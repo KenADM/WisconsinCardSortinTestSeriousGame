@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PureVRMovement : MonoBehaviour
+public class Movement : MonoBehaviour
 {
     [Header("Impostazioni")]
     public float speed = 1f;

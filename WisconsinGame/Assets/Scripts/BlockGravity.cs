@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ManualGravity : MonoBehaviour
+public class BlockGravity : MonoBehaviour
 {
     public float gravityForce = 9.8f;
     public float floorHeight = 0f; // La Y del tuo pavimento

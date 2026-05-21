@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PureVRGrabber : MonoBehaviour
+public class Grab : MonoBehaviour
 {
     [Header("Tasto Presa")]
     public InputAction grabAction;
@@ -21,14 +21,14 @@ public class PureVRGrabber : MonoBehaviour
         float grabValue = grabAction.ReadValue<float>();
 
         // Se premo il tasto, ho un oggetto a tiro, e non ho già le mani piene -> AFFERRA
-        if (grabValue > 0.5f && grabbedObject == null && objectToGrab != null)
+        if (grabValue > 0.5f && grabbedObject == null && objectToGrab != null && objectToGrab.transform.parent == null && objectToGrab.CompareTag("Grabbable"))
         {
-            Grab();
+            GrabObject();
         }
         // Se rilascio il tasto e ho un oggetto in mano -> LASCIA
         else if (grabValue < 0.5f && grabbedObject != null)
         {
-            Release();
+            ReleaseObject();
         }
     }
 
@@ -51,14 +51,14 @@ public class PureVRGrabber : MonoBehaviour
         }
     }
 
-    void Grab()
+    void GrabObject()
     {        
         // Facciamo diventare il blocco un "figlio" della mano, così si muove insieme a noi
         grabbedObject = objectToGrab;
         grabbedObject.transform.SetParent(transform);
     }
 
-    void Release()
+    void ReleaseObject()
     {
         // Togliamo la parentela. Il blocco resterà esattamente dove lo abbiamo lasciato. (sta all'oggerto decidere se cadere o restare sospeso)
         grabbedObject.transform.SetParent(null);
