@@ -786,11 +786,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Spawning
   prefab: {fileID: 1157651701686477638, guid: 06b876ab97f162148bc2bacb0b431081, type: 3}
   peoplePrefab: {fileID: 3597062380946135547, guid: e9c819cd7e5e88a4fb323a90d88d08bb, type: 3}
+  peopleNumber: 4
   TempPrefab: {fileID: 3597062380946135547, guid: 55034e266062ea04cb6baf6a68918a63, type: 3}
-  Materials:
-  - {fileID: 2100000, guid: 2e26413895f8d2d48a32740b8beebe03, type: 2}
+  typeNumber: 4
+  materials:
   - {fileID: 2100000, guid: fca46890c2b8eef458868d032615550d, type: 2}
   - {fileID: 2100000, guid: b07a4a209636eb84d956e64500ddc49c, type: 2}
+  - {fileID: 2100000, guid: 2e26413895f8d2d48a32740b8beebe03, type: 2}
   - {fileID: 2100000, guid: 6c52ad15285ef14408ad15863771eb76, type: 2}
 --- !u!1 &895683122
 GameObject:
