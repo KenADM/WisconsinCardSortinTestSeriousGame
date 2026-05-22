@@ -50,7 +50,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2755020271395391473, guid: 1867b2e59f6c7654fb493eea365fe19e, type: 3}
       propertyPath: m_Name
-      value: CubeEmpty Variant
+      value: CubeEmpty
       objectReference: {fileID: 0}
     - target: {fileID: 3662735991204726653, guid: 1867b2e59f6c7654fb493eea365fe19e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'

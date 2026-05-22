@@ -22,6 +22,7 @@ public class BlockGravity : MonoBehaviour
         if (!gravityStopped){
             transform.rotation = startRotation;
 
+            // Se il blocco è attaccato a qualcosa (es. la mano), non applichiamo la gravità
             if (transform.parent != null) 
             {
                 currentVelocity = 0f; 

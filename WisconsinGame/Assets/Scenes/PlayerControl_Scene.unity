@@ -751,7 +751,7 @@ GameObject:
   - component: {fileID: 774179885}
   - component: {fileID: 774179886}
   m_Layer: 0
-  m_Name: GameController
+  m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -785,6 +785,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Spawning
   prefab: {fileID: 1157651701686477638, guid: 06b876ab97f162148bc2bacb0b431081, type: 3}
+  peoplePrefab: {fileID: 3597062380946135547, guid: e9c819cd7e5e88a4fb323a90d88d08bb, type: 3}
+  TempPrefab: {fileID: 3597062380946135547, guid: 55034e266062ea04cb6baf6a68918a63, type: 3}
   Materials:
   - {fileID: 2100000, guid: 2e26413895f8d2d48a32740b8beebe03, type: 2}
   - {fileID: 2100000, guid: fca46890c2b8eef458868d032615550d, type: 2}
@@ -898,8 +900,8 @@ Transform:
   m_GameObject: {fileID: 895683122}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.1, z: 2}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalPosition: {x: 0, y: 0.035, z: 2}
+  m_LocalScale: {x: 0.3, y: 0.07, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1197,11 +1199,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2864343713543992301, guid: 06b876ab97f162148bc2bacb0b431081, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.378
+      value: 1.169
       objectReference: {fileID: 0}
     - target: {fileID: 2864343713543992301, guid: 06b876ab97f162148bc2bacb0b431081, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.323
+      value: 0.117
       objectReference: {fileID: 0}
     - target: {fileID: 2864343713543992301, guid: 06b876ab97f162148bc2bacb0b431081, type: 3}
       propertyPath: m_LocalPosition.z

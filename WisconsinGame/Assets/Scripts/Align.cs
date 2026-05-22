@@ -4,8 +4,11 @@ public class Align : MonoBehaviour
 {
     private int blockCount; // Contatore dei blocchi allineati
     private BoxCollider triggerCollider; // Riferimento al BoxCollider del trigger
+    private Transform TriggerTransform; // Riferimento al Transform del trigger
     private float colliderX;
     private float colliderZ;
+
+    private float top;
     
     [Header("Spawning")]
     public Spawning Manager;
@@ -13,7 +16,9 @@ public class Align : MonoBehaviour
     void Start()
     {
         blockCount = 0; // Inizializziamo il contatore dei blocchi allineati a 0
+        top = 0;
         triggerCollider = GetComponent<BoxCollider>(); // Otteniamo il BoxCollider del trigger
+        TriggerTransform = GetComponent<Transform>(); // Otteniamo il Transform del trigger
     }
 
     void OnTriggerStay(Collider other)
@@ -32,11 +37,23 @@ public class Align : MonoBehaviour
 
             // Calcoliamo l'altezza del blocco considerando la scala
             float blockHeight =  cubeCollider.size.y * cubeTransform.localScale.y; 
+            Debug.Log("Block Height: " + blockHeight);
 
             //spostiamo il blocco in alto, considerando quanti blocchi sono già allineati
-            float targetY = transform.position.y + blockHeight * blockCount; 
-            Vector3 targetPosition = new Vector3(transform.position.x, targetY, transform.position.z);
+            if(top == 0)
+            {
+                BoxCollider baseCollider = GetComponent<BoxCollider>();
+                Transform baseTransform = GetComponent<Transform>();
+                top = baseCollider.size.y * baseTransform.localScale.y; 
+
+                top = top + blockHeight/2; 
+            }else{
+                top = top + blockHeight; 
+            }
+            Vector3 targetPosition = new Vector3(transform.position.x, top, transform.position.z);
             
+
+
             // Muoviamo il blocco 
             other.transform.position = targetPosition;
 
@@ -46,10 +63,13 @@ public class Align : MonoBehaviour
             // Cambia il tag per indicare che è allineato, per evitare che non possa piu essere mosso
             other.gameObject.tag = "Aligned"; 
 
-            // cambio collider, che viene spostato sopra il blocco, per permettere di allineare altri blocchi sopra
-            triggerCollider.center = new Vector3(triggerCollider.center.x, triggerCollider.center.y + cubeCollider.size.y, triggerCollider.center.z); // + 1 poichè il blocco è alto 1 unità, quindi spostiamo il collider di 1 unità verso l'alto per allineare il prossimo blocco sopra
 
-            // Spawna un nuovo blocco
+            Debug.Log("Collider Center: " + triggerCollider.center);
+
+            // sposto collider in alto, considerando i blocchi già allineati
+            float heightToAdd = blockHeight / triggerCollider.transform.localScale.y; 
+            triggerCollider.center = new Vector3(triggerCollider.center.x, triggerCollider.center.y + heightToAdd, triggerCollider.center.z);
+            Debug.Log("Collider Center: " + triggerCollider.center);
             Manager.Spawn(); 
             
         }
