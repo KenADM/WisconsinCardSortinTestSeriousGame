@@ -2,22 +2,44 @@ using UnityEngine;
 
 public class Align : MonoBehaviour
 {
+    
+    
     void OnTriggerStay(Collider other)
     { 
-        // 1. Il blocco è grabbable E NON è attualmente in mano
+        // Il blocco è grabbable E NON è attualmente in mano
         if(other.CompareTag("Grabbable") && other.transform.parent == null)
         {
-            // 2. Allineiamo la rotazione della base
+            //Debug.Log(transform.position);
             other.transform.rotation = transform.rotation;
 
-            // 3. Calcoliamo la posizione precisa sopra la base
-            float targetY = transform.position.y + (transform.localScale.y / 2f) + (other.transform.localScale.y / 2f) + 0.01f;
+            // Calcoliamo la posizione precisa sopra la base
+            float targetY = transform.position.y + transform.localScale.y / 2 + other.transform.localScale.y / 2;
             Vector3 targetPosition = new Vector3(transform.position.x, targetY, transform.position.z);
             
-            // 4. Muoviamo il blocco (Lerp per la fluidità)
-            other.transform.position = Vector3.Lerp(other.transform.position, targetPosition, Time.deltaTime * 10f);
+            // Muoviamo il blocco 
+            other.transform.position = targetPosition;
 
-            other.gameObject.tag = "Aligned"; // Cambia il tag per indicare che è allineato (opzionale, dipende da come vuoi gestire la logica del gioco)
+            //blocchiamo la caduta del nuovo blocco
+            other.GetComponent<BlockGravity>().StopGravity();
+
+            //Debug.Log(other.transform.position);
+
+            other.gameObject.tag = "Aligned"; // Cambia il tag per indicare che è allineato, per evitare che non possa piu essere mosso
+
+            //cambio collider, che viene spostato sopra il blocco, per permettere di allineare altri blocchi sopra
+            BoxCollider triggerCollider = GetComponent<BoxCollider>();
+
+            Debug.Log(GetComponent<BoxCollider>().center.y);
+            //Debug.Log(triggerCollider.center.y);
+            //Debug.Log(other.transform.localScale.y);
+
+            GetComponent<BoxCollider>().center = new Vector3(triggerCollider.center.x, triggerCollider.center.y + 1, triggerCollider.center.z); // + 1 poichè il blocco è alto 1 unità, quindi spostiamo il collider di 1 unità verso l'alto per allineare il prossimo blocco sopra
+            //Debug.Log(GetComponent<BoxCollider>().center.y);
+
+
+            GetComponent<Spawning>().Spawn(); // Spawna un nuovo blocco sopra
+            
         }
     }
 }
+//MODIFICO ALTEZZA DA RAGGIUNGERE
