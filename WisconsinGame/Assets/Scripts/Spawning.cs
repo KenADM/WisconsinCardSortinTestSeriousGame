@@ -1,10 +1,13 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Spawning : MonoBehaviour
 {
     [Header("Prefab da Spawnare")]
     public GameObject prefab; // Il blocco da spawnare
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
+    public List<Material> Materials = new List<Material>();
+    
     void Start()
     {
         
@@ -12,7 +15,9 @@ public class Spawning : MonoBehaviour
 
     public void Spawn()
     {
-        Instantiate(prefab, new Vector3(0.3f, 0.5f, 2f), Quaternion.identity);
+        GameObject spawnedObj = Instantiate(prefab, new Vector3(0.3f, 0.5f, 2f), Quaternion.identity);
+
+        spawnedObj.GetComponent<Renderer>().material = Materials[Random.Range(0, Materials.Count)];
     }
 
     // Update is called once per frame
