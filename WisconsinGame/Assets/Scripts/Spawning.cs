@@ -12,7 +12,7 @@ public class Spawning : MonoBehaviour
 
     public void Spawn()
     {
-        Instantiate(prefab, new Vector3(0, 5, 0), Quaternion.identity);
+        Instantiate(prefab, new Vector3(0.3f, 0.5f, 2f), Quaternion.identity);
     }
 
     // Update is called once per frame
