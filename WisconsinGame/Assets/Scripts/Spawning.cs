@@ -3,40 +3,44 @@ using System.Collections.Generic;
 //NOTA BENE, per distringuere la caratteristica del tipo di stanza, si è temporaneamente deciso di utilizzare un TempPrefab
 public class Spawning : MonoBehaviour
 {
-    [Header("Appartamento")]
-    public GameObject prefab; // Il blocco da spawnare
+    [Header("Position for Spawn")]
+    public float x;
+    public float y;
+    public float z;
 
     [Header("Persone")]
     public GameObject peoplePrefab; // Il prefab della persona da spawnare
-    public int peopleNumber; // Il numero di persone da spawnare
+    public int peopleNumberMin;
+    public int peopleNumberMax; // Il numero di persone da spawnare
 
     [Header("Tipo di stanza")]
-    public GameObject TempPrefab; // Il prefab dell'oggetto da spawnare
-    public int typeNumber; // Il numero di oggetti da spawnare
+    public List<GameObject> rooms = new List<GameObject>();
+    private int roomNumber;
 
     [Header("Colore")]
-    public List<Material> materials = new List<Material>();
+    public List<Material> colors = new List<Material>();
     private int colorNumber;
 
-    List<CombinationBox> allCombinations = new List<CombinationBox>();
+    private List<CombinationBox> allCombinations = new List<CombinationBox>();
+
+
     
 
     void Start()
     {
-        colorNumber = materials.Count;
+        colorNumber = colors.Count;
+        roomNumber = rooms.Count;
 
         FillCombinations();
-
-        
-        Spawn();
+        //Spawn();
+        SpawnTesting();
     }
 
     // CHECK!!
-    // 1: numero di persone da spawnare, da 1 a 4
     // 2: posizionamento delle persone, da sistemare
     public void GeneratePeople(GameObject spawnedObject, int peopleCount)
     {
-        for (int i = 0; i < peopleCount + 1; i++)
+        for (int i = peopleNumberMin; i < peopleCount + 1; i++)
         {
             GameObject person = Instantiate(peoplePrefab, new Vector3(0,0,0), Quaternion.identity);
             person.transform.SetParent(spawnedObject.transform);
@@ -55,31 +59,26 @@ public class Spawning : MonoBehaviour
         }
     }
 
-    public void GenerateOther(GameObject spawnedObject, int typeCount)
-    {
-        for (int i = 0; i < typeCount; i++)
-        {
-            GameObject person = Instantiate(TempPrefab, new Vector3(0,0,0), Quaternion.identity);
-            person.transform.SetParent(spawnedObject.transform);
+    public void ColorRoom(GameObject spawnedObject, Material color)
+    {   
 
-            BoxCollider cubeCollider = spawnedObject.GetComponent<BoxCollider>();
-            Transform cubeTransform = spawnedObject.GetComponent<Transform>();
-            
-            // Calcoliamo il pavimento del blocco considerando la scala
-            float SizeHeight =  cubeCollider.size.y * cubeTransform.localScale.y;
-            float SizeWidth =  cubeCollider.size.x * cubeTransform.localScale.x;
-            
-            //fix: fare in modo che non si sovrappongono le persone
-            //improvement: cambio altezza delle persone 
-            person.transform.localPosition = new Vector3(Random.Range(-SizeWidth*2,SizeWidth*2), SizeHeight, Random.Range(-SizeWidth*2, SizeWidth*2)); // Posizione casuale intorno al blocco, ma sotto di esso
+        spawnedObject.GetComponent<Renderer>().material = color;
+
+        // serce a scegliere i figli con Renderder
+        Renderer[] allRenderers = spawnedObject.GetComponentsInChildren<Renderer>();
+
+        foreach (Renderer childRenderer in allRenderers)
+        {
+            childRenderer.material = color;
         }
+
     }
 
     void FillCombinations()
     {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < peopleNumber; j++) {
-                for (int k = 0; k < typeNumber; k++) {
+        for (int i = peopleNumberMin; i <= peopleNumberMax; i++) {
+            for (int j = 0; j < colorNumber; j++) {
+                for (int k = 0; k < roomNumber; k++) {
                     allCombinations.Add(new CombinationBox(i, j, k));
                     Debug.Log(i);
                 }
@@ -92,26 +91,55 @@ public class Spawning : MonoBehaviour
     {
 
         if (allCombinations.Count > 0)
-{          
+        {   
             int index = Random.Range(0, allCombinations.Count);
-
-            Debug.Log(index);
-
             CombinationBox randomElement = allCombinations[index];
-
-            Debug.Log(randomElement.color);
-
             allCombinations.RemoveAt(index);
 
-            GameObject spawnedObj = Instantiate(prefab, new Vector3(0.3f, 0.5f, 2f), Quaternion.identity);
-            spawnedObj.GetComponent<Renderer>().material = materials[randomElement.color];
-            GeneratePeople(spawnedObj, randomElement.people);
-            GenerateOther(spawnedObj, randomElement.type);    
+            GameObject room =  rooms[randomElement.type];
+            Material color = colors[randomElement.color];
+            int numberOfPeople = randomElement.people;
+
+            //spawn room
+            GameObject spawnedObj = Instantiate(room, new Vector3(x, y, z), Quaternion.identity);
+            //color room
+            ColorRoom(spawnedObj,color);
+            //spawn people
+            GeneratePeople(spawnedObj, numberOfPeople);
+
         }else{
             Debug.Log("No more combinations available.");
         } 
     }
 
+    public void SpawnTesting()
+    {
+        
+        float dimensions = 0;
+        int index = 0;
+        foreach(CombinationBox Element in allCombinations)
+        {
+
+            GameObject room =  rooms[Element.type];
+            Material color = colors[Element.color];
+            int numberOfPeople = Element.people;
+
+            //spawn room
+            GameObject spawnedObj = Instantiate(room, new Vector3(0+ dimensions*index, 0, 0), Quaternion.identity);
+
+            if (dimensions == 0)
+            {
+                dimensions = spawnedObj.transform.localScale.x;
+            }
+                
+            //color room
+            ColorRoom(spawnedObj,color);
+            //spawn people
+            GeneratePeople(spawnedObj, numberOfPeople);
+
+            index += 1;
+        }
+    }
     // Update is called once per frame
     void Update()
     {

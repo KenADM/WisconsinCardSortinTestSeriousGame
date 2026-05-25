@@ -18,3 +18,8 @@ If you want to learn more about creating good readme files then refer the follow
 - [ASP.NET Core](https://github.com/aspnet/Home)
 - [Visual Studio Code](https://github.com/Microsoft/vscode)
 - [Chakra Core](https://github.com/Microsoft/ChakraCore)
+
+COSE DA SISTEMARE:
+- Gestire lo spawn delle persone in modo che non siano una dopra l'altra
+- Sistemare Spawn e i suoi parametri
+- fare in modo che prefab e materiali siano scelti a livello di codice e non a mano

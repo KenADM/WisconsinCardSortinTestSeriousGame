@@ -784,12 +784,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6f80267c35a7b14487fe4abfb208a8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Spawning
-  prefab: {fileID: 1157651701686477638, guid: 06b876ab97f162148bc2bacb0b431081, type: 3}
   peoplePrefab: {fileID: 3597062380946135547, guid: e9c819cd7e5e88a4fb323a90d88d08bb, type: 3}
-  peopleNumber: 4
-  TempPrefab: {fileID: 3597062380946135547, guid: 55034e266062ea04cb6baf6a68918a63, type: 3}
-  typeNumber: 4
-  materials:
+  peopleNumberMin: 1
+  peopleNumberMax: 4
+  rooms:
+  - {fileID: 1157651701686477638, guid: 18edd3aaab7709146a1d148316ba2948, type: 3}
+  - {fileID: 1157651701686477638, guid: e1d7121358d4a2f45a35f97f0a962747, type: 3}
+  - {fileID: 1157651701686477638, guid: 4c8f07cd59930d640ab22c3cf22ad6c5, type: 3}
+  - {fileID: 1157651701686477638, guid: cc0fa5195d3f1c544ac68015ac93bced, type: 3}
+  colors:
   - {fileID: 2100000, guid: fca46890c2b8eef458868d032615550d, type: 2}
   - {fileID: 2100000, guid: b07a4a209636eb84d956e64500ddc49c, type: 2}
   - {fileID: 2100000, guid: 2e26413895f8d2d48a32740b8beebe03, type: 2}
