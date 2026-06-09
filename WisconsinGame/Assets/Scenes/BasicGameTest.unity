@@ -332,13 +332,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: people
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: typeIndex
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: colorIndex
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: SpawningManager
+      value: 
+      objectReference: {fileID: 1891475914}
     - target: {fileID: 874100930408137850, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.5
       objectReference: {fileID: 0}
     - target: {fileID: 874100930408137850, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.035
       objectReference: {fileID: 0}
     - target: {fileID: 874100930408137850, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -389,13 +405,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: people
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: typeIndex
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: colorIndex
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: SpawningManager
+      value: 
+      objectReference: {fileID: 1891475914}
     - target: {fileID: 874100930408137850, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 874100930408137850, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.035
       objectReference: {fileID: 0}
     - target: {fileID: 874100930408137850, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -502,7 +534,7 @@ MonoBehaviour:
   x: 0
   y: 0
   z: 0
-  peoplePrefab: {fileID: 0}
+  peoplePrefab: {fileID: 3597062380946135547, guid: e9c819cd7e5e88a4fb323a90d88d08bb, type: 3}
   peopleNumberMin: 1
   peopleNumberMax: 4
   rooms:
@@ -542,6 +574,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91f68b06579bd6a4ab548ddf28eec09d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameLogic
+  numberOfCollumns: 4
+  rightComboInARow: 1
 --- !u!1001 &1930984141
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -550,13 +584,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: people
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: typeIndex
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: colorIndex
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: SpawningManager
+      value: 
+      objectReference: {fileID: 1891475914}
     - target: {fileID: 874100930408137850, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 874100930408137850, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.035
       objectReference: {fileID: 0}
     - target: {fileID: 874100930408137850, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -734,13 +784,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: people
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: typeIndex
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: colorIndex
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 686110139545467139, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
+      propertyPath: SpawningManager
+      value: 
+      objectReference: {fileID: 1891475914}
     - target: {fileID: 874100930408137850, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 874100930408137850, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.035
       objectReference: {fileID: 0}
     - target: {fileID: 874100930408137850, guid: eb7693941daafb747ad34cccccb3e60e, type: 3}
       propertyPath: m_LocalPosition.z

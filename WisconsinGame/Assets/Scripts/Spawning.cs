@@ -19,10 +19,22 @@ namespace SpecialObjects
         [Header("Tipo di stanza")]
         public List<GameObject> rooms = new List<GameObject>();
         private int roomNumber;
+        /*
+        0- Cube
+        1- Sphere
+        2- Cilinder
+        3- Capsule
+        */
 
         [Header("Colore")]
         public List<Material> colors = new List<Material>();
         private int colorNumber;
+        /*
+        0- blue
+        1- green
+        2- red
+        3- yellow
+        */
 
         private List<CombinationBox> allCombinations = new List<CombinationBox>();
 
@@ -35,7 +47,7 @@ namespace SpecialObjects
             roomNumber = rooms.Count;
 
             FillCombinations();
-            Spawn();
+            //SpawnStart();
             //SpawnTesting();
         }
 
@@ -82,8 +94,9 @@ namespace SpecialObjects
             for (int i = peopleNumberMin; i <= peopleNumberMax; i++) {
                 for (int j = 0; j < colorNumber; j++) {
                     for (int k = 0; k < roomNumber; k++) {
-                        allCombinations.Add(new CombinationBox(i, j, k));
-                        Debug.Log(i);
+                        allCombinations.Add(new CombinationBox(j, k, i));
+                        //Debug.Log("Combination added: People " + i + ", Color " + j + ", Room " + k);
+                      
                     }
                 }
             }
@@ -99,20 +112,52 @@ namespace SpecialObjects
                 CombinationBox randomElement = allCombinations[index];
                 allCombinations.RemoveAt(index);
 
-                GameObject room =  rooms[randomElement.type];
-                Material color = colors[randomElement.color];
-                int numberOfPeople = randomElement.people;
-
-                //spawn room
-                GameObject spawnedObj = Instantiate(room, new Vector3(x, y, z), Quaternion.identity);
-                //color room
-                ColorRoom(spawnedObj,color);
-                //spawn people
-                GeneratePeople(spawnedObj, numberOfPeople);
+                SpawnOne(randomElement.color, randomElement.type, randomElement.people);
 
             }else{
                 Debug.Log("No more combinations available.");
             } 
+        }
+
+        public void SpawnOne(int colorIndex, int typeIndex, int people)
+        {
+            Debug.Log(colorIndex + " " + typeIndex + " " + people);
+            GameObject room =  rooms[typeIndex];
+            Material color = colors[colorIndex];
+            int numberOfPeople = people;
+
+            //allCombinations.RemoveAll(item => item.people == people && item.type == typeIndex && item.color == colorIndex);
+
+            //spawn room
+            GameObject spawnedObj = Instantiate(room, new Vector3(x, y, z), Quaternion.identity);
+            //color room
+            ColorRoom(spawnedObj,color);
+            //spawn people
+            GeneratePeople(spawnedObj, numberOfPeople);
+
+            spawnedObj.AddComponent<CubeChar>();
+            spawnedObj.GetComponent<CubeChar>().SetCombinationBox(colorIndex, typeIndex, people);
+
+        }
+
+        public void SpawnOne(int colorIndex, int typeIndex, int people, float FixedX, float FixedY, float FixedZ)
+        {
+            GameObject room =  rooms[typeIndex];
+            Material color = colors[colorIndex];
+            int numberOfPeople = people;
+
+            allCombinations.RemoveAll(item => item.people == people && item.type == typeIndex && item.color == colorIndex);
+
+            //spawn room
+            GameObject spawnedObj = Instantiate(room, new Vector3(FixedX, FixedY, FixedZ), Quaternion.identity);
+            //color room
+            ColorRoom(spawnedObj,color);
+            //spawn people
+            GeneratePeople(spawnedObj, numberOfPeople);
+
+            
+            spawnedObj.AddComponent<CubeChar>();
+            spawnedObj.GetComponent<CubeChar>().SetCombinationBox(colorIndex, typeIndex, people);
         }
 
         public void SpawnTesting()

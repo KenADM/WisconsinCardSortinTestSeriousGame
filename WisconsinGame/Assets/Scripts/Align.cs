@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 namespace SpecialObjects
 {
@@ -9,11 +10,21 @@ namespace SpecialObjects
         private Transform TriggerTransform; // Riferimento al Transform del trigger
         private float colliderX;
         private float colliderZ;
-
         private float top;
-        
+
+        public int colorIndex;
+        public int typeIndex;
+        public int people;
+
         [Header("Spawning")]
-        public Spawning Manager;
+        public Spawning SpawningManager;
+
+
+
+        // events
+        public static event Action<Align> StartingConfiguration;
+        public static event Action SpawnNew;
+        public static event Action<int, int, int, Collider> CheckCondition;
         
         void Start()
         {
@@ -21,6 +32,8 @@ namespace SpecialObjects
             top = 0;
             triggerCollider = GetComponent<BoxCollider>(); // Otteniamo il BoxCollider del trigger
             TriggerTransform = GetComponent<Transform>(); // Otteniamo il Transform del trigger
+            //SpawningManager.SpawnOne(colorIndex, typeIndex, people, this.transform.position.x, this.transform.localScale.y+10, this.transform.localScale.z);
+            StartingConfiguration?.Invoke(this);
         }
 
         void OnTriggerStay(Collider other)
@@ -72,7 +85,10 @@ namespace SpecialObjects
                 float heightToAdd = blockHeight / triggerCollider.transform.localScale.y; 
                 triggerCollider.center = new Vector3(triggerCollider.center.x, triggerCollider.center.y + heightToAdd, triggerCollider.center.z);
                 Debug.Log("Collider Center: " + triggerCollider.center);
-                Manager.Spawn(); 
+                
+                
+                CheckCondition?.Invoke(colorIndex, typeIndex, people, other);
+                SpawnNew?.Invoke();
                 
             }
         }
