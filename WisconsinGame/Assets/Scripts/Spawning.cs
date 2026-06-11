@@ -185,7 +185,7 @@ public class Spawning : MonoBehaviour
             index += 1;
         }
     }
-    // Update is called once per frame
+
     void Update()
     {
         

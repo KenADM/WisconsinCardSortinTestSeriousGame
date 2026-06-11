@@ -22,13 +22,11 @@ public class GameLogic : MonoBehaviour
 
     public static event Action<bool> responsePopUp;
 
-    // 1. Get your components early in Awake so they are ready
     private void Awake()
     {
         mySpawningManager = GetComponent<Spawning>();
     }
 
-    // 2. Subscribe to events in OnEnable so you never miss early triggers
     private void OnEnable()
     {   
         Align.StartingConfiguration += StartingConfigurationHandler;
@@ -36,7 +34,6 @@ public class GameLogic : MonoBehaviour
         Align.CheckCondition += CheckConditionHandler;
     }
 
-    // 3. Always unsubscribe to prevent memory leaks
     private void OnDisable()
     {
         Align.StartingConfiguration -= StartingConfigurationHandler;
