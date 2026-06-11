@@ -16,11 +16,6 @@ namespace SpecialObjects
         public int typeIndex;
         public int people;
 
-        [Header("Spawning")]
-        public Spawning SpawningManager;
-
-
-
         // events
         public static event Action<Align> StartingConfiguration;
         public static event Action SpawnNew;
@@ -79,12 +74,12 @@ namespace SpecialObjects
                 other.gameObject.tag = "Aligned"; 
 
 
-                Debug.Log("Collider Center: " + triggerCollider.center);
+                //Debug.Log("Collider Center: " + triggerCollider.center);
 
                 // sposto collider in alto, considerando i blocchi già allineati
                 float heightToAdd = blockHeight / triggerCollider.transform.localScale.y; 
                 triggerCollider.center = new Vector3(triggerCollider.center.x, triggerCollider.center.y + heightToAdd, triggerCollider.center.z);
-                Debug.Log("Collider Center: " + triggerCollider.center);
+                //Debug.Log("Collider Center: " + triggerCollider.center);
                 
                 
                 CheckCondition?.Invoke(colorIndex, typeIndex, people, other);
