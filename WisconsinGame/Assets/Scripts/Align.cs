@@ -12,14 +12,15 @@ namespace SpecialObjects
         private float colliderZ;
         private float top;
 
+        // base to compare
         public int colorIndex;
         public int typeIndex;
         public int people;
 
         // events
-        public static event Action<Align> StartingConfiguration;
-        public static event Action SpawnNew;
-        public static event Action<int, int, int, Collider> CheckCondition;
+        public static event Action<Align> startingConfiguration;
+        public static event Action spawnNew;
+        public static event Action<int, int, int, Collider> checkCondition;
         
         void Start()
         {
@@ -28,7 +29,7 @@ namespace SpecialObjects
             triggerCollider = GetComponent<BoxCollider>(); // Otteniamo il BoxCollider del trigger
             TriggerTransform = GetComponent<Transform>(); // Otteniamo il Transform del trigger
             //SpawningManager.SpawnOne(colorIndex, typeIndex, people, this.transform.position.x, this.transform.localScale.y+10, this.transform.localScale.z);
-            StartingConfiguration?.Invoke(this);
+            startingConfiguration?.Invoke(this);
         }
 
         void OnTriggerStay(Collider other)
@@ -82,8 +83,8 @@ namespace SpecialObjects
                 //Debug.Log("Collider Center: " + triggerCollider.center);
                 
                 
-                CheckCondition?.Invoke(colorIndex, typeIndex, people, other);
-                SpawnNew?.Invoke();
+                checkCondition?.Invoke(colorIndex, typeIndex, people, other);
+                spawnNew?.Invoke();
                 
             }
         }
