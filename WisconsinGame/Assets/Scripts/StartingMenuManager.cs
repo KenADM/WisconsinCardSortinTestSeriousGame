@@ -9,6 +9,7 @@ public class StartingMenuManager : MonoBehaviour
     public TextMeshProUGUI testo;
     public TMP_InputField input;
     public GameObject startMenu;
+    public GameObject ray;
 
     public static event Action<string> startGame;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -27,12 +28,13 @@ public class StartingMenuManager : MonoBehaviour
         return input.text == "" ? false : true;
     }
 
-    public void StartGame(){ //MODIFICO cosi non sceglie text preview
+    public void StartGame(){
         if(CheckInputField()){
             startGame?.Invoke(input.text);
             startMenu.SetActive(false);
+            ray.SetActive(false);
         }else{
-            testo.text = "INSERIRE CODICE UTENTE";
+            testo.text = testo.text + "!";
         }
     }
 

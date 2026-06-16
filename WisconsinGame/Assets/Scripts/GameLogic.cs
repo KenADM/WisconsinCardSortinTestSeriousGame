@@ -70,14 +70,10 @@ public class GameLogic : MonoBehaviour
 
     }
 
-
-
     private void CheckConditionHandler(int colorIndex, int typeIndex, int people, Collider collider)
     {
-        Debug.Log("Ciao");
         if(!startSpawn) // blocks the check of the base cube placements
         {
-            Debug.Log("Colone insuff");
             return;    
         }
            
