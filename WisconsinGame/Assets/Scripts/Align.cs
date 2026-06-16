@@ -29,6 +29,21 @@ namespace SpecialObjects
             triggerCollider = GetComponent<BoxCollider>(); // Otteniamo il BoxCollider del trigger
             TriggerTransform = GetComponent<Transform>(); // Otteniamo il Transform del trigger
             //SpawningManager.SpawnOne(colorIndex, typeIndex, people, this.transform.position.x, this.transform.localScale.y+10, this.transform.localScale.z);
+            
+        }
+        
+        void OnEnable()
+        {
+            GameLogic.startStartingCubeSpawning += StartStartingCubeSpawningHandler;
+        }
+
+        void OnDisable()
+        {
+            GameLogic.startStartingCubeSpawning -= StartStartingCubeSpawningHandler;
+        }
+
+        void StartStartingCubeSpawningHandler()
+        {
             startingConfiguration?.Invoke(this);
         }
 
@@ -80,7 +95,7 @@ namespace SpecialObjects
                 // sposto collider in alto, considerando i blocchi già allineati
                 float heightToAdd = blockHeight / triggerCollider.transform.localScale.y; 
                 triggerCollider.center = new Vector3(triggerCollider.center.x, triggerCollider.center.y + heightToAdd, triggerCollider.center.z);
-                //Debug.Log("Collider Center: " + triggerCollider.center);
+                Debug.Log("Collider Center: " + triggerCollider.center);
                 
                 
                 checkCondition?.Invoke(colorIndex, typeIndex, people, other);

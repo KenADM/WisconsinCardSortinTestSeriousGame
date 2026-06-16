@@ -7,6 +7,7 @@ public class GameLogic : MonoBehaviour
 {
 
     public int numberOfCollumns = 4;
+    private bool startSpawn = false;
     public int rightComboInARow = 1;
     private int realInARow = 0;
     private List<int> conditionValues = new List<int>() {0, 1, 2};
@@ -21,15 +22,18 @@ public class GameLogic : MonoBehaviour
     private Spawning mySpawningManager;
 
     public static event Action<bool> responsePopUp;
+    public static event Action startStartingCubeSpawning;
 
 
     private void Awake()
     {
         mySpawningManager = GetComponent<Spawning>();
+        
     }
 
     private void OnEnable()
     {   
+        StartingMenuManager.startGame += StartGameHandler;
         Align.startingConfiguration += StartingConfigurationHandler;
         Align.spawnNew += SpawnNewHandler;
         Align.checkCondition += CheckConditionHandler;
@@ -37,11 +41,17 @@ public class GameLogic : MonoBehaviour
 
     private void OnDisable()
     {
+        StartingMenuManager.startGame -= StartGameHandler;
         Align.startingConfiguration -= StartingConfigurationHandler;
         Align.spawnNew -= SpawnNewHandler;
         Align.checkCondition -= CheckConditionHandler;
     }
     
+    private void StartGameHandler(string codiceUtente)
+    {
+        startStartingCubeSpawning?.Invoke();
+    } 
+
     private void StartingConfigurationHandler(Align align)
     {   
         mySpawningManager.SpawnOne(align.colorIndex, align.typeIndex, align.people, align.transform.position.x, align.transform.localScale.y+10, align.transform.localScale.z);
@@ -49,8 +59,9 @@ public class GameLogic : MonoBehaviour
 
     private void SpawnNewHandler()
     {   
-        if(numberOfCollumns < 2) // spawn 1st block to fix only at the placement of the last base cube
+        if(numberOfCollumns < 2) 
         {
+            startSpawn = true;
             mySpawningManager.Spawn();
         }else{
             numberOfCollumns--;
@@ -63,8 +74,10 @@ public class GameLogic : MonoBehaviour
 
     private void CheckConditionHandler(int colorIndex, int typeIndex, int people, Collider collider)
     {
-        if(numberOfCollumns > 0) // blocks the check of the base cube placements
+        Debug.Log("Ciao");
+        if(!startSpawn) // blocks the check of the base cube placements
         {
+            Debug.Log("Colone insuff");
             return;    
         }
            
@@ -86,6 +99,7 @@ public class GameLogic : MonoBehaviour
 
         if (conditionMet)
         {
+
             Debug.Log("Condition met!");
             responsePopUp?.Invoke(true);
             realInARow++;
@@ -133,7 +147,6 @@ public class GameLogic : MonoBehaviour
     void Start()
     {   
         ChooseCondition();
-        
 
     }
 
