@@ -1,31 +1,37 @@
 using UnityEngine;
 using System;
 
-namespace SpecialObjects
+public class CubeChar : MonoBehaviour
 {
-    public class CubeChar : MonoBehaviour
+    public int people;
+    public int type;
+    public int color;
+
+    public CubeChar(int typeNew,  int colorNew, int peopleNew)
     {
-        private CombinationBox CubeCombination;
-
-        public void SetCombinationBox(int people, int type, int color)
-        {
-            CubeCombination = new CombinationBox(people, type, color);
-        }
-
-        public int GetPeople()
-        {
-            return CubeCombination.people;
-        }
-
-        public int GetTypeCube()
-        {
-            return CubeCombination.type;
-        }
-
-        public int GetColor()
-        {
-            return CubeCombination.color;
-        }
-
+        this.people = peopleNew;
+        this.type = typeNew;
+        this.color = colorNew;   
     }
+
+    public void Initialize(int typeNew,  int colorNew, int peopleNew)
+    {
+        this.people = peopleNew;
+        this.type = typeNew;
+        this.color = colorNew;
+    }
+
+    public int GetColor()
+    {
+        return color;
+    }
+    public int GetTypeCube()
+    {
+        return type;
+    }
+    public int GetPeople()
+    {
+        return people;
+    }
+
 }

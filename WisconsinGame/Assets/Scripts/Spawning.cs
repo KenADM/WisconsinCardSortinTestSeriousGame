@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
-using SpecialObjects;
+using static CubeChar;
+using static CubeCombination;
+using Serilog;
 
 public class Spawning : MonoBehaviour
 
@@ -35,7 +37,7 @@ public class Spawning : MonoBehaviour
     3- yellow
     */
 
-    private List<CombinationBox> allCombinations = new List<CombinationBox>();
+    private List<CubeCombination> allCombinations = new List<CubeCombination>();
 
 
     void Awake()
@@ -90,7 +92,7 @@ public class Spawning : MonoBehaviour
         for (int i = peopleNumberMin; i <= peopleNumberMax; i++) {
             for (int j = 0; j < colorNumber; j++) {
                 for (int k = 0; k < roomNumber; k++) {
-                    allCombinations.Add(new CombinationBox(j, k, i));
+                    allCombinations.Add(new CubeCombination(j, k, i));
                     //Debug.Log("Combination added: People " + i + ", Color " + j + ", Room " + k);
                     
                 }
@@ -105,19 +107,20 @@ public class Spawning : MonoBehaviour
         if (allCombinations.Count > 0)
         {   
             int index = Random.Range(0, allCombinations.Count);
-            CombinationBox randomElement = allCombinations[index];
+            CubeCombination randomElement = allCombinations[index];
             allCombinations.RemoveAt(index);
 
             SpawnOne(randomElement.color, randomElement.type, randomElement.people);
 
         }else{
             Debug.Log("No more combinations available.");
+            PlayerLogger.CloseLogger();
         } 
     }
 
     public void SpawnOne(int colorIndex, int typeIndex, int people)
     {
-        Debug.Log(colorIndex + " " + typeIndex + " " + people);
+        //Debug.Log(colorIndex + " " + typeIndex + " " + people);
         GameObject room =  rooms[typeIndex];
         Material color = colors[colorIndex];
         int numberOfPeople = people;
@@ -131,9 +134,8 @@ public class Spawning : MonoBehaviour
         //spawn people
         GeneratePeople(spawnedObj, numberOfPeople);
 
-        spawnedObj.AddComponent<CubeChar>();
-        spawnedObj.GetComponent<CubeChar>().SetCombinationBox(colorIndex, typeIndex, people);
-
+        CubeChar newCube = spawnedObj.AddComponent<CubeChar>();
+        newCube.Initialize(typeIndex, colorIndex, people);
     }
 
     public void SpawnOne(int colorIndex, int typeIndex, int people, float FixedX, float FixedY, float FixedZ)
@@ -153,8 +155,8 @@ public class Spawning : MonoBehaviour
         GeneratePeople(spawnedObj, numberOfPeople);
 
         
-        spawnedObj.AddComponent<CubeChar>();
-        spawnedObj.GetComponent<CubeChar>().SetCombinationBox(colorIndex, typeIndex, people);
+        CubeChar newCube = spawnedObj.AddComponent<CubeChar>();
+        newCube.Initialize(typeIndex, colorIndex, people);
     }
 
     public void SpawnTesting()
@@ -162,7 +164,7 @@ public class Spawning : MonoBehaviour
         
         float dimensions = 0;
         int index = 0;
-        foreach(CombinationBox Element in allCombinations)
+        foreach(CubeCombination Element in allCombinations)
         {
 
             GameObject room =  rooms[Element.type];

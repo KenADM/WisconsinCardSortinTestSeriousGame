@@ -6,12 +6,19 @@ public class Grab : MonoBehaviour
     [Header("Tasto Presa")]
     public InputAction grabAction;
 
+    //public InputAction shorterAction;
+    //public InputAction longerAction;
+    
+
     private GameObject objectToGrab; // Il blocco che stiamo solo sfiorando
     private GameObject grabbedObject; // Il blocco che abbiamo effettivamente in mano
 
+    
     void Start()
     {
         grabAction.Enable();
+        //shorterAction.Enable();
+        //longerAction.Enable();
     }
 
 
@@ -24,12 +31,24 @@ public class Grab : MonoBehaviour
         if (grabValue > 0.5f && grabbedObject == null && objectToGrab != null && objectToGrab.transform.parent == null && objectToGrab.CompareTag("Grabbable"))
         {
             GrabObject();
+            
         }
         // Se rilascio il tasto e ho un oggetto in mano -> LASCIA
         else if (grabValue < 0.5f && grabbedObject != null)
         {
             ReleaseObject();
+            
         }
+/*
+        if (grabValue > 0.5f && grabbedObject != null)
+        {
+            StretchAllow();            
+        }
+        else if (grabValue < 0.5f)
+        {
+            StretchRelease();            
+        }*/
+        
     }
 
     // Questa funzione scatta automaticamente quando la mano "entra" in un oggetto
@@ -57,11 +76,36 @@ public class Grab : MonoBehaviour
         grabbedObject = objectToGrab;
         grabbedObject.transform.SetParent(transform);
     }
-
     void ReleaseObject()
     {
         // Togliamo la parentela. Il blocco resterà esattamente dove lo abbiamo lasciato. (sta all'oggerto decidere se cadere o restare sospeso)
         grabbedObject.transform.SetParent(null);
         grabbedObject = null;
     }
+/*
+    
+
+    void StretchAllow(){
+        //float longerValue = longerAction.ReadValue<float>();
+        //float shorterValue = shorterAction.ReadValue<float>();
+        
+        Vector3 currentPosition = grabbedObject.transform.position;
+
+        if(longerValue > 0.5f && shorterValue < 0.5f){
+            currentPosition.z += 0.01f;  
+            //Debug.Log("LONG");      
+        }
+        else if((longerValue < 0.5f && shorterValue > 0.5f) && true)
+        {
+            currentPosition.z -= 0.01f;   
+            //Debug.Log("SHORT");    
+        }
+
+        grabbedObject.transform.position = currentPosition;
+    }   
+
+    void StretchRelease()
+    {
+
+    }*/
 }

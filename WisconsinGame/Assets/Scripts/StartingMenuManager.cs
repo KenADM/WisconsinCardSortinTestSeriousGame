@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using TMPro;
-using SpecialObjects;
 
 public class StartingMenuManager : MonoBehaviour
 {

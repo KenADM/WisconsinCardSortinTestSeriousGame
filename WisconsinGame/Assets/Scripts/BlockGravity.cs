@@ -17,6 +17,11 @@ public class BlockGravity : MonoBehaviour
     {
         gravityStopped = true;
     }
+    public void StartGravity()
+    {
+        gravityStopped = false;
+        
+    }
     void Update()
     {
         if (!gravityStopped){

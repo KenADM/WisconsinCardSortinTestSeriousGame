@@ -1,7 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using SpecialObjects;
+using Serilog;
+using static PlayerLogger;
+
 
 public class GameLogic : MonoBehaviour
 {
@@ -49,6 +51,10 @@ public class GameLogic : MonoBehaviour
     
     private void StartGameHandler(string codiceUtente)
     {
+        PlayerLogger.Initialize(codiceUtente);
+    
+        ChooseCondition();
+
         startStartingCubeSpawning?.Invoke();
     } 
 
@@ -70,33 +76,43 @@ public class GameLogic : MonoBehaviour
 
     }
 
-    private void CheckConditionHandler(int colorIndex, int typeIndex, int people, Collider collider)
+    private void CheckConditionHandler(int colorBase, int typeBase, int peopleBase, Collider collider)
     {
         if(!startSpawn) // blocks the check of the base cube placements
         {
             return;    
         }
-           
-
+        
+        int colorNewCube = collider.GetComponent<CubeChar>().GetColor();
+        int typeNewCube = collider.GetComponent<CubeChar>().GetTypeCube();
+        int peopleNewCube = collider.GetComponent<CubeChar>().GetPeople();
+        string condition = "";
         bool conditionMet = false;
 
         switch (conditionNumber)
         {
             case 0: // same color
-                conditionMet = (colorIndex == collider.GetComponent<CubeChar>().GetColor());
+                conditionMet = (colorBase == colorNewCube);
+                condition = "color";
                 break;
             case 1: // same type
-                conditionMet = (typeIndex == collider.GetComponent<CubeChar>().GetTypeCube());
+                conditionMet = (typeBase == typeNewCube);
+                condition = "type";
                 break;
             case 2: // same number of people
-                conditionMet = (people == collider.GetComponent<CubeChar>().GetPeople());
+                conditionMet = (peopleBase == peopleNewCube);
+                condition = "people";
                 break;
         }
 
+        string conditionResult = "";
         if (conditionMet)
         {
 
             Debug.Log("Condition met!");
+
+            conditionResult = "Match";
+
             responsePopUp?.Invoke(true);
             realInARow++;
             if (realInARow >= rightComboInARow)
@@ -105,16 +121,26 @@ public class GameLogic : MonoBehaviour
                 ChooseCondition();
                 realInARow = 0;
             }
+
         }
         else
         {   
-            
+            conditionResult = "Not Match";
             responsePopUp?.Invoke(false);
             realInARow = 0;
             Debug.Log("Condition not met!");
             
         }
+
         
+    Log.Information("Check Condition\nCube:\tColor: {ColorNewCube} Type: {TypeNewCube} People: {PeopleNewCube}\nBase:\tColor: {ColorBase} Type: {TypeBase} People: {PeopleBase}\nCondition: {Condition}\nResult: {ConditionResult} ({RealInARow})\n", 
+        colorNewCube, typeNewCube, peopleNewCube, colorBase, typeBase, peopleBase, condition, conditionResult, realInARow);
+
+        if(conditionMet && realInARow == 0)
+        {
+            string newCondition = GetCondition();
+            Log.Information("New Condition: {Condition}!\n", condition);    
+        }
     }   
     private void ChooseCondition()
     {
@@ -126,13 +152,13 @@ public class GameLogic : MonoBehaviour
 
         switch (conditionNumber)
             {
-                case 0: // same color
+                case 0: 
                     Debug.Log("Condition: Color!");
                     break;
-                case 1: // same type
+                case 1: 
                     Debug.Log("Condition: Type!");
                     break;
-                case 2: // same number of people
+                case 2: 
                     Debug.Log("Condition: People!");
                     break;
             }
@@ -140,9 +166,28 @@ public class GameLogic : MonoBehaviour
         conditionValues.RemoveAt(randomIndex);
 
     }
+
+    private string GetCondition()
+    {
+        string newCondition = "";
+        switch (conditionNumber)
+            {
+                case 0:
+                    newCondition = "Color";
+                    break;
+                case 1:
+                    newCondition = "Color";
+                    break;
+                case 2:
+                    newCondition = "Color";
+                    break;
+            }
+        return newCondition;
+    }
+
     void Start()
     {   
-        ChooseCondition();
+        
 
     }
 
