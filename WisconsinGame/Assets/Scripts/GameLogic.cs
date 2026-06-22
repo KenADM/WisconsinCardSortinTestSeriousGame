@@ -47,6 +47,8 @@ public class GameLogic : MonoBehaviour
         Align.startingConfiguration -= StartingConfigurationHandler;
         Align.spawnNew -= SpawnNewHandler;
         Align.checkCondition -= CheckConditionHandler;
+        PlayerLogger.CloseLogger();
+
     }
     
     private void StartGameHandler(string codiceUtente)

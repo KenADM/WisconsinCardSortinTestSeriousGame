@@ -11,17 +11,7 @@ public class StartingMenuManager : MonoBehaviour
     public GameObject ray;
 
     public static event Action<string> startGame;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     bool CheckInputField(){
         return input.text == "" ? false : true;

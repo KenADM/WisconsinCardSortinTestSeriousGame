@@ -21,5 +21,4 @@ If you want to learn more about creating good readme files then refer the follow
 
 COSE DA SISTEMARE:
 - Gestire lo spawn delle persone in modo che non siano una dopra l'altra
-- Sistemare Spawn e i suoi parametri
-- fare in modo che prefab e materiali siano scelti a livello di codice e non a mano
+- aggiungere scritta di fine test
