@@ -1,4 +1,4 @@
-/*using UnityEngine;
+using UnityEngine;
 
 public class WallHiderDecider : MonoBehaviour
 {
@@ -6,6 +6,11 @@ public class WallHiderDecider : MonoBehaviour
     public GameObject south;
     public GameObject west;
     public GameObject east;
+
+    public WallHider northS;
+    public WallHider southS;
+    public WallHider westS;
+    public WallHider eastS;
     public Camera playerCamera;
     
     
@@ -24,27 +29,27 @@ public class WallHiderDecider : MonoBehaviour
 
         if(distNorthPlayer < distSouthPlayer)
         {
-            north.WallHider.hideAllowed = true;
-            south.WallHider.hideAllowed = false;
+            northS.hideAllowed = true;
+            southS.hideAllowed = false;
         }
         else
         {
-            north.WallHider.hideAllowed = false;
-            south.WallHider.hideAllowed = true;
+            northS.hideAllowed = false;
+            southS.hideAllowed = true;
         }
         
         if(distWestPlayer < distEastPlayer)
         {
-            west.WallHider.hideAllowed = true;
-            east.WallHider.hideAllowed = false;
+            westS.hideAllowed = true;
+            eastS.hideAllowed = false;
         }
         else
         {
-            west.WallHider.hideAllowed = false;
-            east.WallHider.hideAllowed = true;
+            westS.hideAllowed = false;
+            eastS.hideAllowed = true;
         }
 
 
 
     }
-}*/
+}

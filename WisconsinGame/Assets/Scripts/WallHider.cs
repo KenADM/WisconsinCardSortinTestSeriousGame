@@ -19,15 +19,24 @@ public class WallHider : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        cameraFrustum = GeometryUtility.CalculateFrustumPlanes(playercamera);
-        if(GeometryUtility.TestPlanesAABB(cameraFrustum, bounds))
+        if (!hideAllowed)
         {
-            myRenderer.enabled = false;
+            myRenderer.enabled = true;
         }
         else
         {
-            myRenderer.enabled = true;
+            cameraFrustum = GeometryUtility.CalculateFrustumPlanes(playercamera);
+            if(!GeometryUtility.TestPlanesAABB(cameraFrustum, bounds))
+            {
+                myRenderer.enabled = true;
+            }
+            else
+            {
+                myRenderer.enabled = false;
 
+            }   
         }
+         
+
     }
 }

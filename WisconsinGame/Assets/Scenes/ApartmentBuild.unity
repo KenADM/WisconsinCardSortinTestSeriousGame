@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 334030336}
   - component: {fileID: 334030335}
   - component: {fileID: 334030334}
+  - component: {fileID: 334030337}
   m_Layer: 0
   m_Name: Wall3
   m_TagString: Untagged
@@ -231,6 +232,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 334030332}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &334030337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 334030332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 868472608b2bacb4d9d6622236fa1cb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WallHider
+  playercamera: {fileID: 837678836}
+  hideAllowed: 0
 --- !u!1 &634090159
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,6 +258,7 @@ GameObject:
   - component: {fileID: 634090162}
   - component: {fileID: 634090161}
   - component: {fileID: 634090160}
+  - component: {fileID: 634090164}
   m_Layer: 0
   m_Name: House
   m_TagString: Untagged
@@ -349,6 +365,27 @@ Transform:
   - {fileID: 894448785}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &634090164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 634090159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eecd4dadb6febce419b8d1df63715d21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  north: {fileID: 1298977550}
+  south: {fileID: 672801975}
+  west: {fileID: 334030332}
+  east: {fileID: 894448784}
+  northS: {fileID: 1298977552}
+  southS: {fileID: 672801980}
+  westS: {fileID: 334030337}
+  eastS: {fileID: 894448789}
+  playerCamera: {fileID: 837678836}
 --- !u!1 &672801975
 GameObject:
   m_ObjectHideFlags: 0
@@ -361,6 +398,7 @@ GameObject:
   - component: {fileID: 672801979}
   - component: {fileID: 672801978}
   - component: {fileID: 672801977}
+  - component: {fileID: 672801980}
   m_Layer: 0
   m_Name: Wall2
   m_TagString: Untagged
@@ -461,6 +499,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 672801975}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &672801980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 672801975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 868472608b2bacb4d9d6622236fa1cb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WallHider
+  playercamera: {fileID: 837678836}
+  hideAllowed: 0
 --- !u!1 &837678833
 GameObject:
   m_ObjectHideFlags: 0
@@ -722,6 +774,7 @@ GameObject:
   - component: {fileID: 894448788}
   - component: {fileID: 894448787}
   - component: {fileID: 894448786}
+  - component: {fileID: 894448789}
   m_Layer: 0
   m_Name: Wall4
   m_TagString: Untagged
@@ -822,6 +875,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 894448784}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &894448789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 894448784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 868472608b2bacb4d9d6622236fa1cb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WallHider
+  playercamera: {fileID: 837678836}
+  hideAllowed: 0
 --- !u!1 &1298977550
 GameObject:
   m_ObjectHideFlags: 0
@@ -870,6 +937,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   playercamera: {fileID: 837678836}
+  hideAllowed: 0
 --- !u!65 &1298977553
 BoxCollider:
   m_ObjectHideFlags: 0
