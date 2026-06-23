@@ -22,4 +22,6 @@ If you want to learn more about creating good readme files then refer the follow
 COSE DA SISTEMARE:
 - Gestire lo spawn delle persone in modo che non siano una dopra l'altra
 - aggiungere scritta di fine test
-- nella visualizzazione dell'appartamento, se sono piu vicino al pavimento, mostro il soffito
+- nella visualizzazione dell'appartamento, se sono piu vicino al pavimento, mostro il soffito (da sistemare)
+- per scrivere uso una mano, poi la canna da pesca la uso dopo.
+- !!! Mano e interazione touch con tastiera

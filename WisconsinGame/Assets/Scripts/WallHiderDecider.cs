@@ -6,11 +6,17 @@ public class WallHiderDecider : MonoBehaviour
     public GameObject south;
     public GameObject west;
     public GameObject east;
-
+    public GameObject ceiling;
+    public GameObject floor;
+/*
     public WallHider northS;
     public WallHider southS;
     public WallHider westS;
     public WallHider eastS;
+    public WallHider ceilingS;
+    public WallHider floorS;
+*/
+
     public Camera playerCamera;
     
     
@@ -27,26 +33,42 @@ public class WallHiderDecider : MonoBehaviour
         float distWestPlayer = Vector3.Distance(playerCamera.transform.position, west.transform.position);
         float distEastPlayer = Vector3.Distance(playerCamera.transform.position, east.transform.position);
 
+        float distCeilingPlayer = Vector3.Distance(playerCamera.transform.position, ceiling.transform.position);
+        float distFloorPlayer = Vector3.Distance(playerCamera.transform.position, floor.transform.position);
+        
+
         if(distNorthPlayer < distSouthPlayer)
         {
-            northS.hideAllowed = true;
-            southS.hideAllowed = false;
+            north.SetActive(false);
+            south.SetActive(true);
         }
         else
         {
-            northS.hideAllowed = false;
-            southS.hideAllowed = true;
+            north.SetActive(true);
+            south.SetActive(false);
+
         }
         
         if(distWestPlayer < distEastPlayer)
         {
-            westS.hideAllowed = true;
-            eastS.hideAllowed = false;
+            west.SetActive(false);
+            east.SetActive(true);
         }
         else
         {
-            westS.hideAllowed = false;
-            eastS.hideAllowed = true;
+
+            west.SetActive(true);
+            east.SetActive(false);
+        }
+
+        if(distCeilingPlayer < distFloorPlayer)
+        {
+            ceiling.SetActive(true);
+        }
+        else
+        {
+
+            ceiling.SetActive(false);
         }
 
 
