@@ -22,3 +22,4 @@ If you want to learn more about creating good readme files then refer the follow
 COSE DA SISTEMARE:
 - Gestire lo spawn delle persone in modo che non siano una dopra l'altra
 - aggiungere scritta di fine test
+- nella visualizzazione dell'appartamento, se sono piu vicino al pavimento, mostro il soffito
