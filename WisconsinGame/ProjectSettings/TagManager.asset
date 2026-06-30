@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Grabbable
   - Aligned
+  - Wall
+  - InnerWall
   layers:
   - Default
   - TransparentFX
