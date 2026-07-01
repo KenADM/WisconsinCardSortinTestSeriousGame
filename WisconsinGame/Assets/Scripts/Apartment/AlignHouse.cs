@@ -4,102 +4,47 @@ using System;
 
 public class AlignHouse : MonoBehaviour
 {
-    private int blockCount; // Contatore dei blocchi allineati
-    private BoxCollider triggerCollider; // Riferimento al BoxCollider del trigger
-    private Transform TriggerTransform; // Riferimento al Transform del trigger
-    private float colliderX;
-    private float colliderZ;
-    private float top;
+    public int blockCount;
 
-    // base to compare
+    private Transform platformTransform;
+    private BoxCollider platformCollider;
+
     public int colorIndex;
     public int typeIndex;
     public int people;
 
-    // events
-    public static event Action<AlignHouse> startingConfiguration;
-    public static event Action spawnNew;
-    public static event Action<int, int, int, Collider> checkCondition;
-    
+
     void Start()
     {
         blockCount = 0; // Inizializziamo il contatore dei blocchi allineati a 0
-        top = 0;
-        triggerCollider = GetComponent<BoxCollider>(); // Otteniamo il BoxCollider del trigger
-        TriggerTransform = GetComponent<Transform>(); // Otteniamo il Transform del trigger
-        //SpawningManager.SpawnOne(colorIndex, typeIndex, people, this.transform.position.x, this.transform.localScale.y+10, this.transform.localScale.z);
-        
-    }
-    
-    void OnEnable()
-    {
-        GameLogic.startStartingCubeSpawning += StartStartingCubeSpawningHandler;
+        platformTransform = transform.Find("Trigger").GetComponent<Transform>(); // Otteniamo il Transform del trigger
+
+        platformCollider = transform.Find("Trigger").GetComponent<BoxCollider>(); // Otteniamo il BoxCollider del trigger
     }
 
-    void OnDisable()
+    public void OnTriggerAlert(Collider house) //aggiungere l'aquisizione di colorIndex, typeIndex e people dal prefab del blocco
     {
-        GameLogic.startStartingCubeSpawning -= StartStartingCubeSpawningHandler;
-    }
-
-    void StartStartingCubeSpawningHandler()
-    {
-        startingConfiguration?.Invoke(this);
-    }
-
-    void OnTriggerStay(Collider other)
-    { 
+        Debug.Log("Triggered by: " + house.name);
         // Il blocco è grabbable E NON è attualmente in mano
-        if(other.CompareTag("Grabbable") && other.transform.parent == null)
+        if(house.CompareTag("Grabbable") && house.transform.parent == null)
         {
-            BoxCollider cubeCollider = other.GetComponent<BoxCollider>();
-            Transform cubeTransform = other.GetComponent<Transform>();
+            Rigidbody houseRigidbody = house.GetComponent<Rigidbody>();
 
-            // Debug.Log(transform.position);
-            other.transform.rotation = transform.rotation;
+            house.transform.rotation = transform.rotation;
+            house.tag = "Aligned";
 
-            // Incrementa il contatore dei blocchi allineati
-            blockCount++; 
-
-            // Calcoliamo l'altezza del blocco considerando la scala
-            float blockHeight =  cubeCollider.size.y * cubeTransform.localScale.y; 
-            //Debug.Log("Block Height: " + blockHeight);
-
-            //spostiamo il blocco in alto, considerando quanti blocchi sono già allineati
-            if(top == 0)
+            houseRigidbody.isKinematic = true; // Disabilita la fisica per il blocco allineato
+            houseRigidbody.useGravity = false; // Disabilita la gravità per il blocco allineato
+            if(blockCount == 0)
             {
-                BoxCollider baseCollider = GetComponent<BoxCollider>();
-                Transform baseTransform = GetComponent<Transform>();
-                top = baseCollider.size.y * baseTransform.localScale.y; 
-
-                top = top + blockHeight/2; 
-            }else{
-                top = top + blockHeight; 
+                
+                platformTransform.position = new Vector3(platformTransform.position.x, platformTransform.position.y + platformTransform.localScale.y , platformTransform.position.z);
+                Debug.Log("Platform Center: " + platformTransform.localScale.y);
+                
             }
-            Vector3 targetPosition = new Vector3(transform.position.x, top, transform.position.z);
-            
+            blockCount++;
 
 
-            // Muoviamo il blocco 
-            other.transform.position = targetPosition;
-
-            // blocchiamo la caduta del nuovo blocco
-            other.GetComponent<BlockGravity>().StopGravity();
-            
-            // Cambia il tag per indicare che è allineato, per evitare che non possa piu essere mosso
-            other.gameObject.tag = "Aligned"; 
-
-
-            //Debug.Log("Collider Center: " + triggerCollider.center);
-
-            // sposto collider in alto, considerando i blocchi già allineati
-            float heightToAdd = blockHeight / triggerCollider.transform.localScale.y; 
-            triggerCollider.center = new Vector3(triggerCollider.center.x, triggerCollider.center.y + heightToAdd, triggerCollider.center.z);
-            //Debug.Log("Collider Center: " + triggerCollider.center);
-            
-            
-            checkCondition?.Invoke(colorIndex, typeIndex, people, other);
-            spawnNew?.Invoke();
-            
         }
     }
 }

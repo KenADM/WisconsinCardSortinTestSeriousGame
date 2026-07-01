@@ -8,6 +8,7 @@ TagManager:
   - Aligned
   - Wall
   - InnerWall
+  - Grabbed
   layers:
   - Default
   - TransparentFX

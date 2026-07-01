@@ -135,7 +135,7 @@ public class GameLogic : MonoBehaviour
         }
 
         
-    Log.Information("Check Condition\nCube:\tColor: {ColorNewCube} Type: {TypeNewCube} People: {PeopleNewCube}\nBase:\tColor: {ColorBase} Type: {TypeBase} People: {PeopleBase}\nCondition: {Condition}\nResult: {ConditionResult} ({RealInARow})\n", 
+        Log.Information("Check Condition\nCube:\tColor: {ColorNewCube} Type: {TypeNewCube} People: {PeopleNewCube}\nBase:\tColor: {ColorBase} Type: {TypeBase} People: {PeopleBase}\nCondition: {Condition}\nResult: {ConditionResult} ({RealInARow})\n", 
         colorNewCube, typeNewCube, peopleNewCube, colorBase, typeBase, peopleBase, condition, conditionResult, realInARow);
 
         if(conditionMet && realInARow == 0)
