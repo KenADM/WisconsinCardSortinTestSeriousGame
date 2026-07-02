@@ -3,9 +3,9 @@ using System;
 
 public class HouseChar : MonoBehaviour
 {
-    public int color;
-    public int type;
-    public int people;
+    private int color;
+    private int type;
+    private int people;
 
     public void Initialize(int colorNew,  int typeNew, int peopleNew)
     {
@@ -14,15 +14,15 @@ public class HouseChar : MonoBehaviour
         this.color = colorNew;
     }
 
-    public int GetColor()
+    public int GetColorHouse()
     {
         return color;
     }
-    public int GetTypeCube()
+    public int GetTypeHouse()
     {
         return type;
     }
-    public int GetPeople()
+    public int GetPeopleHouse()
     {
         return people;
     }

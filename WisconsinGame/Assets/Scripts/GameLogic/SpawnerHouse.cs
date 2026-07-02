@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+
 using static CubeCombination;
 
 public class SpawnerHouse : MonoBehaviour
@@ -35,11 +36,13 @@ public class SpawnerHouse : MonoBehaviour
     public int peopleNumberMin;
     public int peopleNumberMax; // Il numero di persone da spawnare
 
-    private Vector3 scaleCube = new Vector3(2f, 2f, 2f);
-    private Vector3 scalePeople = new Vector3(0.1f, 0.1f, 0.1f);
+    private static Vector3 houseScale = new Vector3(2f, 2f, 2f);
+    private static float houseHeight = 0.6f * houseScale.y; // Houses have a 0.6 height, so we multiply by the scale to get the actual height
+    private static Vector3 scalePeople = new Vector3(0.2f, 0.2f, 0.2f);
 
 
     private List<CubeCombination> allCombinations = new List<CubeCombination>();
+
 
     void Awake()
     {
@@ -74,7 +77,7 @@ public class SpawnerHouse : MonoBehaviour
             GameObject person = Instantiate(peoplePrefab, new Vector3(0,0,0), Quaternion.identity);
             person.transform.SetParent(spawnedObject.transform);
             
-            person.transform.localPosition = new Vector3(Random.Range(-0.3f,0.3f), -0.45f, Random.Range(-0.3f, 0.3f));
+            person.transform.localPosition = new Vector3(Random.Range(-0.3f,0.3f), -0.25f, Random.Range(-0.3f, 0.3f));
             person.transform.localScale = scalePeople;
 
         }
@@ -119,11 +122,20 @@ public class SpawnerHouse : MonoBehaviour
         }
     }
 
-    private void SpawnStartingCube(Transform platform, int colorIndex, int typeIndex, int people)
+    private void SpawnStartingCube(Transform platform)
     {
         //Debug.Log("yey");
-        SpawnOne(colorIndex, typeIndex, people, platform.position.x, 1.2f, platform.position.z);
+        float platformHeight = platform.Find("Platform").GetComponent<Transform>().localScale.y;
+        AlignHouse CharBaseHouse = platform.GetComponent<AlignHouse>();
+        int colorIndex = CharBaseHouse.GetColorTower();
+        int typeIndex = CharBaseHouse.GetTypeTower();
+        int people = CharBaseHouse.GetPeopleTower();
 
+
+        GameObject spawnedHouse = SpawnOne(colorIndex, typeIndex, people, platform.position.x, platformHeight + houseHeight / 2, platform.position.z);
+        
+        spawnedHouse.GetComponent<HouseFunctions>().MakeUnmovable();
+        spawnedHouse.transform.SetParent(platform);
     }
 
     public void Spawn()
@@ -134,16 +146,16 @@ public class SpawnerHouse : MonoBehaviour
             int index = Random.Range(0, allCombinations.Count);
             CubeCombination randomElement = allCombinations[index];
             allCombinations.RemoveAt(index);
-
+            Debug.Log("Spawning house with Color: " + randomElement.color + ", Type: " + randomElement.type + ", People: " + randomElement.people);
             SpawnOne(randomElement.color, randomElement.type, randomElement.people, x, y, z);
-
+            Debug.Log("Done");
         }else{
             Debug.Log("No more combinations available.");
             PlayerLogger.CloseLogger();
         } 
     }
 
-    public void SpawnOne(int colorIndex, int typeIndex, int people, float FixedX, float FixedY, float FixedZ)
+    public GameObject SpawnOne(int colorIndex, int typeIndex, int people, float FixedX, float FixedY, float FixedZ)
     {
         //Debug.Log(colorIndex + " " + typeIndex + " " + people);
         GameObject room =  rooms[typeIndex];
@@ -152,7 +164,7 @@ public class SpawnerHouse : MonoBehaviour
         allCombinations.RemoveAll(item => item.people == people && item.type == typeIndex && item.color == colorIndex);
         //spawn room
         GameObject spawnedObj = Instantiate(room, new Vector3(FixedX, FixedY, FixedZ), Quaternion.identity);
-        spawnedObj.transform.localScale = scaleCube;
+        spawnedObj.transform.localScale = houseScale;
         //color room
         ColorRoom(spawnedObj,color);
         //spawn people
@@ -160,8 +172,10 @@ public class SpawnerHouse : MonoBehaviour
 
 
         HouseChar newHouse = spawnedObj.AddComponent<HouseChar>();
-        newHouse.Initialize(typeIndex, colorIndex, people);
+        newHouse.Initialize(colorIndex, typeIndex, people);
+        return spawnedObj;
     }
+    
 
     public void SpawnTesting()
     {

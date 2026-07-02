@@ -7,7 +7,6 @@ public class GameLogicManager : MonoBehaviour
 {
 
 
-
     private int combo = 0;
     public int maxCombo = 5;
     private List<int> conditionValues = new List<int>() {0, 1, 2};
@@ -15,18 +14,20 @@ public class GameLogicManager : MonoBehaviour
     public List<Transform> platforms = new List<Transform>();
 
 
-    public static event Action<Transform, int, int, int> spawnStartingHouse;
+    public static event Action<Transform> spawnStartingHouse;
     public static event Action spawnHouse;
     
 
     void OnEnable()
     {
         StartingScreenManager.startGame += StartGameHandler;
+        AlignHouse.checkHousePlacement += CheckHousePlacementHandler;
     }
 
     void OnDisable()
     {
         StartingScreenManager.startGame -= StartGameHandler;
+        AlignHouse.checkHousePlacement -= CheckHousePlacementHandler;
     }
 
     private void StartGameHandler(string codiceUtente, int numOfVariantPerCharacteristic)
@@ -42,11 +43,63 @@ public class GameLogicManager : MonoBehaviour
         Debug.Log("Spawning starting cubes");
         for (int i = 0; i < numOfVariantPerCharacteristic; i++)
         {
-            Debug.Log("Spawning color: " + i + ", type: " + i + ", people: " + (i+1) + " at platform: " + platforms[i].name);
-            spawnStartingHouse?.Invoke(platforms[i], i, i, i+1);
+            spawnStartingHouse?.Invoke(platforms[i]);
         }
         spawnHouse?.Invoke();
         
+    }
+
+    private void CheckHousePlacementHandler(int[] platformValues, int[] houseValues)
+    {
+        //string condition = "";
+        bool conditionMet = false;
+        Debug.Log("Checking house placement");    
+        switch (conditionNumber)
+        {
+            case 0: // same color
+                conditionMet = (platformValues[0] == houseValues[0]);
+                //condition = "color";
+                break;
+            case 1: // same type
+                conditionMet = (platformValues[1] == houseValues[1]);
+                //condition = "type";
+                break;
+            case 2: // same number of people
+                conditionMet = (platformValues[2] == houseValues[2]);
+                //condition = "people";
+                break;
+        }
+
+        //string conditionResult = "";
+
+        if (conditionMet)
+        {
+
+            Debug.Log("Condition met!");
+            //conditionResult = "Match";
+            combo++;
+        }
+        else
+        {   
+            Debug.Log("Condition not met!");
+            //conditionResult = "Not Match";
+            combo = 0;
+            
+        }
+        
+        //Log.Information("Check Condition\nCube:\tColor: {ColorNewCube} Type: {TypeNewCube} People: {PeopleNewCube}\nBase:\tColor: {ColorBase} Type: {TypeBase} People: {PeopleBase}\nCondition: {Condition}\nResult: {ConditionResult} ({RealInARow})\n", 
+        //colorNewCube, typeNewCube, peopleNewCube, colorBase, typeBase, peopleBase, condition, conditionResult, realInARow);
+
+        if (combo >= maxCombo)
+        {
+            Debug.Log("Change condition!");
+            ChooseCondition();
+            string newCondition = GetCondition();
+            //Log.Information("New Condition: {Condition}!\n", condition);   
+            combo = 0;
+        }
+
+        spawnHouse?.Invoke();
     }
 
     private void ChooseCondition()
