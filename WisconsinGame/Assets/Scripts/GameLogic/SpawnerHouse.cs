@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
-
 using static CubeCombination;
+using Serilog;
 
 public class SpawnerHouse : MonoBehaviour
 
@@ -151,7 +151,7 @@ public class SpawnerHouse : MonoBehaviour
             Debug.Log("Done");
         }else{
             Debug.Log("No more combinations available.");
-            PlayerLogger.CloseLogger();
+            PlayerLog.CloseLogger();
         } 
     }
 

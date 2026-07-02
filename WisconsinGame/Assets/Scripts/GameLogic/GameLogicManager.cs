@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 
+using Serilog;
+using static PlayerLog;
 
 public class GameLogicManager : MonoBehaviour
 {
@@ -28,11 +30,15 @@ public class GameLogicManager : MonoBehaviour
     {
         StartingScreenManager.startGame -= StartGameHandler;
         AlignHouse.checkHousePlacement -= CheckHousePlacementHandler;
+        PlayerLog.CloseLogger();
     }
 
     private void StartGameHandler(string codiceUtente, int numOfVariantPerCharacteristic)
     {
         Debug.Log("Starting Game with user code: " + codiceUtente + " and number of variants per characteristic: " + numOfVariantPerCharacteristic);
+        
+        PlayerLog.Initialize(codiceUtente);
+        
         ChooseCondition();
         SpawnStartingCubes(numOfVariantPerCharacteristic);
 
@@ -51,51 +57,51 @@ public class GameLogicManager : MonoBehaviour
 
     private void CheckHousePlacementHandler(int[] platformValues, int[] houseValues)
     {
-        //string condition = "";
+        string condition = "";
         bool conditionMet = false;
         Debug.Log("Checking house placement");    
         switch (conditionNumber)
         {
             case 0: // same color
                 conditionMet = (platformValues[0] == houseValues[0]);
-                //condition = "color";
+                condition = "color";
                 break;
             case 1: // same type
                 conditionMet = (platformValues[1] == houseValues[1]);
-                //condition = "type";
+                condition = "type";
                 break;
             case 2: // same number of people
                 conditionMet = (platformValues[2] == houseValues[2]);
-                //condition = "people";
+                condition = "people";
                 break;
         }
 
-        //string conditionResult = "";
+        string conditionResult = "";
 
         if (conditionMet)
         {
 
             Debug.Log("Condition met!");
-            //conditionResult = "Match";
+            conditionResult = "Match";
             combo++;
         }
         else
         {   
             Debug.Log("Condition not met!");
-            //conditionResult = "Not Match";
+            conditionResult = "Not Match";
             combo = 0;
             
         }
         
-        //Log.Information("Check Condition\nCube:\tColor: {ColorNewCube} Type: {TypeNewCube} People: {PeopleNewCube}\nBase:\tColor: {ColorBase} Type: {TypeBase} People: {PeopleBase}\nCondition: {Condition}\nResult: {ConditionResult} ({RealInARow})\n", 
-        //colorNewCube, typeNewCube, peopleNewCube, colorBase, typeBase, peopleBase, condition, conditionResult, realInARow);
+        Log.Information("Check Condition\nCube:\tColor: {ColorNewCube} Type: {TypeNewCube} People: {PeopleNewCube}\nBase:\tColor: {ColorBase} Type: {TypeBase} People: {PeopleBase}\nCondition: {Condition}\nResult: {ConditionResult} ({RealInARow})\n", 
+        houseValues[0], houseValues[1], houseValues[2], platformValues[0], platformValues[1], platformValues[2], condition, conditionResult, combo);
 
         if (combo >= maxCombo)
         {
             Debug.Log("Change condition!");
             ChooseCondition();
             string newCondition = GetCondition();
-            //Log.Information("New Condition: {Condition}!\n", condition);   
+            Log.Information("New Condition: {Condition}!\n", condition);   
             combo = 0;
         }
 
@@ -113,13 +119,13 @@ public class GameLogicManager : MonoBehaviour
         switch (conditionNumber)
             {
                 case 0: 
-                    Debug.Log("Condition: Color!");
+                    //Debug.Log("Condition: Color!");
                     break;
                 case 1: 
-                    Debug.Log("Condition: Type!");
+                    //Debug.Log("Condition: Type!");
                     break;
                 case 2: 
-                    Debug.Log("Condition: People!");
+                    //Debug.Log("Condition: People!");
                     break;
             }
 
