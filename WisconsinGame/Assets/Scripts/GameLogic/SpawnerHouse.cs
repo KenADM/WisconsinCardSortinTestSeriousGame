@@ -146,9 +146,9 @@ public class SpawnerHouse : MonoBehaviour
             int index = Random.Range(0, allCombinations.Count);
             CubeCombination randomElement = allCombinations[index];
             allCombinations.RemoveAt(index);
-            Debug.Log("Spawning house with Color: " + randomElement.color + ", Type: " + randomElement.type + ", People: " + randomElement.people);
+            //Debug.Log("Spawning house with Color: " + randomElement.color + ", Type: " + randomElement.type + ", People: " + randomElement.people);
             SpawnOne(randomElement.color, randomElement.type, randomElement.people, x, y, z);
-            Debug.Log("Done");
+            //Debug.Log("Done");
         }else{
             Debug.Log("No more combinations available.");
             PlayerLog.CloseLogger();

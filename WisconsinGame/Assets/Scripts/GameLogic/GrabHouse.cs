@@ -41,7 +41,7 @@ public class GrabHouse : MonoBehaviour
     // Questa funzione scatta automaticamente quando la mano "entra" in un oggetto
     void OnTriggerEnter(Collider other)
     {   
-        Debug.Log("grabbeble");
+        //Debug.Log("grabbeble");
         // Controlliamo se l'oggetto ha l'etichetta giusta
         if (other.CompareTag("Grabbable"))
         {
@@ -52,7 +52,7 @@ public class GrabHouse : MonoBehaviour
     // Questa funzione scatta quando la mano si allontana dall'oggetto
     void OnTriggerExit(Collider other)
     {
-        Debug.Log("not grabbeble");
+        //.Log("not grabbeble");
         if (other.CompareTag("Grabbable") && objectToGrab == other.gameObject)
         {
             objectToGrab = null;
@@ -64,14 +64,14 @@ public class GrabHouse : MonoBehaviour
         // Facciamo diventare il blocco un "figlio" della mano, così si muove insieme a noi
         grabbedObject = objectToGrab;
         grabbedObject.transform.SetParent(transform);
-        Debug.Log("grabbed");
+        //Debug.Log("grabbed");
     }
     void ReleaseObject()
     {
         // Togliamo la parentela. Il blocco resterà esattamente dove lo abbiamo lasciato. (sta all'oggerto decidere se cadere o restare sospeso)
         grabbedObject.transform.SetParent(null);
         grabbedObject = null;
-        Debug.Log("ungrabbed");
+        //Debug.Log("ungrabbed");
     }
 
 }

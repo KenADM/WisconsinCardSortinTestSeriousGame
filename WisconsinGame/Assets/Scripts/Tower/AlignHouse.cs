@@ -71,14 +71,14 @@ public class AlignHouse : MonoBehaviour
     }
     public void raiseStack()
     {
-        Debug.Log("Raising stack");
+        //Debug.Log("Raising stack");
         HouseCollection.position = new Vector3(HouseCollection.position.x, HouseCollection.position.y + (houseHeight/2*3), HouseCollection.position.z);
 
     }
 
     void AddToStack(Transform house)
     {
-        Debug.Log("Adding house to stack");    
+        //Debug.Log("Adding house to stack");    
         house.SetParent(HouseCollection);
         placedHouse.GetComponent<HouseFunctions>().MakeUnmovable();
         HouseChar houseChar = house.GetComponent<HouseChar>();
@@ -90,12 +90,12 @@ public class AlignHouse : MonoBehaviour
     public void lowerStack()
     {
         if(isHousePlaced){
-            Debug.Log("Adding placed house to stack");
+            //Debug.Log("Adding placed house to stack");
             HouseCollection.position = new Vector3(HouseCollection.position.x, HouseCollection.position.y - houseHeight/2, HouseCollection.position.z);
             AddToStack(placedHouse);
             
         }else{
-            Debug.Log("Lowering stack without adding placed house");
+            //Debug.Log("Lowering stack without adding placed house");
             HouseCollection.position = new Vector3(HouseCollection.position.x, HouseCollection.position.y - (houseHeight/2*3), HouseCollection.position.z);
         }
 

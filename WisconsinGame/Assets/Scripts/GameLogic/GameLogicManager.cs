@@ -35,7 +35,7 @@ public class GameLogicManager : MonoBehaviour
 
     private void StartGameHandler(string codiceUtente, int numOfVariantPerCharacteristic)
     {
-        Debug.Log("Starting Game with user code: " + codiceUtente + " and number of variants per characteristic: " + numOfVariantPerCharacteristic);
+        //Debug.Log("Starting Game with user code: " + codiceUtente + " and number of variants per characteristic: " + numOfVariantPerCharacteristic);
         
         PlayerLog.Initialize(codiceUtente);
         
@@ -46,7 +46,7 @@ public class GameLogicManager : MonoBehaviour
 
     private void SpawnStartingCubes(int numOfVariantPerCharacteristic)
     {
-        Debug.Log("Spawning starting cubes");
+        //Debug.Log("Spawning starting cubes");
         for (int i = 0; i < numOfVariantPerCharacteristic; i++)
         {
             spawnStartingHouse?.Invoke(platforms[i]);
@@ -98,7 +98,7 @@ public class GameLogicManager : MonoBehaviour
 
         if (combo >= maxCombo)
         {
-            Debug.Log("Change condition!");
+            //Debug.Log("Change condition!");
             ChooseCondition();
             string newCondition = GetCondition();
             Log.Information("New Condition: {Condition}!\n", condition);   
@@ -142,10 +142,10 @@ public class GameLogicManager : MonoBehaviour
                     newCondition = "Color";
                     break;
                 case 1:
-                    newCondition = "Color";
+                    newCondition = "Type";
                     break;
                 case 2:
-                    newCondition = "Color";
+                    newCondition = "People";
                     break;
             }
         return newCondition;
