@@ -3,8 +3,8 @@ using UnityEngine.InputSystem;
 
 public class HouseFunctions : MonoBehaviour
 {
-    public Rigidbody rb;
-    public UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grabInteractable;
+    private Rigidbody rb;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grabInteractable;
 
     void Awake()
     {

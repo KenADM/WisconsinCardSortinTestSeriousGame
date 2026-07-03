@@ -130,7 +130,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2933716063920320373
 Transform:
   m_ObjectHideFlags: 0
@@ -1287,8 +1287,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7facc721cb0721438c119d4cfd8f0c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChangeState
-  rb: {fileID: 0}
-  grabInteractable: {fileID: 0}
 --- !u!1 &6164933377841434389
 GameObject:
   m_ObjectHideFlags: 0

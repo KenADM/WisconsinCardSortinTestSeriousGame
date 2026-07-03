@@ -20,12 +20,13 @@ If you want to learn more about creating good readme files then refer the follow
 - [Chakra Core](https://github.com/Microsoft/ChakraCore)
 
 COSE DA SISTEMARE:
-- Gestire lo spawn delle persone in modo che non siano una dopra l'altra
+- Gestire lo spawn delle persone in modo che non siano una sopra l'altra
 - aggiungere scritta di fine test
-- reintegro il logger
-- reintegrare startUp
 - integrare una breve istruzioni sul test
 - pensare a come integrare lo sposta appartamenti
 - ricerca su come funzione XRI interaction toolkit
 - Aggiungere effetto per le condition met e not met (Magari con il meteo?)
-- Nascondere gli appartamenti piu alti (per test);
+
+COSE PER SETTIMANA PROSSIMA
+- cambio colore maglietta persone
+- Effetto Corretto-Sbagliato

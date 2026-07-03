@@ -6,7 +6,7 @@ public class WallHiderDecider : MonoBehaviour
     private Transform south;
     private Transform west;
     private Transform east;
-    private Transform ceiling;
+    //private Transform ceiling;
     private Transform floor;
     
 
@@ -22,15 +22,25 @@ public class WallHiderDecider : MonoBehaviour
         south = transform.Find("South");
         west = transform.Find("West");
         east = transform.Find("East");
-        ceiling = transform.Find("Ceiling");
+        //ceiling = transform.Find("Ceiling");
         floor = transform.Find("Floor");
 
     }
 
     public void DeactivateHiding(){
         wallHidingActive = false;
+        ActivateAllWalls();
     }
-    // Update is called once per frame
+
+    public void ActivateAllWalls(){
+        foreach(Transform item in this.transform){
+            if(item.CompareTag("Wall"))
+            {
+                item.gameObject.SetActive(true);
+            }
+        }
+        
+    }
 
     void HideCloserThing(Transform wallA, Transform wallB){
         float dist1 = Vector3.Distance(playerCamera.transform.position, wallA.position);
@@ -73,6 +83,7 @@ public class WallHiderDecider : MonoBehaviour
         HideCloserThing(north,south);
         HideCloserThing(west,east);
 
+        /*
         float dist1 = Vector3.Distance(playerCamera.transform.position, floor.position);
         float dist2 = Vector3.Distance(playerCamera.transform.position, ceiling.position);
         if(dist1 < dist2)
@@ -83,6 +94,6 @@ public class WallHiderDecider : MonoBehaviour
         {
             ceiling.gameObject.SetActive(false);
 
-        }
+        }*/
     }
 }

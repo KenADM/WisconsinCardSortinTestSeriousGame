@@ -136,6 +136,7 @@ public class SpawnerHouse : MonoBehaviour
         
         spawnedHouse.GetComponent<HouseFunctions>().MakeUnmovable();
         spawnedHouse.transform.SetParent(platform);
+        spawnedHouse.name = "BaseHouse";
     }
 
     public void Spawn()
@@ -170,6 +171,7 @@ public class SpawnerHouse : MonoBehaviour
         //spawn people
         GeneratePeople(spawnedObj, numberOfPeople);
 
+        spawnedObj.name = "NewHouse";
 
         HouseChar newHouse = spawnedObj.AddComponent<HouseChar>();
         newHouse.Initialize(colorIndex, typeIndex, people);

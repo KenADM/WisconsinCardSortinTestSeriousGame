@@ -14,7 +14,7 @@ public class StartingScreenManager : MonoBehaviour
 
     void Start()
     {
-        startGame?.Invoke("ciao", numOfVariantPerCharacteristic);
+        //startGame?.Invoke("ciao", numOfVariantPerCharacteristic);
     }
 
     bool CheckInputField(){
