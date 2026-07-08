@@ -3,9 +3,9 @@ using System;
 
 public class HouseChar : MonoBehaviour
 {
-    private int color;
-    private int type;
-    private int people;
+    [SerializeField] private int color;
+    [SerializeField] private int type;
+    [SerializeField] private int people;
 
     public void Initialize(int colorNew,  int typeNew, int peopleNew)
     {

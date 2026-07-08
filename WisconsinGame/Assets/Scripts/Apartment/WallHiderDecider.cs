@@ -2,12 +2,11 @@ using UnityEngine;
 
 public class WallHiderDecider : MonoBehaviour
 {
-    private Transform north;
-    private Transform south;
-    private Transform west;
-    private Transform east;
-    //private Transform ceiling;
-    private Transform floor;
+    [SerializeField] private Transform north;
+    [SerializeField] private Transform south;
+    [SerializeField] private Transform west;
+    [SerializeField] private Transform east;
+    [SerializeField] private Transform floor;
     
 
     private Camera playerCamera;
@@ -18,12 +17,13 @@ public class WallHiderDecider : MonoBehaviour
     {
         // Grabs the camera tagged as "MainCamera"
         playerCamera = Camera.main;
+        /*
         north = transform.Find("North");
         south = transform.Find("South");
         west = transform.Find("West");
         east = transform.Find("East");
-        //ceiling = transform.Find("Ceiling");
         floor = transform.Find("Floor");
+        */
 
     }
 
@@ -83,17 +83,5 @@ public class WallHiderDecider : MonoBehaviour
         HideCloserThing(north,south);
         HideCloserThing(west,east);
 
-        /*
-        float dist1 = Vector3.Distance(playerCamera.transform.position, floor.position);
-        float dist2 = Vector3.Distance(playerCamera.transform.position, ceiling.position);
-        if(dist1 < dist2)
-        {
-            ceiling.gameObject.SetActive(true);
-        }
-        else
-        {
-            ceiling.gameObject.SetActive(false);
-
-        }*/
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class AlertAlignment : MonoBehaviour
 {
-    private AlignHouse alignHouse;
+    [SerializeField] private AlignHouse alignHouse;
 
     void Start()
     {
@@ -17,15 +17,12 @@ public class AlertAlignment : MonoBehaviour
             //Debug.Log("Calling OnTriggerAlert on AlignHouse");
             alignHouse.PlacedHouse(other);
         }
-    }
 
-    void OnTriggerExit(Collider other)
-    {
-        //Debug.Log("CIAOOOO triggered by: " + other.name);
         if (alignHouse != null && other.CompareTag("Grabbed"))
         {
             //Debug.Log("Calling RemovedHouse on AlignHouse");
             alignHouse.RemovedHouse(other);
         }
     }
+
 }

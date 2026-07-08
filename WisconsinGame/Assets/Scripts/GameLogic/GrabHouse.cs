@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 public class GrabHouse : MonoBehaviour
 {
+    // not used
     [Header("Tasto Presa")]
     public InputAction grabAction;
 

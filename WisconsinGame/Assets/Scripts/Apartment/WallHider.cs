@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class WallHider : MonoBehaviour
 {
+    // not used
     public Camera playercamera;
     MeshRenderer myRenderer;
     Plane[] cameraFrustum;

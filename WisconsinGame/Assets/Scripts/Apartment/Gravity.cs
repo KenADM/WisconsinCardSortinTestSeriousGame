@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Gravity : MonoBehaviour
 {
+    //not used, given the use of rigidBody
     public float gravityForce = 9.8f;
     public float floorHeight = 0f; // La Y del tuo pavimento
     private float currentVelocity = 0f;

@@ -139,6 +139,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6c0e971030793c4f8479b3ae0cf7295, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallHiderDecider
+  north: {fileID: 9106434068173418728}
+  south: {fileID: 4084416619189007459}
+  west: {fileID: 1836675946052458754}
+  east: {fileID: 2765932947193349606}
+  floor: {fileID: 5863150486295036916}
 --- !u!1 &1765604947237140093
 GameObject:
   m_ObjectHideFlags: 0

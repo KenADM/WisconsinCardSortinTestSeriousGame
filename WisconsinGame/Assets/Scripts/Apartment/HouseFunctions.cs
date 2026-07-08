@@ -10,16 +10,19 @@ public class HouseFunctions : MonoBehaviour
     {
         rb = this.gameObject.GetComponent<Rigidbody>();
         grabInteractable = this.gameObject.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        
     }
 
     public void Grab( )
     {
-        // Cambia lo stato del blocco in "grabbed"
         this.gameObject.tag = "Grabbed";
+
     }
 
     public void Release( ){
+
         this.gameObject.tag = "Grabbable";
+
     }
 
     public void MakeUnmovable(){

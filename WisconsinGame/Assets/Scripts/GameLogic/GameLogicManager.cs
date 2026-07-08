@@ -8,9 +8,12 @@ using static PlayerLog;
 public class GameLogicManager : MonoBehaviour
 {
 
+    [Header("Data For Analisys")]
+    [SerializeField] private int combo = 0;
+    [SerializeField] private int maxCombo = 5;
+    [SerializeField] private int categoriesCompleted = 0;
 
-    private int combo = 0;
-    public int maxCombo = 5;
+
     private List<int> conditionValues = new List<int>() {0, 1, 2};
     private int conditionNumber;
     public List<Transform> platforms = new List<Transform>();
@@ -26,6 +29,8 @@ public class GameLogicManager : MonoBehaviour
     {
         StartingScreenManager.startGame += StartGameHandler;
         AlignHouse.checkHousePlacement += CheckHousePlacementHandler;
+
+
     }
 
     void OnDisable()
@@ -38,7 +43,6 @@ public class GameLogicManager : MonoBehaviour
     private void StartGameHandler(string codiceUtente, int numOfVariantPerCharacteristic)
     {
         Debug.Log("Starting Game with user code: " + codiceUtente + " and number of variants per characteristic: " + numOfVariantPerCharacteristic);
-        
         PlayerLog.Initialize(codiceUtente);
         
         ChooseCondition();
@@ -59,27 +63,16 @@ public class GameLogicManager : MonoBehaviour
         
     }
 
-    private void CheckHousePlacementHandler(int[] platformValues, int[] houseValues)
+    private void CheckHousePlacementHandler(GameObject platform, int[] houseValues)
     {
+        TowerChar baseTowerChar = platform.GetComponent<TowerChar>();
+        FeedbackManager feedbackHandler = platform.GetComponent<FeedbackManager>();
 
-        string condition = "";
-        bool conditionMet = false;
-        Debug.Log("Checking house placement");    
-        switch (conditionNumber)
-        {
-            case 0: // same color
-                conditionMet = (platformValues[0] == houseValues[0]);
-                condition = "color";
-                break;
-            case 1: // same type
-                conditionMet = (platformValues[1] == houseValues[1]);
-                condition = "type";
-                break;
-            case 2: // same number of people
-                conditionMet = (platformValues[2] == houseValues[2]);
-                condition = "people";
-                break;
-        }
+        int[] platformValues = new int[] { baseTowerChar.GetColorTower(), baseTowerChar.GetTypeTower(), baseTowerChar.GetPeopleTower() };
+
+        string condition = GetCondition();
+        bool conditionMet = (platformValues[conditionNumber] == houseValues[conditionNumber]);
+        
 
         string conditionResult = "";
 
@@ -89,12 +82,17 @@ public class GameLogicManager : MonoBehaviour
             Debug.Log("Condition met!");
             conditionResult = "Match";
             combo++;
+
+            feedbackHandler.Feedback(true);
+
         }
         else
         {   
             Debug.Log("Condition not met!");
             conditionResult = "Not Match";
             combo = 0;
+
+            feedbackHandler.Feedback(false);
             
         }
         PrintCombo();
@@ -108,18 +106,22 @@ public class GameLogicManager : MonoBehaviour
             PrintCondition();
             combo = 0;
             PrintCombo();
+
+            categoriesCompleted++;
         }
 
         spawnHouse?.Invoke();
     }
 
-    private void PrintCondition(){
+    private void PrintCondition()
+     {
         string newCondition = GetCondition();
         Log.Information("New Condition: {Condition}!\n", newCondition); 
         displayCondition.text  = newCondition;
     }
 
-    private void PrintCombo(){
+    private void PrintCombo()
+    {
         string comboPrint = "Combo " + combo;
         Debug.Log(comboPrint);
         displayCombo.text = comboPrint;

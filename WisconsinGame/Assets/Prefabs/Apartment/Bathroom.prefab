@@ -460,6 +460,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6c0e971030793c4f8479b3ae0cf7295, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallHiderDecider
+  north: {fileID: 929068488717609194}
+  south: {fileID: 356139087393498948}
+  west: {fileID: 1296425294250391118}
+  east: {fileID: 616531922950539715}
+  floor: {fileID: 1727645260781377477}
 --- !u!65 &2735046509479757469
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -7,49 +7,38 @@ public class AlignHouse : MonoBehaviour
 {
     private int blockCount;
 
-    private Transform trigger;
-    private Transform houseStack;
-    private Transform HouseCollection;
-    private Transform housePreview;
-    
+    // MANCA: controlli per gli errori
+    [SerializeField] private Transform houseStack; // house stack gameobject, contains houseCollection
+    [SerializeField] private Transform houseCollection; // gameObject containing the actual houses
+    [SerializeField] private Transform housePreview; // house used as guide for placement
+    [SerializeField] private TowerChar matchingChar;
+
+
+    [SerializeField] private Transform trigger; // used for house positioning
     private static Vector3 houseScale = new Vector3(2f, 2f, 2f);
     private static float houseHeight = 0.6f * houseScale.y; // Houses have a 0.6 height, so we multiply by the scale to get the actual height
 
     private bool isHousePlaced = false;
     private Transform placedHouse;
 
-
-
-    private int color;
-    private int type;
-    private int people;
-
-    public static event Action<int[], int[]> checkHousePlacement;
+    public static event Action<GameObject, int[]> checkHousePlacement;
 
     // sistemo i nomi che alcuni son minuscoli
     void Start()
     {
-        blockCount = 0; // Inizializziamo il contatore dei blocchi allineati a 0
+        blockCount = 0;
+        /*
         trigger = transform.Find("Trigger").GetComponent<Transform>(); // Otteniamo il Transform del trigger
         houseStack = transform.Find("HouseStack").GetComponent<Transform>(); // Otteniamo il Transform del stack delle case
-        HouseCollection = houseStack.Find("HouseCollection").GetComponent<Transform>(); // Otteniamo il Transform del contenitore delle case nello stack
+        houseCollection = houseStack.Find("HouseCollection").GetComponent<Transform>(); // Otteniamo il Transform del contenitore delle case nello stack
         housePreview = transform.Find("HousePreview").GetComponent<Transform>();
-        TowerChar towerChar = GetComponent<TowerChar>();
-        if (towerChar != null)
-        {
-            color = towerChar.GetColorTower();
-            type = towerChar.GetTypeTower();
-            people = towerChar.GetPeopleTower();
-        }
-        else
-        {
-            Debug.LogError("TowerChar component not found on the GameObject.");
-        }
+        matchingChar = GetComponent<TowerChar>();
+        */
     }
 
     void snapHouse(Transform house)
     {
-        house.transform.rotation = transform.rotation;
+        // house.transform.rotation = transform.rotation; // eliminato dato che le case non ruotano
         house.transform.position = new Vector3(trigger.position.x, trigger.position.y, trigger.position.z);
     }
 
@@ -80,20 +69,20 @@ public class AlignHouse : MonoBehaviour
         Debug.Log("Raising stack");
         housePreview.gameObject.SetActive(true);
 
-        HouseCollection.position = new Vector3(HouseCollection.position.x, HouseCollection.position.y + (houseHeight/2*3), HouseCollection.position.z);
+        houseCollection.position = new Vector3(houseCollection.position.x, houseCollection.position.y + (houseHeight/2*3), houseCollection.position.z);
     }
 
     void AddToStack(Transform house)
     {   
         Debug.Log("Adding house to stack");
         DisableInternalView();
-        house.SetParent(HouseCollection);
+        house.SetParent(houseCollection);
         placedHouse.GetComponent<HouseFunctions>().MakeUnmovable();
         house.gameObject.name = "PlacedHouse";
         HouseChar houseChar = house.GetComponent<HouseChar>();
 
 
-        checkHousePlacement?.Invoke(new int[] { this.color, this.type, this.people }, new int[] { houseChar.GetColorHouse(), houseChar.GetTypeHouse(), houseChar.GetPeopleHouse() });
+        checkHousePlacement?.Invoke(this.gameObject , new int[] { houseChar.GetColorHouse(), houseChar.GetTypeHouse(), houseChar.GetPeopleHouse() });
         
         blockCount++;
         isHousePlaced = false;
@@ -105,12 +94,12 @@ public class AlignHouse : MonoBehaviour
 
         if(isHousePlaced){
             Debug.Log("Adding placed house to stack");
-            HouseCollection.position = new Vector3(HouseCollection.position.x, HouseCollection.position.y - houseHeight/2, HouseCollection.position.z);
+            houseCollection.position = new Vector3(houseCollection.position.x, houseCollection.position.y - houseHeight/2, houseCollection.position.z);
             AddToStack(placedHouse);
             
         }else{
             Debug.Log("Lowering stack without adding placed house");
-            HouseCollection.position = new Vector3(HouseCollection.position.x, HouseCollection.position.y - (houseHeight/2*3), HouseCollection.position.z);
+            houseCollection.position = new Vector3(houseCollection.position.x, houseCollection.position.y - (houseHeight/2*3), houseCollection.position.z);
         }
 
 
@@ -120,7 +109,7 @@ public class AlignHouse : MonoBehaviour
     {   
         Debug.Log("disable internal view");
 
-        foreach(Transform house in HouseCollection)
+        foreach(Transform house in houseCollection)
         {
             Debug.Log("disable internal view house");
 
@@ -137,15 +126,15 @@ public class AlignHouse : MonoBehaviour
 
     public int GetColorTower()
     {
-        return this.color;
+        return matchingChar.GetColorTower();
     }
     public int GetTypeTower()
     {
-        return this.type;
+        return matchingChar.GetTypeTower();
     }
     public int GetPeopleTower()
     {
-        return this.people;
+        return matchingChar.GetPeopleTower();
     }
     
 }

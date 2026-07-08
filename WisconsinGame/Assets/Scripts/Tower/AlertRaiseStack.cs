@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class AlertRaiseStack : MonoBehaviour
 {
-    private AlignHouse alignHouse;
+    [SerializeField] private AlignHouse alignHouse;
 
     void Start()
     {
