@@ -29,4 +29,5 @@ COSE DA SISTEMARE:
 
 COSE PER SETTIMANA PROSSIMA
 - cambio colore maglietta persone
-- Effetto Corretto-Sbagliato
+- Determino meglio le sorting categories e il criterio di ending (per ora quando finiscono le case).
+- Gestire lo spawn di una persona
