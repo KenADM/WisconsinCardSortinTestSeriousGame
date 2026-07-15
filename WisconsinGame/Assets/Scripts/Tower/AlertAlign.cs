@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class AlertAlignment : MonoBehaviour
 {
+    // handles the placement of a house
     [SerializeField] private AlignHouse alignHouse;
 
     void Start()

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class FeedbackManager : MonoBehaviour
 {
+    // handles feedback for correct/incorrect house
     [SerializeField] private ParticleSystem smoke;
     [SerializeField] private AudioSource sound;
     
@@ -21,11 +22,11 @@ public class FeedbackManager : MonoBehaviour
 
             if(feedback)
             {
-                sound.PlayOneShot(positiveSound, 1f);
+                sound.PlayOneShot(positiveSound, 0.25f);
             }
             else
             {
-                sound.PlayOneShot(negativeSound, 1f);
+                sound.PlayOneShot(negativeSound, 2.5f);
             }
 
         }

@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class HouseFunctions : MonoBehaviour
 {
+    // used to change state of a grabbed, ungrabbed and placed house
+
     private Rigidbody rb;
     private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grabInteractable;
 
@@ -29,8 +31,8 @@ public class HouseFunctions : MonoBehaviour
         this.gameObject.tag = "Aligned";
         if (rb != null)
         {
-            rb.isKinematic = true; // Disabilita la fisica per il blocco allineato
-            rb.useGravity = false; // Disabilita la gravità per il blocco allineato
+            rb.isKinematic = true; // Disable movement for aligned houses
+            rb.useGravity = false; // Disable gravity for algned houses
         }
 
         if(grabInteractable != null)

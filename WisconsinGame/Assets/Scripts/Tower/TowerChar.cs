@@ -3,6 +3,8 @@ using System;
 
 public class TowerChar: MonoBehaviour
 {
+    // Tower Char
+    
     [SerializeField] private int people;
     [SerializeField] private int type;
     [SerializeField] private int color;

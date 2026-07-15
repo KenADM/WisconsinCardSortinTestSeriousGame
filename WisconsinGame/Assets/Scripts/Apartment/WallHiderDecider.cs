@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class WallHiderDecider : MonoBehaviour
 {
+    // Script to hide the wall to allow vision of the interior (animal crossing style)
+
     [SerializeField] private Transform north;
     [SerializeField] private Transform south;
     [SerializeField] private Transform west;

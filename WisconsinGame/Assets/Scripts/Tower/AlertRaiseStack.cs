@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class AlertRaiseStack : MonoBehaviour
 {
+    // trigger to raise and lower the house stack
     [SerializeField] private AlignHouse alignHouse;
 
     void Start()
@@ -15,7 +16,7 @@ public class AlertRaiseStack : MonoBehaviour
         if (alignHouse != null && other.CompareTag("Player"))
         {
             //Debug.Log("Calling OnTriggerAlert on AlignHouse");
-            alignHouse.raiseStack();
+            alignHouse.RaiseStack();
         }
     }
 
@@ -25,7 +26,7 @@ public class AlertRaiseStack : MonoBehaviour
         if (alignHouse != null && other.CompareTag("Player"))
         {
             //Debug.Log("Calling OnTriggerAlert on AlignHouse");
-            alignHouse.lowerStack();
+            alignHouse.LowerStack();
         }
     }
 }

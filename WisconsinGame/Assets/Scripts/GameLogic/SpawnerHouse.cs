@@ -58,17 +58,17 @@ public class SpawnerHouse : MonoBehaviour
     void OnEnable()
     {
         GameLogicManager.spawnHouse += Spawn;
-        GameLogicManager.spawnStartingHouse += SpawnStartingCube;
+        GameLogicManager.spawnStartingHouse += spawnStartingHouseHandler;
     }
 
     void OnDisable()
     {
         GameLogicManager.spawnHouse -= Spawn;
-        GameLogicManager.spawnStartingHouse -= SpawnStartingCube;
+        GameLogicManager.spawnStartingHouse -= spawnStartingHouseHandler;
     }
 
 
-    // 2: posizionamento delle persone, da sistemare
+    // People handler, might need an update
     public void GeneratePeople(GameObject spawnedObject, int peopleCount)
     {
         //Debug.Log("Generating " + peopleCount );
@@ -83,7 +83,7 @@ public class SpawnerHouse : MonoBehaviour
         }
     }
 
-
+    // Colors the inner walls of a house
     public void ColorRoom(GameObject spawnedObject, Material color)
     {   
         //Debug.Log("Coloring room with color: " + color.name);
@@ -109,6 +109,7 @@ public class SpawnerHouse : MonoBehaviour
 
     }
 
+    // filled the list of all possible combinations
     void FillCombinations()
     {
         for (int i = peopleNumberMin; i <= peopleNumberMax; i++) {
@@ -122,15 +123,24 @@ public class SpawnerHouse : MonoBehaviour
         }
     }
 
-    private void SpawnStartingCube(Transform platform)
+    // given a platform, the starting Houses are spawn
+    private void spawnStartingHouseHandler(Transform platform)
     {
-        //Debug.Log("yey");
+     
         float platformHeight = platform.Find("Platform").GetComponent<Transform>().localScale.y;
+
+        // get tower info
+        /*
         AlignHouse CharBaseHouse = platform.GetComponent<AlignHouse>();
         int colorIndex = CharBaseHouse.GetColorTower();
         int typeIndex = CharBaseHouse.GetTypeTower();
         int people = CharBaseHouse.GetPeopleTower();
-
+        */
+        
+        TowerChar baseTowerChar = platform.GetComponent<TowerChar>();
+        int colorIndex = baseTowerChar.GetColorTower();
+        int typeIndex = baseTowerChar.GetTypeTower();
+        int people = baseTowerChar.GetPeopleTower();
 
         GameObject spawnedHouse = SpawnOne(colorIndex, typeIndex, people, platform.position.x, platformHeight + houseHeight / 2, platform.position.z);
         
@@ -139,6 +149,7 @@ public class SpawnerHouse : MonoBehaviour
         spawnedHouse.name = "BaseHouse";
     }
 
+    // Spawn a random house
     public void Spawn()
     {
 
@@ -156,6 +167,7 @@ public class SpawnerHouse : MonoBehaviour
         } 
     }
 
+    // Spawn a specific house
     public GameObject SpawnOne(int colorIndex, int typeIndex, int people, float FixedX, float FixedY, float FixedZ)
     {
         //Debug.Log(colorIndex + " " + typeIndex + " " + people);
@@ -178,7 +190,7 @@ public class SpawnerHouse : MonoBehaviour
         return spawnedObj;
     }
     
-
+    // not used
     public void SpawnTesting()
     {
         

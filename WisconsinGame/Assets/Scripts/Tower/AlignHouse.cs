@@ -5,6 +5,8 @@ using System;
 
 public class AlignHouse : MonoBehaviour
 {
+    // handles the raise and lower of the house stack and calls GameLogicHandler to check the placement attempt
+
     private int blockCount;
 
     // MANCA: controlli per gli errori
@@ -36,7 +38,7 @@ public class AlignHouse : MonoBehaviour
         */
     }
 
-    void snapHouse(Transform house)
+    void SnapHouse(Transform house)
     {
         // house.transform.rotation = transform.rotation; // eliminato dato che le case non ruotano
         house.transform.position = new Vector3(trigger.position.x, trigger.position.y, trigger.position.z);
@@ -47,7 +49,7 @@ public class AlignHouse : MonoBehaviour
 
         if(house.CompareTag("Grabbable")){
             housePreview.gameObject.SetActive(false);
-            snapHouse(house.GetComponent<Transform>());
+            SnapHouse(house.GetComponent<Transform>());
             isHousePlaced = true;
             placedHouse = house.GetComponent<Transform>();
         }
@@ -64,7 +66,7 @@ public class AlignHouse : MonoBehaviour
             placedHouse = null;
         }
     }
-    public void raiseStack()
+    public void RaiseStack()
     {
         Debug.Log("Raising stack");
         housePreview.gameObject.SetActive(true);
@@ -88,7 +90,7 @@ public class AlignHouse : MonoBehaviour
         isHousePlaced = false;
     }
 
-    public void lowerStack()
+    public void LowerStack()
     {
         housePreview.gameObject.SetActive(false);
 

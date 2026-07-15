@@ -7,6 +7,7 @@ using static PlayerLog;
 
 public class GameLogicManager : MonoBehaviour
 {
+    // script that handles game logic and game starting setup
 
     [Header("Data For Analisys")]
     [SerializeField] private int combo = 0;
@@ -24,12 +25,11 @@ public class GameLogicManager : MonoBehaviour
     public static event Action<Transform> spawnStartingHouse;
     public static event Action spawnHouse;
     
-
+    // for event handling
     void OnEnable()
     {
         StartingScreenManager.startGame += StartGameHandler;
         AlignHouse.checkHousePlacement += CheckHousePlacementHandler;
-
 
     }
 
@@ -40,6 +40,10 @@ public class GameLogicManager : MonoBehaviour
         PlayerLog.CloseLogger();
     }
 
+    // handles the game startup:
+    // log file setup
+    // initial condition is chosen
+    // calls starting cube
     private void StartGameHandler(string codiceUtente, int numOfVariantPerCharacteristic)
     {
         Debug.Log("Starting Game with user code: " + codiceUtente + " and number of variants per characteristic: " + numOfVariantPerCharacteristic);
@@ -47,28 +51,34 @@ public class GameLogicManager : MonoBehaviour
         
         ChooseCondition();
         PrintCondition();
-        SpawnStartingCubes(numOfVariantPerCharacteristic);
+        SpawnStartingSetup(numOfVariantPerCharacteristic);
 
     }
 
-    private void SpawnStartingCubes(int numOfVariantPerCharacteristic)
+    // spawns 4 initial houses
+    private void SpawnStartingSetup(int numOfVariantPerCharacteristic)
     {
         Debug.Log("Spawning starting cubes");
         for (int i = 0; i < numOfVariantPerCharacteristic; i++)
         {
             spawnStartingHouse?.Invoke(platforms[i]);
+            
+            // activates the roof of the tower
             platforms[i].Find("HouseStack").Find("HouseCollection").Find("Ceiling").gameObject.SetActive(true);
         }
         spawnHouse?.Invoke();
         
     }
 
+    // checks if a house is placed correctly based on the active condition
     private void CheckHousePlacementHandler(GameObject platform, int[] houseValues)
     {
+        // gets the tower characteristics
         TowerChar baseTowerChar = platform.GetComponent<TowerChar>();
-        FeedbackManager feedbackHandler = platform.GetComponent<FeedbackManager>();
-
         int[] platformValues = new int[] { baseTowerChar.GetColorTower(), baseTowerChar.GetTypeTower(), baseTowerChar.GetPeopleTower() };
+
+        // gets the handler for the specific tower !!! might substitute with event
+        FeedbackManager feedbackHandler = platform.GetComponent<FeedbackManager>();
 
         string condition = GetCondition();
         bool conditionMet = (platformValues[conditionNumber] == houseValues[conditionNumber]);
@@ -96,9 +106,13 @@ public class GameLogicManager : MonoBehaviour
             
         }
         PrintCombo();
+
+        // saves attempt in log
         Log.Information("Check Condition\nCube:\tColor: {ColorNewCube} Type: {TypeNewCube} People: {PeopleNewCube}\nBase:\tColor: {ColorBase} Type: {TypeBase} People: {PeopleBase}\nCondition: {Condition}\nResult: {ConditionResult} ({RealInARow})\n", 
         houseValues[0], houseValues[1], houseValues[2], platformValues[0], platformValues[1], platformValues[2], condition, conditionResult, combo);
 
+
+        // change condition enough houses are placed correctly in a row
         if (combo >= maxCombo)
         {
             Debug.Log("Change condition!");
