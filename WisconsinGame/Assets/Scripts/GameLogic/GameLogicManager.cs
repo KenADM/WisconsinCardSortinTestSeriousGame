@@ -64,7 +64,7 @@ public class GameLogicManager : MonoBehaviour
             spawnStartingHouse?.Invoke(platforms[i]);
             
             // activates the roof of the tower
-            platforms[i].Find("HouseStack").Find("HouseCollection").Find("Ceiling").gameObject.SetActive(true);
+            //platforms[i].Find("HouseStack").Find("HouseCollection").Find("Ceiling").gameObject.SetActive(true);
         }
         spawnHouse?.Invoke();
         

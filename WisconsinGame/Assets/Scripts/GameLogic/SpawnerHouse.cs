@@ -69,6 +69,7 @@ public class SpawnerHouse : MonoBehaviour
 
 
     // People handler, might need an update
+    /*
     public void GeneratePeople(GameObject spawnedObject, int peopleCount)
     {
         //Debug.Log("Generating " + peopleCount );
@@ -80,6 +81,17 @@ public class SpawnerHouse : MonoBehaviour
             person.transform.localPosition = new Vector3(Random.Range(-0.3f,0.3f), -0.25f, Random.Range(-0.3f, 0.3f));
             person.transform.localScale = scalePeople;
 
+        }
+    }
+    */
+
+    public void GeneratePeople(GameObject spawnedObject, int peopleCount)
+    {
+        //Debug.Log("Generating " + peopleCount );
+        GameObject people = spawnedObject.transform.Find("People").gameObject;
+        for (int i = peopleNumberMin; i <= peopleCount; i++)
+        {
+            people.transform.Find(i.ToString()).gameObject.SetActive(true);
         }
     }
 

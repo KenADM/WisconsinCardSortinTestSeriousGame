@@ -3973,7 +3973,6 @@ GameObject:
   - component: {fileID: 1624173998}
   - component: {fileID: 1624173995}
   - component: {fileID: 1624173997}
-  - component: {fileID: 1624173999}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -4002,10 +4001,10 @@ MonoBehaviour:
   - {fileID: 2100000, guid: cd1f8607883b1474ab8d966defacb330, type: 2}
   - {fileID: 2100000, guid: d862374181d90a844a2f78aac661512a, type: 2}
   rooms:
-  - {fileID: 1321161550769941400, guid: 15ed97be5abcc87498413b1f77804da5, type: 3}
-  - {fileID: 5731661375301357738, guid: 3819e2926a433e34cbff63523c7bd4c4, type: 3}
-  - {fileID: 3737543392544690026, guid: 5f1e28132916cf74aac0854998009517, type: 3}
-  - {fileID: 7833228955649214009, guid: c6c82d9e9126c5747a3144a20849a295, type: 3}
+  - {fileID: 1321161550769941400, guid: 1d9629cc5ca2c334da232f8c6b98b771, type: 3}
+  - {fileID: 1321161550769941400, guid: 80c0ce48f4d1a4045bbaf3fc24c165ab, type: 3}
+  - {fileID: 1321161550769941400, guid: 17ccddf9e2f377549bbdebabb5751cea, type: 3}
+  - {fileID: 1321161550769941400, guid: 1dd1d57620ab7184980b16d15d6738cc, type: 3}
   peoplePrefab: {fileID: 913845681951795218, guid: 2435736d6adca23458edd7c80c901e3e, type: 3}
   peopleNumberMin: 1
   peopleNumberMax: 4
@@ -4061,24 +4060,6 @@ MonoBehaviour:
   testo: {fileID: 92569755}
   input: {fileID: 1837046217}
   startMenu: {fileID: 539183858}
---- !u!114 &1624173999
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1624173994}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b042fbc812f2bf54492c3a4f5aebbfcf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  smoke: {fileID: 0}
-  sound: {fileID: 0}
-  positive: {r: 1, g: 1, b: 1, a: 1}
-  negative: {r: 0, g: 0, b: 0, a: 1}
-  positiveSound: {fileID: 0}
-  negativeSound: {fileID: 0}
 --- !u!4 &1638965826 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8543278311094205395, guid: a5d22062567ce4c4a94453b9989eee14, type: 3}
@@ -5209,7 +5190,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22400762, guid: 67117722a812a2e46ab8cb8eafbf5f5e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000015258789
+      value: 0.00009918213
       objectReference: {fileID: 0}
     - target: {fileID: 22426080, guid: 67117722a812a2e46ab8cb8eafbf5f5e, type: 3}
       propertyPath: m_AnchorMax.x

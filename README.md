@@ -31,3 +31,9 @@ COSE PER SETTIMANA PROSSIMA
 - cambio colore maglietta persone
 - Determino meglio le sorting categories e il criterio di ending (per ora quando finiscono le case).
 - Gestire lo spawn di una persona !! PRIMA FINISCO IL DESIGN DELLE CASE
+
+COSE DA FARE
+- lista assets
+- torre in crescita giu
+- appartamento iniziale spawna da un'altra parte
+- limitare i movimenti
