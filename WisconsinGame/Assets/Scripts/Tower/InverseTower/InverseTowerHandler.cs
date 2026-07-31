@@ -7,7 +7,7 @@ public class InverseTowerHandler : MonoBehaviour
 {
     // handles the raise and lower of the house stack and calls GameLogicHandler to check the placement attempt
 
-    private int blockCount;
+    [SerializeField] private int blockCount;
 
     // MANCA: controlli per gli errori
     [SerializeField] private Transform houseStack; // house stack gameobject, contains houseCollection
@@ -80,7 +80,8 @@ public class InverseTowerHandler : MonoBehaviour
     {
         if(blockCount == 0)
         {
-            Debug.Log("ciao");
+            Debug.Log("firstHousePlaced");
+
             // place at the base
             baseHouse = house;
             baseHouse.position = housePreview.position;
@@ -90,13 +91,18 @@ public class InverseTowerHandler : MonoBehaviour
         }
         else
         {
-            Debug.Log("bye");
+            Debug.Log("SecondHousePlaced");
 
             // move old top house to bottom
             house.position = baseHouse.position;
             Destroy(baseHouse.gameObject);
             baseHouse=house;            
         }
+
+        house.gameObject.name = "PlacedHouse";
+        HouseChar houseChar = house.GetComponent<HouseChar>();
+        checkHousePlacement?.Invoke(this.gameObject , new int[] { houseChar.GetColorHouse(), houseChar.GetTypeHouse(), houseChar.GetPeopleHouse() });
+
         blockCount++;
     }
     public int GetColorTower()

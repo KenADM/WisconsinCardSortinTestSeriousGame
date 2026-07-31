@@ -32,15 +32,11 @@ public class SpawnerHouse : MonoBehaviour
     */
 
     [Header("Persone")]
-    public GameObject peoplePrefab; // Il prefab della persona da spawnare
     public int peopleNumberMin;
     public int peopleNumberMax; // Il numero di persone da spawnare
 
     private static Vector3 houseScale = new Vector3(2f, 2f, 2f);
     private static float houseHeight = 0.6f * houseScale.y; // Houses have a 0.6 height, so we multiply by the scale to get the actual height
-    private static Vector3 scalePeople = new Vector3(0.2f, 0.2f, 0.2f);
-
-
     private List<CubeCombination> allCombinations = new List<CubeCombination>();
 
 
@@ -68,28 +64,13 @@ public class SpawnerHouse : MonoBehaviour
     }
 
 
-    // People handler, might need an update
-    /*
-    public void GeneratePeople(GameObject spawnedObject, int peopleCount)
-    {
-        //Debug.Log("Generating " + peopleCount );
-        for (int i = peopleNumberMin; i < peopleCount + 1; i++)
-        {
-            GameObject person = Instantiate(peoplePrefab, new Vector3(0,0,0), Quaternion.identity);
-            person.transform.SetParent(spawnedObject.transform);
-            
-            person.transform.localPosition = new Vector3(Random.Range(-0.3f,0.3f), -0.25f, Random.Range(-0.3f, 0.3f));
-            person.transform.localScale = scalePeople;
 
-        }
-    }
-    */
 
     public void GeneratePeople(GameObject spawnedObject, int peopleCount)
     {
         //Debug.Log("Generating " + peopleCount );
         GameObject people = spawnedObject.transform.Find("People").gameObject;
-        for (int i = peopleNumberMin; i <= peopleCount; i++)
+        for (int i = 1; i <= peopleCount; i++)
         {
             people.transform.Find(i.ToString()).gameObject.SetActive(true);
         }
@@ -141,20 +122,13 @@ public class SpawnerHouse : MonoBehaviour
      
         float platformHeight = platform.Find("Platform").GetComponent<Transform>().localScale.y;
 
-        // get tower info
-        /*
-        AlignHouse CharBaseHouse = platform.GetComponent<AlignHouse>();
-        int colorIndex = CharBaseHouse.GetColorTower();
-        int typeIndex = CharBaseHouse.GetTypeTower();
-        int people = CharBaseHouse.GetPeopleTower();
-        */
         
         TowerChar baseTowerChar = platform.GetComponent<TowerChar>();
         int colorIndex = baseTowerChar.GetColorTower();
         int typeIndex = baseTowerChar.GetTypeTower();
         int people = baseTowerChar.GetPeopleTower();
 
-        GameObject spawnedHouse = SpawnOne(colorIndex, typeIndex, people, platform.position.x, platformHeight + houseHeight / 2, platform.position.z);
+        GameObject spawnedHouse = SpawnOne(colorIndex, typeIndex, people, platform.transform.position.x , 0.6f, platform.transform.position.z + 4f);
         
         spawnedHouse.GetComponent<HouseFunctions>().MakeUnmovable();
         spawnedHouse.transform.SetParent(platform);
@@ -182,7 +156,7 @@ public class SpawnerHouse : MonoBehaviour
     // Spawn a specific house
     public GameObject SpawnOne(int colorIndex, int typeIndex, int people, float FixedX, float FixedY, float FixedZ)
     {
-        //Debug.Log(colorIndex + " " + typeIndex + " " + people);
+        Debug.Log(colorIndex + " " + typeIndex + " " + people);
         GameObject room =  rooms[typeIndex];
         Material color = colors[colorIndex];
         int numberOfPeople = people;
@@ -195,7 +169,7 @@ public class SpawnerHouse : MonoBehaviour
         //spawn people
         GeneratePeople(spawnedObj, numberOfPeople);
 
-        spawnedObj.name = "NewHouse";
+        spawnedObj.name = "NewHouse" + colorIndex + " "+ typeIndex + " "+ people + " ";
 
         HouseChar newHouse = spawnedObj.AddComponent<HouseChar>();
         newHouse.Initialize(colorIndex, typeIndex, people);

@@ -29,14 +29,14 @@ public class GameLogicManager : MonoBehaviour
     void OnEnable()
     {
         StartingScreenManager.startGame += StartGameHandler;
-        AlignHouse.checkHousePlacement += CheckHousePlacementHandler;
+        InverseTowerHandler.checkHousePlacement += CheckHousePlacementHandler;
 
     }
 
     void OnDisable()
     {
         StartingScreenManager.startGame -= StartGameHandler;
-        AlignHouse.checkHousePlacement -= CheckHousePlacementHandler;
+        InverseTowerHandler.checkHousePlacement -= CheckHousePlacementHandler;
         PlayerLog.CloseLogger();
     }
 
@@ -73,6 +73,7 @@ public class GameLogicManager : MonoBehaviour
     // checks if a house is placed correctly based on the active condition
     private void CheckHousePlacementHandler(GameObject platform, int[] houseValues)
     {
+        Debug.Log("check");
         // gets the tower characteristics
         TowerChar baseTowerChar = platform.GetComponent<TowerChar>();
         int[] platformValues = new int[] { baseTowerChar.GetColorTower(), baseTowerChar.GetTypeTower(), baseTowerChar.GetPeopleTower() };

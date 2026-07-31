@@ -10,9 +10,9 @@ public class AlertPlacement : MonoBehaviour
         alignHouse = GetComponentInParent<InverseTowerHandler>();
     }
 
-    void OnTriggerStay(Collider other)
+    void OnTriggerEnter(Collider other)
     {
-        if (alignHouse != null && (other.CompareTag("Grabbable") || other.CompareTag("Aligned"))) // da cambiare
+        if (alignHouse != null && other.gameObject.TryGetComponent<HouseChar>(out _)) 
         {
             alignHouse.PlaceHouse(other.transform);
         }

@@ -8,8 +8,10 @@ public class StringGravity : MonoBehaviour
 
     void Update()
     {
-        transform.position = rodTip.position;
-        transform.rotation = Quaternion.identity; 
+        Vector3 newPosition = rodTip.position;
+        newPosition.x += 0.07f;
+        transform.position = newPosition;
+        transform.rotation = Quaternion.Euler(-90f, 0f, 0f);
     }
     
 }
