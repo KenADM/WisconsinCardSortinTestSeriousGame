@@ -18,6 +18,8 @@ public class WallHiderDecider : MonoBehaviour
     void Start()
     {
         // Grabs the camera tagged as "MainCamera"
+        // Sleep
+        
         playerCamera = Camera.main;
         /*
         north = transform.Find("North");

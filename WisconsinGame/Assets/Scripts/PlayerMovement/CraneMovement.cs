@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using System.Xml.Serialization;
 
 public class CraneMovement : MonoBehaviour
 {
@@ -14,10 +12,16 @@ public class CraneMovement : MonoBehaviour
     // serve per indicare quale tasto o joystick vogliamo usare per muoverci.
     public InputAction moveAction; 
 
-    [Header("Crane Down Input")]
-    // serve per indicare quale tasto o joystick vogliamo usare per muoverci.
-    public InputAction downAction; 
-    
+    [Header("Actions Input")]
+    // serve per indicare quale tasto usare per il pickup
+    public InputAction pickupAction; 
+
+    [Header("Keyboard Fallback Settings")]
+    // Variables to customize keyboard controls in the Inspector
+    public Key moveLeftKey = Key.A;
+    public Key moveRightKey = Key.D;
+    public Key keyboardPickupKey = Key.Space;
+
     [Header("Piattaforme")]
     public List<Transform> platforms = new List<Transform>();
 
@@ -27,89 +31,120 @@ public class CraneMovement : MonoBehaviour
     public float z;  
 
     [Header("Offset")]
-
     public float OffsetTowerDistance;
 
-
     private bool isInputActive = true;
+
     void Start()
     {
         moveAction.Enable();
+        pickupAction.Enable(); 
     }
 
     void Update()
     {
-        // Il joystick legge un Vector2: 
-        // il joystick invia segnali x e y (con valori da -1 a 1) in base a come si muove il joystick
-        // joystick.x = quanto spingo a destra o sinistra
-        // joystick.y = quanto spingo avanti o indietro
+        float inputX = 0f;
 
+        // joystick input
         Vector2 joystick = moveAction.ReadValue<Vector2>();
         if (Mathf.Abs(joystick.x) > 0.5f)
         {
-            // Controlla se il movimento è già stato eseguito per questo "push"
+            inputX = joystick.x;
+        }
+        // Keyboard input (Customizable)
+        else if (Keyboard.current != null)
+        {
+            // Read from the customizable public variables
+            if (Keyboard.current[moveRightKey].isPressed) 
+            {
+                inputX = 1f;
+            }
+            else if (Keyboard.current[moveLeftKey].isPressed) 
+            {
+                inputX = -1f;
+            }
+        }
+
+        // Apply Movement Logic
+        if (Mathf.Abs(inputX) > 0.5f)
+        {
             if (isInputActive)
             {
-                MoveToClosest(joystick.x);
-                isInputActive = false; // Blocca il movimento finché il joystick non torna al centro
+                MoveToClosest(inputX);
+                isInputActive = false; // block further input until the joystick is released
             }
         }
         else
         {
-            // Il joystick è tornato vicino al centro (zona morta).
-            // Resettiamo la variabile così il giocatore può muoversi di nuovo.
-            isInputActive = true;
+            isInputActive = true; 
         }
 
-        Vector2 joystick2 = downAction.ReadValue<Vector2>();
-        if (Mathf.Abs(joystick2.x) > 0.5f)
+        // PickUp Logic
+
+        // VR input for pickup
+        bool pickupTriggered = pickupAction.WasPressedThisFrame(); 
+
+        // Keyboard input for pickup (Customizable)
+        if (Keyboard.current != null && Keyboard.current[keyboardPickupKey].wasPressedThisFrame)
         {
-            //DA IMPLEMENTARE
+            pickupTriggered = true;
         }
 
+        // Se il bottone è stato premuto, chiama la funzione
+        if (pickupTriggered)
+        {
+            CranePickup();
+        }
     }
     
-private void MoveToClosest(float direction)
-{
-    Vector3 spawn = new Vector3(x, y, z);
-    Vector3 myPosition = this.transform.position;
-    
-    Vector3 closest = this.transform.position;
-
-    foreach (Transform nextHop in platforms)
+    private void CranePickup()
     {
-        // player position 
-        Vector3 targetPos = nextHop.position;
-        targetPos.z += OffsetTowerDistance;
+        Debug.Log("Funzione CranePickup richiamata!");
 
-        // check if targeted onject is in the right direction
-        if (IsCorrectDirection(myPosition.x, targetPos.x, direction))
+        
+    }
+    
+    private void MoveToClosest(float direction)
+    {
+        Vector3 spawn = new Vector3(x, y, z);
+        Vector3 myPosition = this.transform.position;
+        
+        Vector3 closest = this.transform.position;
+
+        foreach (Transform nextHop in platforms)
         {
-            if (Vector3.Distance(myPosition, targetPos) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f)
+            // player position 
+            Vector3 targetPos = nextHop.position;
+            targetPos.z += OffsetTowerDistance;
+
+            // check if targeted object is in the right direction
+            if (IsCorrectDirection(myPosition.x, targetPos.x, direction))
             {
-                closest = targetPos;
+                if (Vector3.Distance(myPosition, targetPos) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f)
+                {
+                    closest = targetPos;
+                }
             }
         }
-    }
-    
-    Vector3 spawnTarget = spawn;
-    spawnTarget.z += OffsetTowerDistance;
+        
+        Vector3 spawnTarget = spawn;
+        spawnTarget.z += OffsetTowerDistance;
 
-    if (IsCorrectDirection(myPosition.x, spawnTarget.x, direction))
-    {
-        if (Vector3.Distance(myPosition, spawnTarget) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f)
+        if (IsCorrectDirection(myPosition.x, spawnTarget.x, direction))
         {
-            closest = spawnTarget;
+            if (Vector3.Distance(myPosition, spawnTarget) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f)
+            {
+                closest = spawnTarget;
+            }
         }
-    }
 
-    // closest already has the offset applied from the loops above, so we just assign it
-    vrHead.position = closest;
+        // closest already has the offset applied from the loops above, so we just assign it
+        vrHead.position = closest;
     }
 
     private bool IsCorrectDirection(float myX, float targetX, float direction)
     {
-        if (direction > 0) //right
+        if (direction > 0) // right
         {
             return targetX > myX;
         }

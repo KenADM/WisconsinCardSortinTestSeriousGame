@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 public class HouseFunctions : MonoBehaviour
 {
     // used to change state of a grabbed, ungrabbed and placed house
-
+    // not used
     private Rigidbody rb;
     private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grabInteractable;
 
@@ -13,18 +13,6 @@ public class HouseFunctions : MonoBehaviour
         rb = this.gameObject.GetComponent<Rigidbody>();
         grabInteractable = this.gameObject.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         
-    }
-
-    public void Grab( )
-    {
-        this.gameObject.tag = "Grabbed";
-
-    }
-
-    public void Release( ){
-
-        this.gameObject.tag = "Grabbable";
-
     }
 
     public void MakeUnmovable(){

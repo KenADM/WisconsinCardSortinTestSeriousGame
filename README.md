@@ -20,20 +20,17 @@ If you want to learn more about creating good readme files then refer the follow
 - [Chakra Core](https://github.com/Microsoft/ChakraCore)
 
 COSE DA SISTEMARE:
-- Gestire lo spawn delle persone in modo che non siano una sopra l'altra
 - aggiungere scritta di fine test
 - integrare una breve istruzioni sul test
-- pensare a come integrare lo sposta appartamenti
 - ricerca su come funzione XRI interaction toolkit
 - Aggiungere effetto per le condition met e not met (Magari con il meteo?)
 
 COSE PER SETTIMANA PROSSIMA
 - cambio colore maglietta persone
 - Determino meglio le sorting categories e il criterio di ending (per ora quando finiscono le case).
-- Gestire lo spawn di una persona !! PRIMA FINISCO IL DESIGN DELLE CASE
 
 COSE DA FARE
 - lista assets
-- torre in crescita giu
 - appartamento iniziale spawna da un'altra parte
 - limitare i movimenti
+- sistemare il visualizer dei muri o lo spostamento a destra o sinistra, alcuni muri non si vedono
