@@ -2,30 +2,30 @@ using UnityEngine;
 
 public class GrabbableHouseSensor : MonoBehaviour
 {
-    [SerializeField] private CraneMovement CraneManager;
+    [SerializeField] private CraneMovement craneManager;
 
     void Start()
     {
-        alignHouse = GetComponentInParent<CraneMovement>();
+        craneManager = GetComponentInParent<CraneMovement>();
     }
 
     void OnTriggerStay(Collider other)
     {
         //Debug.Log("AlertAlignment triggered by: " + other.name);
-        if (CraneManager != null && other.GetComponent<HouseChar>().isGrabbable())
+        if (craneManager != null && other.gameObject.TryGetComponent<HouseChar>(out _) && other.GetComponent<HouseChar>().isGrabbable())
         {
             //Debug.Log("Calling OnTriggerAlert on AlignHouse");
-            CraneManager.PlacedHouse(other);
+            craneManager.HoverHouse(other.gameObject);
         }
 
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (CraneManager != null && other.GetComponent<HouseChar>().isGrabbable())
+        if (craneManager != null && other.gameObject.TryGetComponent<HouseChar>(out _) && other.GetComponent<HouseChar>().isGrabbable())
         {
             //Debug.Log("Calling RemovedHouse on AlignHouse");
-            CraneManager.RemovedHouse(other);
+            craneManager.UnhoverHouse(other.gameObject);
         }
     }
 }

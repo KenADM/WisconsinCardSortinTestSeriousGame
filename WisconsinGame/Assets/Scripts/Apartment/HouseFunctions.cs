@@ -16,7 +16,6 @@ public class HouseFunctions : MonoBehaviour
     }
 
     public void MakeUnmovable(){
-        this.gameObject.tag = "Aligned";
         if (rb != null)
         {
             rb.isKinematic = true; // Disable movement for aligned houses
@@ -26,6 +25,20 @@ public class HouseFunctions : MonoBehaviour
         if(grabInteractable != null)
         {
             grabInteractable.enabled = false;
+        }
+
+    }
+
+    public void Release(){
+        if (rb != null)
+        {
+            rb.isKinematic = false; // Enable movement for aligned houses
+            rb.useGravity = true; // Enable gravity for algned houses
+        }
+
+        if(grabInteractable != null)
+        {
+            grabInteractable.enabled = true;
         }
 
     }

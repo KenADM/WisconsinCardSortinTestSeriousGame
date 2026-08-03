@@ -55,6 +55,22 @@ public class HouseChar : MonoBehaviour
         }
     }
 
+    public void Release()
+    {
+        isMovable = true;
+
+        if (rb != null)
+        {
+            rb.isKinematic = false; // Enable movement for released houses
+            rb.useGravity = true; // Enable gravity for released houses
+        }
+
+        if(grabInteractable != null)
+        {
+            grabInteractable.enabled = true;
+        }
+    }
+
     public bool isGrabbable()
     {
         return isMovable;

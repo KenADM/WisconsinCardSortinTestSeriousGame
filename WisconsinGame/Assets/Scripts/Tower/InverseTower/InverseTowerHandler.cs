@@ -6,7 +6,7 @@ using System;
 public class InverseTowerHandler : MonoBehaviour
 {
     // handles the raise and lower of the house stack and calls GameLogicHandler to check the placement attempt
-
+    // FIX!! Devo premere piu volte x rilasciare la casa
     [SerializeField] private int blockCount;
 
     // MANCA: controlli per gli errori
@@ -101,6 +101,7 @@ public class InverseTowerHandler : MonoBehaviour
 
         house.gameObject.name = "PlacedHouse";
         HouseChar houseChar = house.GetComponent<HouseChar>();
+        houseChar.MakeUnmovable();
         checkHousePlacement?.Invoke(this.gameObject , new int[] { houseChar.GetColorHouse(), houseChar.GetTypeHouse(), houseChar.GetPeopleHouse() });
 
         blockCount++;
