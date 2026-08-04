@@ -22,19 +22,13 @@ If you want to learn more about creating good readme files then refer the follow
 COSE DA SISTEMARE:
 - aggiungere scritta di fine test
 - integrare una breve istruzioni sul test
-- ricerca su come funzione XRI interaction toolkit
-- Aggiungere effetto per le condition met e not met (Magari con il meteo?)
 
 COSE PER SETTIMANA PROSSIMA
-- cambio colore maglietta persone
 - Determino meglio le sorting categories e il criterio di ending (per ora quando finiscono le case).
 
 COSE DA FARE
 - lista assets
-- appartamento iniziale spawna da un'altra parte
-- limitare i movimenti
 - sistemare il visualizer dei muri o lo spostamento a destra o sinistra, alcuni muri non si vedono
 - fare che le torri ai limiti se non mi sposto non tolgono il preview dell'appartamento
-- creare oggeto piattaforma di spawn
 - happiness level
 - XRI
