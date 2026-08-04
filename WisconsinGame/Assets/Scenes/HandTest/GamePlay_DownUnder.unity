@@ -749,11 +749,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 392622881130807743, guid: cbb5c972f1a61f1489eb1ab7ad3869e8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 207.61002
+      value: 320
       objectReference: {fileID: 0}
     - target: {fileID: 392622881130807743, guid: cbb5c972f1a61f1489eb1ab7ad3869e8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 448.89
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 392622881130807743, guid: cbb5c972f1a61f1489eb1ab7ad3869e8, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3368,6 +3368,8 @@ MonoBehaviour:
   y: 0
   z: 4
   OffsetTowerDistance: -5
+  pickupTriggered: 0
+  hoveredHouse: {fileID: 0}
   hook: {fileID: 359203977}
 --- !u!114 &9029791580943607934
 MonoBehaviour:

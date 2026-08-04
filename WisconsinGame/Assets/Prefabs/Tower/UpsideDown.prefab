@@ -177,6 +177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5407eba11cf86974d928ed5c3b8950cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InverseTowerHandler
+  blockCount: 0
   houseStack: {fileID: 0}
   houseCollection: {fileID: 0}
   housePreview: {fileID: 7082208833818858677}
@@ -530,7 +531,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1677794934692911254, guid: 04cad2d00e12f2643a236ec96b2073e3, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4373892921944936270, guid: 04cad2d00e12f2643a236ec96b2073e3, type: 3}
       propertyPath: m_LocalScale.x

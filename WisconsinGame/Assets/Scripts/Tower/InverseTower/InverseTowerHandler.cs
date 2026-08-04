@@ -42,13 +42,13 @@ public class InverseTowerHandler : MonoBehaviour
         matchingChar = GetComponent<TowerChar>();
         */
     }
-
+    /*
     void SnapHouse(Transform house)
     {
         // house.transform.rotation = transform.rotation; // eliminato dato che le case non ruotano
         house.transform.position = new Vector3(trigger.position.x, trigger.position.y, trigger.position.z);
     }
-
+    
     public void PlacedHouse(Collider house) 
     {
 
@@ -71,7 +71,7 @@ public class InverseTowerHandler : MonoBehaviour
             placedHouse = null;
         }
     }
-
+    */
     // inverse tower
 
 
@@ -105,6 +105,17 @@ public class InverseTowerHandler : MonoBehaviour
         checkHousePlacement?.Invoke(this.gameObject , new int[] { houseChar.GetColorHouse(), houseChar.GetTypeHouse(), houseChar.GetPeopleHouse() });
 
         blockCount++;
+    }
+    public void ShowPreviewHouse(Transform house)
+    {
+        // show the preview house in the preview position
+        housePreview.gameObject.SetActive(true);
+    }
+
+    public void HidePreviewHouse()
+    {
+        // hide the preview house
+        housePreview.gameObject.SetActive(false);
     }
     public int GetColorTower()
     {

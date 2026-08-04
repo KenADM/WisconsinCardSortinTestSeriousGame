@@ -34,11 +34,12 @@ public class CraneMovement : MonoBehaviour
     public float OffsetTowerDistance;
 
     private bool isInputActive = true;
-    private bool pickupTriggered = false;
+    public bool pickupTriggered = false;
 
     // hover house ---
-    private GameObject hoveredHouse = null;
-     [SerializeField] private GameObject hook;
+    public GameObject hoveredHouse = null;
+    private GameObject grabbedHouse = null;
+    [SerializeField] private GameObject hook;
 
     void Start()
     {
@@ -48,35 +49,28 @@ public class CraneMovement : MonoBehaviour
 
     void Update()
     {
+        // --- MOVEMENT LOGIC ---
         float inputX = 0f;
-
-        // joystick input
         Vector2 joystick = moveAction.ReadValue<Vector2>();
+
         if (Mathf.Abs(joystick.x) > 0.5f)
         {
             inputX = joystick.x;
         }
-        // Keyboard input (Customizable)
         else if (Keyboard.current != null)
         {
-            // Read from the customizable public variables
             if (Keyboard.current[moveRightKey].isPressed) 
-            {
                 inputX = 1f;
-            }
             else if (Keyboard.current[moveLeftKey].isPressed) 
-            {
                 inputX = -1f;
-            }
         }
 
-        // Apply Movement Logic
         if (Mathf.Abs(inputX) > 0.5f)
         {
             if (isInputActive)
             {
                 MoveToClosest(inputX);
-                isInputActive = false; // block further input until the joystick is released
+                isInputActive = false; 
             }
         }
         else
@@ -84,55 +78,49 @@ public class CraneMovement : MonoBehaviour
             isInputActive = true; 
         }
 
-        // PickUp Logic
+        // --- PICKUP LOGIC ---
+        bool pickupPressedThisFrame = pickupAction.WasPressedThisFrame() || (Keyboard.current != null && Keyboard.current[keyboardPickupKey].wasPressedThisFrame);
 
-        // VR input for pickup
-        //bool pickupTriggered = pickupAction.WasPressedThisFrame(); 
-        // Keyboard input for pickup 
-        if (hoveredHouse != null)
+        if (pickupPressedThisFrame)
         {
-            if (!pickupTriggered && ((Keyboard.current != null && Keyboard.current[keyboardPickupKey].wasPressedThisFrame) || pickupAction.WasPressedThisFrame()))
+            if (!pickupTriggered)
             {
-                pickupTriggered = true;
+                // if i have something in my hand and i trigger a pickup
+                if (hoveredHouse != null)
+                {
+                    CranePickup();
+                }
             }
-            else if (pickupTriggered && ((Keyboard.current != null && Keyboard.current[keyboardPickupKey].wasPressedThisFrame) || pickupAction.WasPressedThisFrame()))
+            else
             {
-                pickupTriggered = false;
-            } 
+                // if i have something in my hand and i click to pickup, i release it
+                CraneRelease();
+            }
         }
-
-
-        // Se il bottone è stato premuto, chiama la funzione
-        if (pickupTriggered)
-        {
-            CranePickup();
-        }
-        else if (!pickupTriggered)
-        {
-            CraneRelease();
-        }
-
     }
     
     private void MoveToClosest(float direction)
     {
         Vector3 spawn = new Vector3(x, y, z);
         Vector3 myPosition = this.transform.position;
-        
-        Vector3 closest = this.transform.position;
+        Vector3 closest =  this.transform.position;
 
         foreach (Transform nextHop in platforms)
         {
-            // player position 
             Vector3 targetPos = nextHop.position;
+            
             targetPos.z += OffsetTowerDistance;
 
-            // check if targeted object is in the right direction
-            if (IsCorrectDirection(myPosition.x, targetPos.x, direction))
+            if (IsCorrectDirection(myPosition.x, targetPos.x, direction) || closest ==  this.transform.position)
             {
-                if (Vector3.Distance(myPosition, targetPos) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f)
+                if(closest !=  this.transform.position)
+                {
+                    closest.gameObject.GetComponent<InverseTowerHandler>().HidePreviewHouse();
+                }
+                if ((Vector3.Distance(myPosition, targetPos) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f) || closest ==  this.transform.position)
                 {
                     closest = targetPos;
+                    closest.gameObject.GetComponent<InverseTowerHandler>().ShowPreviewHouse();
                 }
             }
         }
@@ -143,72 +131,68 @@ public class CraneMovement : MonoBehaviour
         if (IsCorrectDirection(myPosition.x, spawnTarget.x, direction))
         {
             if (Vector3.Distance(myPosition, spawnTarget) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f)
-            {
+            {   
+                closest.gameObject.GetComponent<InverseTowerHandler>().HidePreviewHouse();
                 closest = spawnTarget;
+                
             }
         }
 
-        // closest already has the offset applied from the loops above, so we just assign it
         vrHead.position = closest;
     }
 
     private bool IsCorrectDirection(float myX, float targetX, float direction)
     {
-        if (direction > 0) // right
-        {
-            return targetX > myX;
-        }
-        else if (direction < 0) // left
-        {
-            return targetX < myX;
-        }
-        
+        if (direction > 0) return targetX > myX;
+        else if (direction < 0) return targetX < myX;
         return false; 
     }
 
     public void HoverHouse(GameObject house)
     {
-        Debug.Log("HoverHouse called with: " + house.name);
-        hoveredHouse = house;
+        // Se non abbiamo già una casa in mano, aggiorniamo l'hover
+        if (!pickupTriggered) 
+        {
+            hoveredHouse = house;
+        }
     }
 
     public void UnhoverHouse(GameObject house)
     {
-        Debug.Log("UnhoverHouse called with: " + house.name);
-        hoveredHouse = null;
+        if (hoveredHouse == house)
+        {
+            hoveredHouse = null;
+        }
     }
 
     private void CranePickup()
     {
-        Debug.Log("Funzione CranePickup richiamata!");
         if (hoveredHouse != null)
         {
-            Debug.Log("Hovered house is not null, Grabbing: " + hoveredHouse.name);
-            hoveredHouse.transform.SetParent(hook.transform);
-            hoveredHouse.transform.localPosition = Vector3.zero; // Reset position relative to the hook
-            hoveredHouse.GetComponent<HouseChar>().MakeUnmovable(); // Make the house unmovable
+            pickupTriggered = true;
+            grabbedHouse = hoveredHouse; // Salva la casa che stiamo tenendo
 
-        }
-        else
-        {
-            Debug.Log("No hovered house to pick up.");
+            grabbedHouse.transform.SetParent(hook.transform);
+            Vector3 newPositionHouse = new Vector3(grabbedHouse.transform.localPosition.x, grabbedHouse.transform.localPosition.y, -0.04f);
+            grabbedHouse.transform.localPosition = newPositionHouse; // Posiziona la casa in una posizione predefinita rispetto al gancio
+            
+            HouseChar houseComp = grabbedHouse.GetComponent<HouseChar>();
+            if (houseComp != null) houseComp.MakeUnmovable();
         }
     }
 
     private void CraneRelease()
     {
-        Debug.Log("Funzione CraneRelease richiamata!");
-        if (hoveredHouse != null)
+        if (grabbedHouse != null)
         {
-            Debug.Log("Hovered house is not null, Releasing: " + hoveredHouse.name);
-            hoveredHouse.transform.SetParent(null); // Detach from the hook
-            hoveredHouse.GetComponent<HouseChar>().Release(); // Make the house movable again
-            hoveredHouse = null; // Clear the reference to the released house
-        }
-        else
-        {
-            Debug.Log("No hovered house to release.");
+            pickupTriggered = false;
+
+            grabbedHouse.transform.SetParent(null); 
+            
+            HouseChar houseComp = grabbedHouse.GetComponent<HouseChar>();
+            if (houseComp != null) houseComp.Release();
+
+            grabbedHouse = null; 
         }
     }
-
 }
