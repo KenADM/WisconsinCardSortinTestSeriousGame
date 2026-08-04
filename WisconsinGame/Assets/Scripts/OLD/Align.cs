@@ -17,8 +17,8 @@ public class Align : MonoBehaviour
     public int people;
 
     // events
-    public static event Action<Align> startingConfiguration;
-    public static event Action spawnNew;
+    public static event System.Action<Align> startingConfiguration;
+    public static event System.Action spawnNew;
     public static event Action<int, int, int, Collider> checkCondition;
     
     void Start()

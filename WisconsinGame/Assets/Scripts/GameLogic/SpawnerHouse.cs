@@ -7,9 +7,11 @@ public class SpawnerHouse : MonoBehaviour
 
 {
     [Header("Position for Spawn")]
-    public float x;
-    public float y;
-    public float z;
+    private float x;
+    private float y;
+    private float z;
+
+    [SerializeField] private Transform spawnPosition = null;
 
     [Header("Colore")]
     public List<Material> colors = new List<Material>();
@@ -44,6 +46,9 @@ public class SpawnerHouse : MonoBehaviour
     {
         colorNumber = colors.Count;
         roomNumber = rooms.Count;
+        x = spawnPosition.position.x;
+        y = spawnPosition.position.y;
+        z = spawnPosition.position.z;
 
         FillCombinations();
         //Debug.Log("Total combinations generated: " + allCombinations.Count);

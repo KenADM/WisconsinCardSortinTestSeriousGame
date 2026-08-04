@@ -22,8 +22,8 @@ public class GameLogicManager : MonoBehaviour
     public TextMeshProUGUI displayCondition;
     public TextMeshProUGUI displayCombo;
 
-    public static event Action<Transform> spawnStartingHouse;
-    public static event Action spawnHouse;
+    public static event System.Action<Transform> spawnStartingHouse;
+    public static event System.Action spawnHouse;
     
     // for event handling
     void OnEnable()

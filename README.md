@@ -34,3 +34,7 @@ COSE DA FARE
 - appartamento iniziale spawna da un'altra parte
 - limitare i movimenti
 - sistemare il visualizer dei muri o lo spostamento a destra o sinistra, alcuni muri non si vedono
+- fare che le torri ai limiti se non mi sposto non tolgono il preview dell'appartamento
+- creare oggeto piattaforma di spawn
+- happiness level
+- XRI

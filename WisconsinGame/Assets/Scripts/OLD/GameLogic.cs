@@ -23,8 +23,8 @@ public class GameLogic : MonoBehaviour
 
     private Spawning mySpawningManager;
 
-    public static event Action<bool> responsePopUp;
-    public static event Action startStartingCubeSpawning;
+    public static event System.Action<bool> responsePopUp;
+    public static event System.Action startStartingCubeSpawning;
 
 
     private void Awake()

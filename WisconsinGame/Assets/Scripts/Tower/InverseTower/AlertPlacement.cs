@@ -12,10 +12,11 @@ public class AlertPlacement : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (alignHouse != null && other.gameObject.TryGetComponent<HouseChar>(out _)) 
-        {
+        if (alignHouse != null && other.gameObject.TryGetComponent<HouseChar>(out HouseChar houseChar) && houseChar.isGrabbable())
+        {   
             alignHouse.PlaceHouse(other.transform);
         }
+
 
     }
 

@@ -10,7 +10,7 @@ public class DesktopvrCameraSwitcher : MonoBehaviour
     public GameObject desktopCamera;
 
     [Header("Input (Press to Switch)")]
-    public bool isDesktopMode = false; // Start in Desktop mode by default
+    public bool isDesktopMode = false; 
     void Start()
     {
         // Set the initial state when the game starts

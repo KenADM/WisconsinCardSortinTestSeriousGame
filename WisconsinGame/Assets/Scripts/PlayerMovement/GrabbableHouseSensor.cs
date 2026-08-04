@@ -11,7 +11,7 @@ public class GrabbableHouseSensor : MonoBehaviour
 
     void OnTriggerStay(Collider other)
     {
-        if (craneManager != null && other.gameObject.TryGetComponent<HouseChar>(out _) && other.GetComponent<HouseChar>().isGrabbable())
+        if (craneManager != null && other.gameObject.TryGetComponent<HouseChar>(out HouseChar houseChar) && houseChar.isGrabbable())
         {
             //Debug.Log("AlertAlignment triggered by: " + other.name);
             craneManager.HoverHouse(other.gameObject);
@@ -21,7 +21,7 @@ public class GrabbableHouseSensor : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        if (craneManager != null && other.gameObject.TryGetComponent<HouseChar>(out _) && other.GetComponent<HouseChar>().isGrabbable())
+        if (craneManager != null && other.gameObject.TryGetComponent<HouseChar>(out _))
         {
             //Debug.Log("Calling RemovedHouse on AlignHouse");
             craneManager.UnhoverHouse(other.gameObject);

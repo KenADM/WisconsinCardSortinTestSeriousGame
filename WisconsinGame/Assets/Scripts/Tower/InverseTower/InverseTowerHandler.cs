@@ -106,7 +106,7 @@ public class InverseTowerHandler : MonoBehaviour
 
         blockCount++;
     }
-    public void ShowPreviewHouse(Transform house)
+    public void ShowPreviewHouse()
     {
         // show the preview house in the preview position
         housePreview.gameObject.SetActive(true);

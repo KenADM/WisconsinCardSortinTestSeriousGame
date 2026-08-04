@@ -26,9 +26,8 @@ public class CraneMovement : MonoBehaviour
     public List<Transform> platforms = new List<Transform>();
 
     [Header("Position for Spawn")]
-    public float x;
-    public float y;
-    public float z;  
+
+    [SerializeField] private Transform spawnPosition = null;
 
     [Header("Offset")]
     public float OffsetTowerDistance;
@@ -86,7 +85,7 @@ public class CraneMovement : MonoBehaviour
             if (!pickupTriggered)
             {
                 // if i have something in my hand and i trigger a pickup
-                if (hoveredHouse != null)
+                if (hoveredHouse != null && hoveredHouse.GetComponent<HouseChar>() != null && hoveredHouse.GetComponent<HouseChar>().isGrabbable())
                 {
                     CranePickup();
                 }
@@ -99,32 +98,34 @@ public class CraneMovement : MonoBehaviour
         }
     }
     
-    private void MoveToClosest(float direction)
+    private void MoveToClosest(float direction) // da sistemare a CASA, visualizzare sempre il Preview
     {
-        Vector3 spawn = new Vector3(x, y, z);
+        Vector3 spawn = spawnPosition.position;
         Vector3 myPosition = this.transform.position;
         Vector3 closest =  this.transform.position;
+        Transform closestPlatform = null;
 
         foreach (Transform nextHop in platforms)
         {
             Vector3 targetPos = nextHop.position;
-            
             targetPos.z += OffsetTowerDistance;
-
-            if (IsCorrectDirection(myPosition.x, targetPos.x, direction) || closest ==  this.transform.position)
+            nextHop.gameObject.GetComponent<InverseTowerHandler>().HidePreviewHouse();
+            
+            if (IsCorrectDirection(myPosition.x, targetPos.x, direction))
             {
-                if(closest !=  this.transform.position)
-                {
-                    closest.gameObject.GetComponent<InverseTowerHandler>().HidePreviewHouse();
-                }
-                if ((Vector3.Distance(myPosition, targetPos) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f) || closest ==  this.transform.position)
+                if ((Vector3.Distance(myPosition, targetPos) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f))
                 {
                     closest = targetPos;
-                    closest.gameObject.GetComponent<InverseTowerHandler>().ShowPreviewHouse();
+                    closestPlatform = nextHop;
                 }
-            }
+            }            
         }
-        
+
+        if(closestPlatform != null)
+        {
+            closestPlatform.gameObject.GetComponent<InverseTowerHandler>().ShowPreviewHouse();
+        }
+
         Vector3 spawnTarget = spawn;
         spawnTarget.z += OffsetTowerDistance;
 
@@ -132,12 +133,15 @@ public class CraneMovement : MonoBehaviour
         {
             if (Vector3.Distance(myPosition, spawnTarget) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f)
             {   
-                closest.gameObject.GetComponent<InverseTowerHandler>().HidePreviewHouse();
+                if(closestPlatform != null)
+                {
+                    closestPlatform.gameObject.GetComponent<InverseTowerHandler>().HidePreviewHouse();
+                }
                 closest = spawnTarget;
-                
             }
         }
 
+        closest.y = myPosition.y; // Mantieni la stessa coordinata x del granchio
         vrHead.position = closest;
     }
 
@@ -171,7 +175,7 @@ public class CraneMovement : MonoBehaviour
         {
             pickupTriggered = true;
             grabbedHouse = hoveredHouse; // Salva la casa che stiamo tenendo
-
+            
             grabbedHouse.transform.SetParent(hook.transform);
             Vector3 newPositionHouse = new Vector3(grabbedHouse.transform.localPosition.x, grabbedHouse.transform.localPosition.y, -0.04f);
             grabbedHouse.transform.localPosition = newPositionHouse; // Posiziona la casa in una posizione predefinita rispetto al gancio

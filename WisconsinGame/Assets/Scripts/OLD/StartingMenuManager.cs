@@ -10,7 +10,7 @@ public class StartingMenuManager : MonoBehaviour
     public GameObject startMenu;
     public GameObject ray;
 
-    public static event Action<string> startGame;
+    public static event System.Action<string> startGame;
 
 
     bool CheckInputField(){
