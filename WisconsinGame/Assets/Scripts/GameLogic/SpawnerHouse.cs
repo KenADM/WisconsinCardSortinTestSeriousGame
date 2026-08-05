@@ -133,7 +133,7 @@ public class SpawnerHouse : MonoBehaviour
         int typeIndex = baseTowerChar.GetTypeTower();
         int people = baseTowerChar.GetPeopleTower();
 
-        GameObject spawnedHouse = SpawnOne(colorIndex, typeIndex, people, platform.transform.position.x , 0.6f, platform.transform.position.z + 4f);
+        GameObject spawnedHouse = SpawnOne(colorIndex, typeIndex, people, platform.transform.position.x + 4f, 1f, platform.transform.position.z - 5f);
         
         spawnedHouse.GetComponent<HouseFunctions>().MakeUnmovable();
         spawnedHouse.transform.SetParent(platform);
@@ -167,7 +167,7 @@ public class SpawnerHouse : MonoBehaviour
         int numberOfPeople = people;
         allCombinations.RemoveAll(item => item.people == people && item.type == typeIndex && item.color == colorIndex);
         //spawn room
-        GameObject spawnedObj = Instantiate(room, new Vector3(FixedX, FixedY, FixedZ), Quaternion.identity);
+        GameObject spawnedObj = Instantiate(room, new Vector3(FixedX, FixedY, FixedZ), room.transform.rotation);
         spawnedObj.transform.localScale = houseScale;
         //color room
         ColorRoom(spawnedObj,color);

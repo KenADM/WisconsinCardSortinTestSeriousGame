@@ -31,4 +31,5 @@ COSE DA FARE
 - sistemare il visualizer dei muri o lo spostamento a destra o sinistra, alcuni muri non si vedono
 - fare che le torri ai limiti se non mi sposto non tolgono il preview dell'appartamento
 - happiness level
-- XRI
+- Sistemare il codice di crane movement
+- bloccare i movimenti prima del login

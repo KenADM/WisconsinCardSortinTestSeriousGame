@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 public class CraneMovement : MonoBehaviour
+// sistemare il codice
 {
     [Header("Settings")]
     public float Rotationspeed = 1f;
@@ -26,7 +27,6 @@ public class CraneMovement : MonoBehaviour
     public List<Transform> platforms = new List<Transform>();
 
     [Header("Position for Spawn")]
-
     [SerializeField] private Transform spawnPosition = null;
 
     [Header("Offset")]
@@ -44,6 +44,7 @@ public class CraneMovement : MonoBehaviour
     {
         moveAction.Enable();
         pickupAction.Enable(); 
+        OffsetTowerDistance = this.transform.localPosition.z - spawnPosition.localPosition.z;
     }
 
     void Update()
@@ -82,19 +83,7 @@ public class CraneMovement : MonoBehaviour
 
         if (pickupPressedThisFrame)
         {
-            if (!pickupTriggered)
-            {
-                // if i have something in my hand and i trigger a pickup
-                if (hoveredHouse != null && hoveredHouse.GetComponent<HouseChar>() != null && hoveredHouse.GetComponent<HouseChar>().isGrabbable())
-                {
-                    CranePickup();
-                }
-            }
-            else
-            {
-                // if i have something in my hand and i click to pickup, i release it
-                CraneRelease();
-            }
+            TogglePickup();
         }
     }
     
@@ -169,19 +158,37 @@ public class CraneMovement : MonoBehaviour
         }
     }
 
+    // --- NEW PUBLIC FUNCTION FOR VR BUTTONS ---
+    public void TogglePickup()
+    {
+        if (!pickupTriggered)
+        {
+            CranePickup();
+        }
+        else
+        {
+            CraneRelease();
+        }
+    }
+
     private void CranePickup()
     {
+        // All validity checks are now centralized here
         if (hoveredHouse != null)
         {
-            pickupTriggered = true;
-            grabbedHouse = hoveredHouse; // Salva la casa che stiamo tenendo
+            HouseChar houseComp = hoveredHouse.GetComponent<HouseChar>();
             
-            grabbedHouse.transform.SetParent(hook.transform);
-            Vector3 newPositionHouse = new Vector3(grabbedHouse.transform.localPosition.x, grabbedHouse.transform.localPosition.y, -0.04f);
-            grabbedHouse.transform.localPosition = newPositionHouse; // Posiziona la casa in una posizione predefinita rispetto al gancio
-            
-            HouseChar houseComp = grabbedHouse.GetComponent<HouseChar>();
-            if (houseComp != null) houseComp.MakeUnmovable();
+            if (houseComp != null && houseComp.isGrabbable())
+            {
+                pickupTriggered = true;
+                grabbedHouse = hoveredHouse; // Salva la casa che stiamo tenendo
+                
+                grabbedHouse.transform.SetParent(hook.transform);
+                Vector3 newPositionHouse = new Vector3(grabbedHouse.transform.localPosition.x, grabbedHouse.transform.localPosition.y, -0.04f);
+                grabbedHouse.transform.localPosition = newPositionHouse; // Posiziona la casa in una posizione predefinita rispetto al gancio
+                
+                houseComp.MakeUnmovable();
+            }
         }
     }
 
@@ -198,5 +205,18 @@ public class CraneMovement : MonoBehaviour
 
             grabbedHouse = null; 
         }
+    }
+
+    // --- PUBLIC MOVEMENT FUNCTIONS ---
+    public void MoveLeft()
+    {
+        Debug.Log("Move Left");
+        MoveToClosest(-1f);
+    }
+    
+    public void MoveRight()
+    {
+        Debug.Log("Move Right");
+        MoveToClosest(1f);
     }
 }

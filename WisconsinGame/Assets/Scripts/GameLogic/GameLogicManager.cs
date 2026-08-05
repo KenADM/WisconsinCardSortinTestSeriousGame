@@ -28,6 +28,7 @@ public class GameLogicManager : MonoBehaviour
     // for event handling
     void OnEnable()
     {
+        Tutorial.startGame += StartGameHandler;
         StartingScreenManager.startGame += StartGameHandler;
         InverseTowerHandler.checkHousePlacement += CheckHousePlacementHandler;
 
@@ -35,6 +36,7 @@ public class GameLogicManager : MonoBehaviour
 
     void OnDisable()
     {
+        Tutorial.startGame -= StartGameHandler;
         StartingScreenManager.startGame -= StartGameHandler;
         InverseTowerHandler.checkHousePlacement -= CheckHousePlacementHandler;
         PlayerLog.CloseLogger();
