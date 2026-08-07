@@ -23,56 +23,21 @@ public class InverseTowerHandler : MonoBehaviour
     private bool isHousePlaced = false;
     private Transform placedHouse;
 
+    [SerializeField] private bool isTutorial = false;
+
     //----
     [SerializeField] private Transform baseHouse;
 
     //----
 
     public static event Action<GameObject, int[]> checkHousePlacement;
+    public static event Action<GameObject, int[]> checkHousePlacementTutorial;
 
     // sistemo i nomi che alcuni son minuscoli
     void Start()
     {
         blockCount = 0;
-        /*
-        trigger = transform.Find("Trigger").GetComponent<Transform>(); // Otteniamo il Transform del trigger
-        houseStack = transform.Find("HouseStack").GetComponent<Transform>(); // Otteniamo il Transform del stack delle case
-        houseCollection = houseStack.Find("HouseCollection").GetComponent<Transform>(); // Otteniamo il Transform del contenitore delle case nello stack
-        housePreview = transform.Find("HousePreview").GetComponent<Transform>();
-        matchingChar = GetComponent<TowerChar>();
-        */
     }
-    /*
-    void SnapHouse(Transform house)
-    {
-        // house.transform.rotation = transform.rotation; // eliminato dato che le case non ruotano
-        house.transform.position = new Vector3(trigger.position.x, trigger.position.y, trigger.position.z);
-    }
-    
-    public void PlacedHouse(Collider house) 
-    {
-
-        if(house.CompareTag("Grabbable")){
-            housePreview.gameObject.SetActive(false);
-            SnapHouse(house.GetComponent<Transform>());
-            isHousePlaced = true;
-            placedHouse = house.GetComponent<Transform>();
-        }
-
-    }
-
-    public void RemovedHouse(Collider house) 
-    {
-
-        if(house.CompareTag("Grabbed")){
-            Debug.Log("rimosso");
-            housePreview.gameObject.SetActive(true);
-            isHousePlaced = false;
-            placedHouse = null;
-        }
-    }
-    */
-    // inverse tower
 
 
     // aggiungere controllo logico della scelta e spawn del prossimo
@@ -102,8 +67,14 @@ public class InverseTowerHandler : MonoBehaviour
         house.gameObject.name = "PlacedHouse";
         HouseChar houseChar = house.GetComponent<HouseChar>();
         houseChar.MakeUnmovable();
-        checkHousePlacement?.Invoke(this.gameObject , new int[] { houseChar.GetColorHouse(), houseChar.GetTypeHouse(), houseChar.GetPeopleHouse() });
-
+        if(!isTutorial)
+        {
+            checkHousePlacement?.Invoke(this.gameObject , new int[] { houseChar.GetColorHouse(), houseChar.GetTypeHouse(), houseChar.GetPeopleHouse() });
+        }
+        else
+        {
+            checkHousePlacementTutorial?.Invoke(this.gameObject , new int[] { houseChar.GetColorHouse(), houseChar.GetTypeHouse(), houseChar.GetPeopleHouse() });
+        }
         blockCount++;
     }
     public void ShowPreviewHouse()

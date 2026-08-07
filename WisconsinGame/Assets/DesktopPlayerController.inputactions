@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "name": "DesktopPlayerController",
+    "maps": [
+        {
+            "name": "Desktop",
+            "id": "c69b8720-f672-4f18-b5da-e31901b6b9a9",
+            "actions": [
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "d650b29a-9f60-4ef4-bec4-c75a61cdb46a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "be9ea1b1-f9ca-4754-92cc-faf8258ce9ea",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

@@ -59,12 +59,14 @@ public class SpawnerHouse : MonoBehaviour
     void OnEnable()
     {
         GameLogicManager.spawnHouse += Spawn;
+        Tutorial.spawnStartingHouse += spawnStartingHouseHandler;
         GameLogicManager.spawnStartingHouse += spawnStartingHouseHandler;
     }
 
     void OnDisable()
     {
         GameLogicManager.spawnHouse -= Spawn;
+        Tutorial.spawnStartingHouse -= spawnStartingHouseHandler;
         GameLogicManager.spawnStartingHouse -= spawnStartingHouseHandler;
     }
 
@@ -121,6 +123,16 @@ public class SpawnerHouse : MonoBehaviour
         }
     }
 
+    void removeCombination(int colorIndex, int typeIndex, int people)
+    {
+        int index = allCombinations.FindIndex(item => item.people == people && item.type == typeIndex && item.color == colorIndex);
+
+        if (index != -1)
+        {
+            allCombinations.RemoveAt(index);
+        }
+    }
+
     // given a platform, the starting Houses are spawn
     private void spawnStartingHouseHandler(Transform platform)
     {
@@ -133,6 +145,7 @@ public class SpawnerHouse : MonoBehaviour
         int typeIndex = baseTowerChar.GetTypeTower();
         int people = baseTowerChar.GetPeopleTower();
 
+        removeCombination(colorIndex, typeIndex, people);
         GameObject spawnedHouse = SpawnOne(colorIndex, typeIndex, people, platform.transform.position.x + 4f, 1f, platform.transform.position.z - 5f);
         
         spawnedHouse.GetComponent<HouseFunctions>().MakeUnmovable();
@@ -143,15 +156,15 @@ public class SpawnerHouse : MonoBehaviour
     // Spawn a random house
     public void Spawn()
     {
-
+        Debug.Log(allCombinations.Count);
         if (allCombinations.Count > 0)
         {   
             int index = Random.Range(0, allCombinations.Count);
             CubeCombination randomElement = allCombinations[index];
-            allCombinations.RemoveAt(index);
-            //Debug.Log("Spawning house with Color: " + randomElement.color + ", Type: " + randomElement.type + ", People: " + randomElement.people);
+
+            removeCombination(randomElement.color, randomElement.type, randomElement.people);
             SpawnOne(randomElement.color, randomElement.type, randomElement.people, x, y, z);
-            //Debug.Log("Done");
+
         }else{
             Debug.Log("No more combinations available.");
             PlayerLog.CloseLogger();
@@ -165,7 +178,7 @@ public class SpawnerHouse : MonoBehaviour
         GameObject room =  rooms[typeIndex];
         Material color = colors[colorIndex];
         int numberOfPeople = people;
-        allCombinations.RemoveAll(item => item.people == people && item.type == typeIndex && item.color == colorIndex);
+        //allCombinations.RemoveAll(item => item.people == people && item.type == typeIndex && item.color == colorIndex);
         //spawn room
         GameObject spawnedObj = Instantiate(room, new Vector3(FixedX, FixedY, FixedZ), room.transform.rotation);
         spawnedObj.transform.localScale = houseScale;

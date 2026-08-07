@@ -33,3 +33,9 @@ COSE DA FARE
 - happiness level
 - Sistemare il codice di crane movement
 - bloccare i movimenti prima del login
+- nelle case, fare un unico rigib body che funge da trigger
+
+TUTORIAL:
+- feedback visivo nella modalita tutorial
+- aggiungere le scritte
+- modificare i movimenti x renderli piu smooth

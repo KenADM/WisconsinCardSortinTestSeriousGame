@@ -60,9 +60,13 @@ public class CraneMovement : MonoBehaviour
         else if (Keyboard.current != null)
         {
             if (Keyboard.current[moveRightKey].isPressed) 
+            {
                 inputX = 1f;
-            else if (Keyboard.current[moveLeftKey].isPressed) 
+            }
+            else if (Keyboard.current[moveLeftKey].isPressed ) 
+            {
                 inputX = -1f;
+            }
         }
 
         if (Mathf.Abs(inputX) > 0.5f)
@@ -87,18 +91,37 @@ public class CraneMovement : MonoBehaviour
         }
     }
     
-    private void MoveToClosest(float direction) // da sistemare a CASA, visualizzare sempre il Preview
+    private void MoveToClosest(float direction)
+    {
+        bool isFacingFront = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 0f)) < 1f;
+        bool isFacingBack = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 180f)) < 1f;
+        if(isFacingFront)
+        {
+            MoveToClosestHandler(direction);
+        }
+        else if(isFacingBack)
+        {
+            MoveToClosestHandler(-direction);
+        }
+    }
+    private void MoveToClosestHandler(float direction) // da sistemare a CASA, visualizzare sempre il Preview
     {
         Vector3 spawn = spawnPosition.position;
         Vector3 myPosition = this.transform.position;
-        Vector3 closest =  this.transform.position;
+        Vector3 closest = this.transform.position;
         Transform closestPlatform = null;
 
         foreach (Transform nextHop in platforms)
         {
             Vector3 targetPos = nextHop.position;
-            targetPos.z += OffsetTowerDistance;
-            nextHop.gameObject.GetComponent<InverseTowerHandler>().HidePreviewHouse();
+            
+            // Cache the component to avoid calling GetComponent multiple times
+            InverseTowerHandler towerHandler = nextHop.gameObject.GetComponent<InverseTowerHandler>();
+            
+            if (towerHandler != null)
+            {
+                towerHandler.HidePreviewHouse();
+            }
             
             if (IsCorrectDirection(myPosition.x, targetPos.x, direction))
             {
@@ -112,11 +135,14 @@ public class CraneMovement : MonoBehaviour
 
         if(closestPlatform != null)
         {
-            closestPlatform.gameObject.GetComponent<InverseTowerHandler>().ShowPreviewHouse();
+            InverseTowerHandler closestTowerHandler = closestPlatform.gameObject.GetComponent<InverseTowerHandler>();
+            if (closestTowerHandler != null)
+            {
+                closestTowerHandler.ShowPreviewHouse();
+            }
         }
 
         Vector3 spawnTarget = spawn;
-        spawnTarget.z += OffsetTowerDistance;
 
         if (IsCorrectDirection(myPosition.x, spawnTarget.x, direction))
         {
@@ -124,16 +150,21 @@ public class CraneMovement : MonoBehaviour
             {   
                 if(closestPlatform != null)
                 {
-                    closestPlatform.gameObject.GetComponent<InverseTowerHandler>().HidePreviewHouse();
+                    InverseTowerHandler closestTowerHandler = closestPlatform.gameObject.GetComponent<InverseTowerHandler>();
+                    if (closestTowerHandler != null)
+                    {
+                        closestTowerHandler.HidePreviewHouse();
+                    }
                 }
                 closest = spawnTarget;
             }
         }
 
-        closest.y = myPosition.y; // Mantieni la stessa coordinata x del granchio
-        vrHead.position = closest;
+        // Modify ONLY the X value of the vrHead, keeping its original Y and Z
+        Vector3 newHeadPos = vrHead.position;
+        newHeadPos.x = closest.x;
+        vrHead.position = newHeadPos;
     }
-
     private bool IsCorrectDirection(float myX, float targetX, float direction)
     {
         if (direction > 0) return targetX > myX;
@@ -210,13 +241,16 @@ public class CraneMovement : MonoBehaviour
     // --- PUBLIC MOVEMENT FUNCTIONS ---
     public void MoveLeft()
     {
-        Debug.Log("Move Left");
         MoveToClosest(-1f);
     }
     
     public void MoveRight()
     {
-        Debug.Log("Move Right");
         MoveToClosest(1f);
+    }
+
+    public void setSpawnPosition(GameObject spawnPos)
+    {
+        spawnPosition = spawnPos.transform;
     }
 }
