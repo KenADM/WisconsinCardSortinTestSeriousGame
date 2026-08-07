@@ -45,6 +45,8 @@ public class Tutorial : MonoBehaviour
 
     void Start()
     {
+        spawnStartingHouse?.Invoke(placingPlatformTutorial.transform);
+
         // tutorialPanel.SetActive(true);
         // spawningPlatformTutorial.SetActive(true);
         // placingPlatformTutorial.SetActive(true);
@@ -52,7 +54,6 @@ public class Tutorial : MonoBehaviour
     }
     public void StartGame()
     {
-        spawnStartingHouse?.Invoke(spawningPlatformGameplay.transform);
         startGame?.Invoke(userCode, numOfVariantPerCharacteristic);
 
     }
@@ -103,7 +104,7 @@ public class Tutorial : MonoBehaviour
         placingPlatformTutorial.SetActive(false);
 
         crane.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-        crane.transform.position = new Vector3(spawningPlatformGameplay.transform.position.x, crane.transform.position.y, crane.transform.position.z);
+        crane.transform.position = new Vector3(spawningPlatformGameplay.transform.position.x, crane.transform.position.y, spawningPlatformGameplay.transform.position.z - 8);
         CraneMovement craneMovement = crane.GetComponent<CraneMovement>();
         craneMovement.platforms.Clear();
         craneMovement.platforms = platformsGameplay;
