@@ -34,6 +34,10 @@ public class CraneMovement : MonoBehaviour
 
     private bool isInputActive = true;
     public bool pickupTriggered = false;
+    
+    // allow movement
+    private bool allowMove = false;
+    private bool allowGrab = false;
 
     // hover house ---
     public GameObject hoveredHouse = null;
