@@ -1,24 +1,30 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using System;
 
 public class CraneMovement : MonoBehaviour
-// sistemare il codice
 {
     [Header("Settings")]
     public float Rotationspeed = 1f;
     public Transform vrHead; // La telecamera
 
+    [Header("Smooth Movement Settings")]
+    [Tooltip("If false, the crane will instantly teleport (original behavior).")]
+    public bool useSmoothMovement = true;
+    [Tooltip("How fast the crane moves to the next platform (Units per second).")]
+    public float movementSpeed = 5f; 
+    
+    // -- MODIFICATO: Ora traccia la posizione in 3D (X, Y, Z) --
+    private Vector3 targetPos;
+
     [Header("Movement Input")]
-    // serve per indicare quale tasto o joystick vogliamo usare per muoverci.
     public InputAction moveAction; 
 
     [Header("Actions Input")]
-    // serve per indicare quale tasto usare per il pickup
     public InputAction pickupAction; 
 
     [Header("Keyboard Fallback Settings")]
-    // Variables to customize keyboard controls in the Inspector
     public Key moveLeftKey = Key.A;
     public Key moveRightKey = Key.D;
     public Key keyboardPickupKey = Key.Space;
@@ -32,14 +38,18 @@ public class CraneMovement : MonoBehaviour
     [Header("Offset")]
     public float OffsetTowerDistance;
 
-    private bool isInputActive = true;
-    public bool pickupTriggered = false;
+    private bool isMoving = true;
+    public bool isSomethingInHand = false;    
     
-    // allow movement
-    private bool allowMove = false;
+    // -- Directional Movement Flags --
+    private bool allowMoveLeft = false;
+    private bool allowMoveRight = false;
     private bool allowGrab = false;
 
-    // hover house ---
+    // -- Events for Tutorial tracking --
+    public static event Action onHouseGrabbed;
+    public static event Action onHouseDropped;
+
     public GameObject hoveredHouse = null;
     private GameObject grabbedHouse = null;
     [SerializeField] private GameObject hook;
@@ -49,13 +59,33 @@ public class CraneMovement : MonoBehaviour
         moveAction.Enable();
         pickupAction.Enable(); 
         OffsetTowerDistance = this.transform.localPosition.z - spawnPosition.localPosition.z;
+        
+        // Initialize the target position to our full 3D starting position
+        targetPos = vrHead.position;
+    }
+
+    void OnEnable()
+    {
+        Tutorial.enableMoveDirection += EnableMoveDirection;
+        Tutorial.enableGrab += EnableGrab;
+    }
+
+    void OnDisable()
+    {
+        Tutorial.enableMoveDirection -= EnableMoveDirection;
+        Tutorial.enableGrab -= EnableGrab;        
     }
 
     void Update()
     {
-        // --- MOVEMENT LOGIC ---
-        float inputX = 0f;
+        HandleInput();
+        HandleSmoothMovement();
+    }
+
+    private void HandleInput()
+    {
         Vector2 joystick = moveAction.ReadValue<Vector2>();
+        float inputX = 0f;
 
         if (Mathf.Abs(joystick.x) > 0.5f)
         {
@@ -63,75 +93,92 @@ public class CraneMovement : MonoBehaviour
         }
         else if (Keyboard.current != null)
         {
-            if (Keyboard.current[moveRightKey].isPressed) 
-            {
-                inputX = 1f;
-            }
-            else if (Keyboard.current[moveLeftKey].isPressed ) 
-            {
-                inputX = -1f;
-            }
+            if (Keyboard.current[moveRightKey].isPressed) inputX = 1f;
+            else if (Keyboard.current[moveLeftKey].isPressed) inputX = -1f;
         }
 
-        if (Mathf.Abs(inputX) > 0.5f)
+        bool canMove = false;
+        if (inputX > 0 && allowMoveRight) canMove = true;
+        if (inputX < 0 && allowMoveLeft) canMove = true;
+
+        if (canMove && Mathf.Abs(inputX) > 0.5f)
         {
-            if (isInputActive)
+            if (isMoving)
             {
                 MoveToClosest(inputX);
-                isInputActive = false; 
+                isMoving = false; 
+            }
+        }
+        else if (Mathf.Abs(inputX) < 0.5f)
+        {
+            isMoving = true; 
+        }
+
+        // --- PICKUP LOGIC ---
+        if (allowGrab)
+        {       
+            bool pickupPressedThisFrame = pickupAction.WasPressedThisFrame() || (Keyboard.current != null && Keyboard.current[keyboardPickupKey].wasPressedThisFrame);
+
+            if (pickupPressedThisFrame)
+            {
+                TogglePickup();
+            }
+        }
+    }
+
+    private void HandleSmoothMovement()
+    {
+        if (useSmoothMovement)
+        {
+            // Vector3.Distance controlla se siamo arrivati a destinazione su tutti gli assi
+            if (Vector3.Distance(vrHead.position, targetPos) > 0.001f)
+            {
+                // MoveTowards sposta fluidamente il Vector3 verso il target in 3D
+                vrHead.position = Vector3.MoveTowards(vrHead.position, targetPos, movementSpeed * Time.deltaTime);
             }
         }
         else
         {
-            isInputActive = true; 
-        }
-
-        // --- PICKUP LOGIC ---
-        bool pickupPressedThisFrame = pickupAction.WasPressedThisFrame() || (Keyboard.current != null && Keyboard.current[keyboardPickupKey].wasPressedThisFrame);
-
-        if (pickupPressedThisFrame)
-        {
-            TogglePickup();
+            // Instant teleportation (Fallback) in 3D
+            vrHead.position = targetPos;
         }
     }
     
     private void MoveToClosest(float direction)
     {
+        // --- NUOVO CONTROLLO: Blocca il movimento se la gru non è ancora arrivata al target ---
+        if (useSmoothMovement && Vector3.Distance(vrHead.position, targetPos) > 0.01f)
+        {
+            return;
+        }
+
         bool isFacingFront = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 0f)) < 1f;
         bool isFacingBack = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 180f)) < 1f;
-        if(isFacingFront)
-        {
-            MoveToClosestHandler(direction);
-        }
-        else if(isFacingBack)
-        {
-            MoveToClosestHandler(-direction);
-        }
+        
+        if(isFacingFront) MoveToClosestHandler(direction);
+        else if(isFacingBack) MoveToClosestHandler(-direction);
     }
-    private void MoveToClosestHandler(float direction) // da sistemare a CASA, visualizzare sempre il Preview
+    
+    private void MoveToClosestHandler(float direction)
     {
         Vector3 spawn = spawnPosition.position;
-        Vector3 myPosition = this.transform.position;
-        Vector3 closest = this.transform.position;
+        
+        // Calculate based on where we are GOING (targetPos)
+        Vector3 myPosition = targetPos; 
+        Vector3 closest = myPosition; 
         Transform closestPlatform = null;
 
         foreach (Transform nextHop in platforms)
         {
-            Vector3 targetPos = nextHop.position;
-            
-            // Cache the component to avoid calling GetComponent multiple times
+            Vector3 targetNextPos = nextHop.position;
             InverseTowerHandler towerHandler = nextHop.gameObject.GetComponent<InverseTowerHandler>();
+            if (towerHandler != null) towerHandler.HidePreviewHouse();
             
-            if (towerHandler != null)
+            if (IsCorrectDirection(myPosition.x, targetNextPos.x, direction))
             {
-                towerHandler.HidePreviewHouse();
-            }
-            
-            if (IsCorrectDirection(myPosition.x, targetPos.x, direction))
-            {
-                if ((Vector3.Distance(myPosition, targetPos) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f))
+                if ((Vector3.Distance(myPosition, targetNextPos) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f))
                 {
-                    closest = targetPos;
+                    closest = targetNextPos;
                     closestPlatform = nextHop;
                 }
             }            
@@ -140,14 +187,10 @@ public class CraneMovement : MonoBehaviour
         if(closestPlatform != null)
         {
             InverseTowerHandler closestTowerHandler = closestPlatform.gameObject.GetComponent<InverseTowerHandler>();
-            if (closestTowerHandler != null)
-            {
-                closestTowerHandler.ShowPreviewHouse();
-            }
+            if (closestTowerHandler != null) closestTowerHandler.ShowPreviewHouse();
         }
 
         Vector3 spawnTarget = spawn;
-
         if (IsCorrectDirection(myPosition.x, spawnTarget.x, direction))
         {
             if (Vector3.Distance(myPosition, spawnTarget) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f)
@@ -155,74 +198,64 @@ public class CraneMovement : MonoBehaviour
                 if(closestPlatform != null)
                 {
                     InverseTowerHandler closestTowerHandler = closestPlatform.gameObject.GetComponent<InverseTowerHandler>();
-                    if (closestTowerHandler != null)
-                    {
-                        closestTowerHandler.HidePreviewHouse();
-                    }
+                    if (closestTowerHandler != null) closestTowerHandler.HidePreviewHouse();
                 }
                 closest = spawnTarget;
             }
         }
 
-        // Modify ONLY the X value of the vrHead, keeping its original Y and Z
-        Vector3 newHeadPos = vrHead.position;
-        newHeadPos.x = closest.x;
-        vrHead.position = newHeadPos;
+        // Durante il gameplay normale, cambiamo solo la X del target, mantenendo Y e Z attuali
+        targetPos = new Vector3(closest.x, targetPos.y, targetPos.z);
     }
+
     private bool IsCorrectDirection(float myX, float targetX, float direction)
     {
-        if (direction > 0) return targetX > myX;
-        else if (direction < 0) return targetX < myX;
+        if (direction > 0) return targetX > myX + 0.01f;
+        else if (direction < 0) return targetX < myX - 0.01f;
         return false; 
     }
 
     public void HoverHouse(GameObject house)
     {
-        // Se non abbiamo già una casa in mano, aggiorniamo l'hover
-        if (!pickupTriggered) 
-        {
-            hoveredHouse = house;
-        }
+        if (!isSomethingInHand) hoveredHouse = house;
     }
 
     public void UnhoverHouse(GameObject house)
     {
-        if (hoveredHouse == house)
-        {
-            hoveredHouse = null;
-        }
+        if (hoveredHouse == house) hoveredHouse = null;
     }
 
-    // --- NEW PUBLIC FUNCTION FOR VR BUTTONS ---
     public void TogglePickup()
     {
-        if (!pickupTriggered)
+        if(!allowGrab) return;
+
+        // --- NUOVO CONTROLLO: Blocca la presa/rilascio se la gru si sta muovendo ---
+        if (useSmoothMovement && Vector3.Distance(vrHead.position, targetPos) > 0.01f)
         {
-            CranePickup();
+            return;
         }
-        else
-        {
-            CraneRelease();
-        }
+
+        if (!isSomethingInHand) CranePickup();
+        else CraneRelease();
     }
 
     private void CranePickup()
     {
-        // All validity checks are now centralized here
         if (hoveredHouse != null)
         {
             HouseChar houseComp = hoveredHouse.GetComponent<HouseChar>();
-            
             if (houseComp != null && houseComp.isGrabbable())
             {
-                pickupTriggered = true;
-                grabbedHouse = hoveredHouse; // Salva la casa che stiamo tenendo
+                isSomethingInHand = true;
+                grabbedHouse = hoveredHouse; 
                 
                 grabbedHouse.transform.SetParent(hook.transform);
                 Vector3 newPositionHouse = new Vector3(grabbedHouse.transform.localPosition.x, grabbedHouse.transform.localPosition.y, -0.04f);
-                grabbedHouse.transform.localPosition = newPositionHouse; // Posiziona la casa in una posizione predefinita rispetto al gancio
+                grabbedHouse.transform.localPosition = newPositionHouse; 
                 
                 houseComp.MakeUnmovable();
+                
+                onHouseGrabbed?.Invoke();
             }
         }
     }
@@ -231,30 +264,44 @@ public class CraneMovement : MonoBehaviour
     {
         if (grabbedHouse != null)
         {
-            pickupTriggered = false;
-
+            isSomethingInHand = false;
             grabbedHouse.transform.SetParent(null); 
             
             HouseChar houseComp = grabbedHouse.GetComponent<HouseChar>();
             if (houseComp != null) houseComp.Release();
-
             grabbedHouse = null; 
+            
+            onHouseDropped?.Invoke();
         }
     }
 
-    // --- PUBLIC MOVEMENT FUNCTIONS ---
-    public void MoveLeft()
+    public void MoveLeft() { MoveToClosest(-1f); }
+    public void MoveRight() { MoveToClosest(1f); }
+    public void setSpawnPosition(GameObject spawnPos) { spawnPosition = spawnPos.transform; }
+
+    void EnableMoveDirection(bool left, bool right)
     {
-        MoveToClosest(-1f);
-    }
-    
-    public void MoveRight()
-    {
-        MoveToClosest(1f);
+        allowMoveLeft = left;
+        allowMoveRight = right;
     }
 
-    public void setSpawnPosition(GameObject spawnPos)
+    void EnableGrab(bool state)
     {
-        spawnPosition = spawnPos.transform;
+        allowGrab = state;
+    }
+
+    // --- NUOVI METODI PER CONTROLLARE IL MOVIMENTO DALL'ESTERNO (Es. Tutorial) ---
+    
+    // Usa questo per dire alla gru di muoversi fluidamente verso un nuovo punto in 3D
+    public void MoveToPositionSmoothly(Vector3 newTargetPos)
+    {
+        targetPos = newTargetPos;
+    }
+
+    // Usa questo se vuoi teletrasportare la gru istantaneamente
+    public void SyncTargetPosition(Vector3 newPos)
+    {
+        targetPos = newPos;
+        vrHead.position = newPos;
     }
 }

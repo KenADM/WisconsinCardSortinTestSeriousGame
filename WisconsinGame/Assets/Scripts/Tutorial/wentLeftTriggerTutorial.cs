@@ -1,24 +1,15 @@
-using Unity.XR.CoreUtils;
+using System;
 using UnityEngine;
 
 public class wentLeftTriggerTutorial : MonoBehaviour
 {
-    [SerializeField] private GameObject wentRightTrigger;
-    private bool triggered = false;
+    public static event Action reachedLeft;
+
     void OnTriggerEnter(Collider other)
     {
-
-        if (triggered) return; // Prevent multiple triggers
-
-        if(wentRightTrigger != null)
-        {
-            wentRightTrigger.SetActive(true);
-        }
-        triggered = true;
+        reachedLeft?.Invoke();
+        
+        // Disattiviamo il trigger subito dopo averlo toccato
+        gameObject.SetActive(false); 
     }
-    void OnTriggerExit(Collider other)
-    {
-        triggered = false;
-    }
-    
 }

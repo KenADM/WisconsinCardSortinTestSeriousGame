@@ -1,22 +1,18 @@
-using Unity.XR.CoreUtils;
 using System;
 using UnityEngine;
 
 public class wentRightTriggerTutorial : MonoBehaviour
 {
-    public static event Action spawnTutorial;
-    private bool triggered = false;
+    public static event Action reachedRight;
 
     void OnTriggerEnter(Collider other)
     {
-        if (triggered) return; // Prevent multiple triggers
-        spawnTutorial?.Invoke();
-        //this.gameObject.SetActive(false);               
-        triggered = true;
-
-    }
-    void OnTriggerExit(Collider other)
-    {
-        triggered = false;
+        // Puoi aggiungere un controllo sul tag se vuoi che solo la gru lo attivi, es:
+        // if (!other.CompareTag("Player")) return;
+        
+        reachedRight?.Invoke();
+        
+        // Disattiviamo il trigger subito dopo averlo toccato per evitare doppi input
+        gameObject.SetActive(false); 
     }
 }

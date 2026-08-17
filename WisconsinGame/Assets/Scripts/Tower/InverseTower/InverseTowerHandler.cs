@@ -22,9 +22,6 @@ public class InverseTowerHandler : MonoBehaviour
 
     private bool isHousePlaced = false;
     private Transform placedHouse;
-
-    [SerializeField] private bool isTutorial = false;
-
     //----
     [SerializeField] private Transform baseHouse;
 
@@ -64,17 +61,14 @@ public class InverseTowerHandler : MonoBehaviour
             baseHouse=house;            
         }
 
-        house.gameObject.name = "PlacedHouse";
+        house.name = "PlacedHouse"; 
+        house.transform.SetParent(this.transform);
         HouseChar houseChar = house.GetComponent<HouseChar>();
         houseChar.MakeUnmovable();
-        if(!isTutorial)
-        {
-            checkHousePlacement?.Invoke(this.gameObject , new int[] { houseChar.GetColorHouse(), houseChar.GetTypeHouse(), houseChar.GetPeopleHouse() });
-        }
-        else
-        {
-            checkHousePlacementTutorial?.Invoke(this.gameObject , new int[] { houseChar.GetColorHouse(), houseChar.GetTypeHouse(), houseChar.GetPeopleHouse() });
-        }
+
+        checkHousePlacement?.Invoke(this.gameObject , new int[] { houseChar.GetColorHouse(), houseChar.GetTypeHouse(), houseChar.GetPeopleHouse() });
+        
+
         blockCount++;
     }
     public void ShowPreviewHouse()
