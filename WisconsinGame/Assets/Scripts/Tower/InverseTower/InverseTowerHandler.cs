@@ -6,12 +6,9 @@ using System;
 public class InverseTowerHandler : MonoBehaviour
 {
     // handles the raise and lower of the house stack and calls GameLogicHandler to check the placement attempt
-    // FIX!! Devo premere piu volte x rilasciare la casa
     [SerializeField] private int blockCount;
 
-    // MANCA: controlli per gli errori
-    [SerializeField] private Transform houseStack; // house stack gameobject, contains houseCollection
-    [SerializeField] private Transform houseCollection; // gameObject containing the actual houses
+    // MANCA: controlli per gli error
     [SerializeField] private Transform housePreview; // house used as guide for placement
     [SerializeField] private TowerChar matchingChar;
 

@@ -52,6 +52,7 @@ public class CraneMovement : MonoBehaviour
     public GameObject hoveredHouse = null;
     private GameObject grabbedHouse = null;
     [SerializeField] private GameObject hook;
+    [SerializeField] private GameObject arm;
 
     // --- COSTANTI (Clean Code: niente numeri "magici" sparsi nel codice) ---
     private const float JOYSTICK_DEADZONE = 0.5f;
@@ -220,10 +221,12 @@ public class CraneMovement : MonoBehaviour
     {
         if (!allowGrab) return;
 
-        if (useSmoothMovement && Vector3.Distance(vrHead.position, targetPos) > MOVEMENT_THRESHOLD)
+
+        if (!useSmoothMovement && Vector3.Distance(vrHead.position, targetPos) > MOVEMENT_THRESHOLD) // check
         {
             return;
         }
+
 
         if (!isSomethingInHand) CranePickup();
         else CraneRelease();   
@@ -231,7 +234,9 @@ public class CraneMovement : MonoBehaviour
 
     private void CranePickup()
     {
-        // Uso Early-Return e TryGetComponent per evitare cascate di IF (Codice più pulito)
+        // fai scendere finchè non incontro qualcosa o raggiungo limite
+
+
         if (hoveredHouse == null || !hoveredHouse.TryGetComponent(out HouseChar houseComp) || !houseComp.isGrabbable()) 
         {
             return;
@@ -246,6 +251,8 @@ public class CraneMovement : MonoBehaviour
         
         houseComp.MakeUnmovable();
         
+        // faccio salire braccio
+
         onHouseGrabbed?.Invoke();
     }
 

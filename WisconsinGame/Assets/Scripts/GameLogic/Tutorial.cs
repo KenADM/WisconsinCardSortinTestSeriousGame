@@ -179,7 +179,7 @@ public class Tutorial : MonoBehaviour
                 break;
 
             case 8: 
-                enableMoveDirection?.Invoke(true, false); 
+                enableMoveDirection?.Invoke(true, true); 
                 enableGrab?.Invoke(false); 
                 if (phase8Prompt) phase8Prompt.SetActive(true); 
                 break;
