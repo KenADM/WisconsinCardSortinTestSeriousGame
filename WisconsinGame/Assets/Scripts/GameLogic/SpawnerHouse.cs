@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using static CubeCombination;
 using Serilog;
+using UnityEditor;
 
 public class SpawnerHouse : MonoBehaviour
-
 {
     [Header("Position for Spawn")]
     private float x;
@@ -37,11 +37,17 @@ public class SpawnerHouse : MonoBehaviour
     public int peopleNumberMin;
     public int peopleNumberMax; // Il numero di persone da spawnare
 
+    [Header("Numero di ripetizioni")]
+    public int numberOfReps;
+
     private static Vector3 houseScale = new Vector3(2f, 2f, 2f);
     private static float houseHeight = 0.6f * houseScale.y; // Houses have a 0.6 height, so we multiply by the scale to get the actual height
     private List<CubeCombination> allCombinations = new List<CubeCombination>();
 
+    // --- NUOVO EVENTO: Segnala che le case sono finite ---
+    public static event System.Action onHousesFinished;
 
+    
     void Awake()
     {
         colorNumber = colors.Count;
@@ -69,8 +75,6 @@ public class SpawnerHouse : MonoBehaviour
         Tutorial.spawnStartingHouse -= spawnStartingHouseHandler;
         GameLogicManager.spawnStartingHouse -= spawnStartingHouseHandler;
     }
-
-
 
 
     public void GeneratePeople(GameObject spawnedObject, int peopleCount)
@@ -112,15 +116,22 @@ public class SpawnerHouse : MonoBehaviour
     // filled the list of all possible combinations
     void FillCombinations()
     {
-        for (int i = peopleNumberMin; i <= peopleNumberMax; i++) {
-            for (int j = 0; j < colorNumber; j++) {
-                for (int k = 0; k < roomNumber; k++) {
-                    allCombinations.Add(new CubeCombination(j, k, i));
-                    //Debug.Log("Combination added: People " + i + ", Color " + j + ", Room " + k);
-                    
+        for(int l = 1; l <= numberOfReps; l++)
+        {
+            for (int i = peopleNumberMin; i <= peopleNumberMax; i++) 
+            {
+                for (int j = 0; j < colorNumber; j++) 
+                {
+                    for (int k = 0; k < roomNumber; k++) 
+                    {
+                        allCombinations.Add(new CubeCombination(j, k, i));
+                        //Debug.Log("Combination added: People " + i + ", Color " + j + ", Room " + k);
+                        
+                    }
                 }
             }
         }
+        
     }
 
     void removeCombination(int colorIndex, int typeIndex, int people)
@@ -168,6 +179,9 @@ public class SpawnerHouse : MonoBehaviour
         }else{
             Debug.Log("No more combinations available.");
             PlayerLog.CloseLogger();
+            
+            // --- RICHIAMO L'EVENTO DI FINE GIOCO ---
+            onHousesFinished?.Invoke();
         } 
     }
 

@@ -21,18 +21,33 @@ public class GameLogicManager : MonoBehaviour
     public TextMeshProUGUI displayCondition;
     public TextMeshProUGUI displayCombo;
 
+    [Header("End Game UI")]
+    [SerializeField] private GameObject endGamePanel; // <-- Pannello di fine gioco da attivare
+
     public static event System.Action<Transform> spawnStartingHouse;
     public static event System.Action spawnHouse;
     
     // Evento per dire al tutorial di generare la seconda casa
     public static event System.Action TutorialspawnNextHouse; 
     
+    void Start()
+    {
+        // Assicuriamoci che il pannello finale sia spento all'inizio
+        if (endGamePanel != null)
+        {
+            endGamePanel.SetActive(false);
+        }
+    }
+
     void OnEnable()
     {
         // Qui il Manager si mette "in ascolto" del bottone StartGame del Tutorial
         Tutorial.startGame += StartGameHandler; 
         StartingScreenManager.startGame += StartGameHandler;
         InverseTowerHandler.checkHousePlacement += CheckHousePlacementHandler;
+        
+        // <-- Iscrizione all'evento di fine case
+        SpawnerHouse.onHousesFinished += OnHousesFinishedHandler; 
     }
 
     void OnDisable()
@@ -40,6 +55,10 @@ public class GameLogicManager : MonoBehaviour
         Tutorial.startGame -= StartGameHandler;
         StartingScreenManager.startGame -= StartGameHandler;
         InverseTowerHandler.checkHousePlacement -= CheckHousePlacementHandler;
+        
+        // <-- Disiscrizione all'evento
+        SpawnerHouse.onHousesFinished -= OnHousesFinishedHandler; 
+        
         PlayerLog.CloseLogger();
     }
 
@@ -181,5 +200,31 @@ public class GameLogicManager : MonoBehaviour
                     break;
             }
         return newCondition;
+    }
+
+    //when there are no more houses, this function is called
+    private void OnHousesFinishedHandler()
+    {
+        Debug.Log("Tutte le case sono state spawnate. Mostro la schermata finale.");
+        if (endGamePanel != null)
+        {
+            endGamePanel.SetActive(true);
+        }
+    }
+
+    // function associated to the button to end game
+    public void QuitGame()
+    {
+        Debug.Log("Uscita dal gioco...");
+        
+        // Save log
+        PlayerLog.CloseLogger(); 
+        
+        // Close Application
+        Application.Quit();
+        // for testing
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #endif
     }
 }
