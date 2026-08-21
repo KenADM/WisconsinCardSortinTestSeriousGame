@@ -21,6 +21,7 @@ public class Tutorial : MonoBehaviour
     [SerializeField] private GameObject TutorialPlatforms;
 
     [Header("Tutorial Text Prompts (Fasi 1-9)")]
+    [SerializeField] private GameObject phase0Prompt; // Muoviti a destra
     [SerializeField] private GameObject phase1Prompt; // Muoviti a destra
     [SerializeField] private GameObject phase2Prompt; // Mostra appartamento ideale e bottone
     [SerializeField] private GameObject phase3Prompt; // Muoviti a sinistra
@@ -51,7 +52,7 @@ public class Tutorial : MonoBehaviour
 
     void OnEnable()
     {
-        StartingScreenManager.TutorialGame += TutorialGameHandler;
+        StartingScreenManager.tutorialGame += TutorialGameHandler;
 
         wentRightTriggerTutorial.reachedRight += ReachedRightTrigger;
         wentLeftTriggerTutorial.reachedLeft += ReachedLeftTrigger; 
@@ -59,12 +60,12 @@ public class Tutorial : MonoBehaviour
         CraneMovement.onHouseGrabbed += OnCraneGrab;
 
         // Iscrizione all'evento di piazzamento corretto inviato dal Manager
-        GameLogicManager.TutorialspawnNextHouse += OnTutorialHousePlaced;
+        GameLogicManager.tutorialspawnNextHouse += OnTutorialHousePlaced;
     }
 
     void OnDisable()
     {
-        StartingScreenManager.TutorialGame -= TutorialGameHandler;
+        StartingScreenManager.tutorialGame -= TutorialGameHandler;
 
         wentRightTriggerTutorial.reachedRight -= ReachedRightTrigger;
         wentLeftTriggerTutorial.reachedLeft -= ReachedLeftTrigger; 
@@ -72,7 +73,7 @@ public class Tutorial : MonoBehaviour
         CraneMovement.onHouseGrabbed -= OnCraneGrab;
 
         // Disiscrizione all'evento
-        GameLogicManager.TutorialspawnNextHouse -= OnTutorialHousePlaced;
+        GameLogicManager.tutorialspawnNextHouse -= OnTutorialHousePlaced;
     }
 
     void Start()
@@ -115,6 +116,7 @@ public class Tutorial : MonoBehaviour
     // Spegne tutti i prompt di tutte le fasi
     private void HideAllPrompts()
     {
+        if (phase0Prompt) phase0Prompt.SetActive(false);
         if (phase1Prompt) phase1Prompt.SetActive(false);
         if (phase2Prompt) phase2Prompt.SetActive(false);
         if (phase3Prompt) phase3Prompt.SetActive(false);
@@ -238,6 +240,16 @@ public class Tutorial : MonoBehaviour
         }
     }
 
+    public void SkipTutorial()
+    {
+        HideAllPrompts(); 
+        phase = 8;
+        Debug.Log("Tutorial Phase Started: " + phase);
+        enableMoveDirection?.Invoke(true, true); 
+        enableGrab?.Invoke(false); 
+        
+    }
+
     public void StartGame()
     {
         HideAllPrompts();
@@ -279,4 +291,6 @@ public class Tutorial : MonoBehaviour
 
         startGame?.Invoke(userCode, numOfVariantPerCharacteristic);
     }
+
+
 }

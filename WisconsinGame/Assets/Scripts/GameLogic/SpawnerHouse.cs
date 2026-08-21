@@ -40,13 +40,18 @@ public class SpawnerHouse : MonoBehaviour
     [Header("Numero di ripetizioni")]
     public int numberOfReps;
 
+    private int peopleOfBaseHouseNotToRepeat;
+    /*
+    base houses
+    004
+    111
+    222
+    333
+    */
+
     private static Vector3 houseScale = new Vector3(2f, 2f, 2f);
     private static float houseHeight = 0.6f * houseScale.y; // Houses have a 0.6 height, so we multiply by the scale to get the actual height
     private List<CubeCombination> allCombinations = new List<CubeCombination>();
-
-    // --- NUOVO EVENTO: Segnala che le case sono finite ---
-    public static event System.Action onHousesFinished;
-
     
     void Awake()
     {
@@ -55,7 +60,8 @@ public class SpawnerHouse : MonoBehaviour
         x = spawnPosition.position.x;
         y = spawnPosition.position.y;
         z = spawnPosition.position.z;
-
+        
+        int index = Random.Range(0, 4);
         FillCombinations();
         //Debug.Log("Total combinations generated: " + allCombinations.Count);
         //SpawnOne(0,0,1);
@@ -125,6 +131,20 @@ public class SpawnerHouse : MonoBehaviour
                     for (int k = 0; k < roomNumber; k++) 
                     {
                         allCombinations.Add(new CubeCombination(j, k, i));
+
+                        // added additional stimulus cards
+                        if (j == k && i != peopleOfBaseHouseNotToRepeat)
+                        {
+                            if (k == 0 && i == 4)
+                            {
+                                allCombinations.Add(new CubeCombination(j, k, i));
+                            }
+                            else if (k == i)
+                            {
+                                allCombinations.Add(new CubeCombination(j, k, i));
+                            }
+                        }
+
                         //Debug.Log("Combination added: People " + i + ", Color " + j + ", Room " + k);
                         
                     }
@@ -177,11 +197,7 @@ public class SpawnerHouse : MonoBehaviour
             SpawnOne(randomElement.color, randomElement.type, randomElement.people, x, y, z);
 
         }else{
-            Debug.Log("No more combinations available.");
-            PlayerLog.CloseLogger();
-            
-            // --- RICHIAMO L'EVENTO DI FINE GIOCO ---
-            onHousesFinished?.Invoke();
+            FillCombinations();
         } 
     }
 
@@ -192,7 +208,6 @@ public class SpawnerHouse : MonoBehaviour
         GameObject room =  rooms[typeIndex];
         Material color = colors[colorIndex];
         int numberOfPeople = people;
-        //allCombinations.RemoveAll(item => item.people == people && item.type == typeIndex && item.color == colorIndex);
         //spawn room
         GameObject spawnedObj = Instantiate(room, new Vector3(FixedX, FixedY, FixedZ), room.transform.rotation);
         spawnedObj.transform.localScale = houseScale;

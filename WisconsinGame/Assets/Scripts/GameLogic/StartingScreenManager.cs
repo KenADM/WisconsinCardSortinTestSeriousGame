@@ -13,7 +13,7 @@ public class StartingScreenManager : MonoBehaviour
     private int numOfVariantPerCharacteristic = 4;
 
     public static event Action<string, int> startGame;
-    public static event Action<string, int> TutorialGame;
+    public static event Action<string, int> tutorialGame;
 
     void Start()
     {
@@ -34,7 +34,7 @@ public class StartingScreenManager : MonoBehaviour
     }
     public void StartTutorial(){
         if(CheckInputField()){
-            TutorialGame?.Invoke(input.text, numOfVariantPerCharacteristic);
+            tutorialGame?.Invoke(input.text, numOfVariantPerCharacteristic);
             startMenu.SetActive(false);
         }else{
             testo.text = testo.text + "!";

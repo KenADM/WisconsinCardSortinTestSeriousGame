@@ -11,6 +11,8 @@ public class GameLogicManager : MonoBehaviour
     [SerializeField] private int combo = 0;
     [SerializeField] private int maxCombo = 5;
     [SerializeField] private int categoriesCompleted = 0;
+    [SerializeField] private int categoriesToComplete = 9;
+
 
     private List<int> conditionValues = new List<int>() {0, 1, 2};
     private int conditionNumber;
@@ -26,9 +28,10 @@ public class GameLogicManager : MonoBehaviour
 
     public static event System.Action<Transform> spawnStartingHouse;
     public static event System.Action spawnHouse;
+    public static event System.Action endGame;
     
     // Evento per dire al tutorial di generare la seconda casa
-    public static event System.Action TutorialspawnNextHouse; 
+    public static event System.Action tutorialspawnNextHouse; 
     
     void Start()
     {
@@ -41,13 +44,11 @@ public class GameLogicManager : MonoBehaviour
 
     void OnEnable()
     {
-        // Qui il Manager si mette "in ascolto" del bottone StartGame del Tutorial
         Tutorial.startGame += StartGameHandler; 
         StartingScreenManager.startGame += StartGameHandler;
         InverseTowerHandler.checkHousePlacement += CheckHousePlacementHandler;
         
-        // <-- Iscrizione all'evento di fine case
-        SpawnerHouse.onHousesFinished += OnHousesFinishedHandler; 
+        //SpawnerHouse.onHousesFinished += OnHousesFinishedHandler; 
     }
 
     void OnDisable()
@@ -56,8 +57,7 @@ public class GameLogicManager : MonoBehaviour
         StartingScreenManager.startGame -= StartGameHandler;
         InverseTowerHandler.checkHousePlacement -= CheckHousePlacementHandler;
         
-        // <-- Disiscrizione all'evento
-        SpawnerHouse.onHousesFinished -= OnHousesFinishedHandler; 
+        //SpawnerHouse.onHousesFinished -= OnHousesFinishedHandler; 
         
         PlayerLog.CloseLogger();
     }
@@ -69,7 +69,7 @@ public class GameLogicManager : MonoBehaviour
         
         // IL TUTORIAL FINISCE QUI UFFICIALMENTE
         isTutorial = false; 
-        
+        combo = 0;
         PlayerLog.Initialize(codiceUtente);
         
         ChooseCondition();
@@ -89,9 +89,6 @@ public class GameLogicManager : MonoBehaviour
 
     private void CheckHousePlacementHandler(GameObject platform, int[] houseValues)
     {
-
-        // --- DA QUI IN GIÙ AVVIENE SOLO SE ISTUTORIAL È FALSE (GIOCO VERO) ---
-
         Debug.Log("check");
         TowerChar baseTowerChar = platform.GetComponent<TowerChar>();
         int[] platformValues = new int[] { baseTowerChar.GetColorTower(), baseTowerChar.GetTypeTower(), baseTowerChar.GetPeopleTower() };
@@ -119,29 +116,38 @@ public class GameLogicManager : MonoBehaviour
         }
         
 
-        if (combo >= maxCombo)
-        {
-            Debug.Log("Change condition!");
-            ChooseCondition();
-            PrintCondition();
-            combo = 0;
-            PrintCombo();
-            categoriesCompleted++;
-        }
 
         if (isTutorial)
         {
-            TutorialspawnNextHouse?.Invoke();
+            tutorialspawnNextHouse?.Invoke();
             return;
         }
         else
         {
+            if (combo >= maxCombo)
+            {
+                Debug.Log("Change condition!");
+                ChooseCondition();
+                PrintCondition();
+                combo = 0;
+                PrintCombo();
+                categoriesCompleted++;
+            }
             PrintCombo();
 
             Log.Information("Check Condition\nCube:\tColor: {ColorNewCube} Type: {TypeNewCube} People: {PeopleNewCube}\nBase:\tColor: {ColorBase} Type: {TypeBase} People: {PeopleBase}\nCondition: {Condition}\nResult: {ConditionResult} ({RealInARow})\n", 
             houseValues[0], houseValues[1], houseValues[2], platformValues[0], platformValues[1], platformValues[2], condition, conditionResult, combo);
 
-            spawnHouse?.Invoke();    
+            if (categoriesCompleted >= categoriesToComplete)
+            {
+                endGame?.Invoke();
+                EndGamePhase();
+            }
+            else
+            {
+                spawnHouse?.Invoke();    
+            }
+
 
         }
     }
@@ -202,8 +208,7 @@ public class GameLogicManager : MonoBehaviour
         return newCondition;
     }
 
-    //when there are no more houses, this function is called
-    private void OnHousesFinishedHandler()
+    private void EndGamePhase()
     {
         Debug.Log("Tutte le case sono state spawnate. Mostro la schermata finale.");
         if (endGamePanel != null)

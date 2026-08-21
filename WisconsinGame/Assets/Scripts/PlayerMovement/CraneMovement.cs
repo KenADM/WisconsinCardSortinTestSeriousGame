@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System;
+using System.Collections; // <-- AGGIUNTO per usare IEnumerator
 
 public class CraneMovement : MonoBehaviour
 {
@@ -44,6 +45,9 @@ public class CraneMovement : MonoBehaviour
     private bool allowMoveLeft = false;
     private bool allowMoveRight = false;
     private bool allowGrab = false;
+    
+    // Flag per impedire input multipli mentre il braccio si muove
+    private bool isArmMoving = false; 
 
     // -- Events for Tutorial tracking --
     public static event Action onHouseGrabbed;
@@ -53,6 +57,8 @@ public class CraneMovement : MonoBehaviour
     private GameObject grabbedHouse = null;
     [SerializeField] private GameObject hook;
     [SerializeField] private GameObject arm;
+
+    [SerializeField] private float maxRotation = 30;
 
     // --- COSTANTI (Clean Code: niente numeri "magici" sparsi nel codice) ---
     private const float JOYSTICK_DEADZONE = 0.5f;
@@ -124,7 +130,7 @@ public class CraneMovement : MonoBehaviour
             isMoving = true; 
         }
 
-        // --- PICKUP LOGIC ---
+        // PICKUP LOGIC
         if (allowGrab)
         {       
             bool pickupPressedThisFrame = pickupAction.WasPressedThisFrame() || 
@@ -177,7 +183,6 @@ public class CraneMovement : MonoBehaviour
         {
             Vector3 targetNextPos = nextHop.position;
             
-            
             if (IsCorrectDirection(myPosition.x, targetNextPos.x, direction))
             {
                 if (Vector3.Distance(myPosition, targetNextPos) < Vector3.Distance(myPosition, closest) || Vector3.Distance(myPosition, closest) == 0f)
@@ -219,41 +224,71 @@ public class CraneMovement : MonoBehaviour
 
     public void TogglePickup()
     {
-        if (!allowGrab) return;
+        // Blocca la richiesta se il braccio sta già scendendo/salendo o non hai i permessi
+        if (!allowGrab || isArmMoving) return;
 
+        // BLOCCO MOVIMENTO: Se la telecamera (vrHead) è ancora lontana dal punto di arrivo (targetPos),
 
-        if (!useSmoothMovement && Vector3.Distance(vrHead.position, targetPos) > MOVEMENT_THRESHOLD) // check
+        if (Vector3.Distance(vrHead.position, targetPos) > MOVEMENT_THRESHOLD) 
         {
+            Debug.Log("Azione bloccata: La gru è in movimento!");
             return;
         }
 
-
-        if (!isSomethingInHand) CranePickup();
-        else CraneRelease();   
+        // 3. Esegui la presa o il rilascio
+        if (!isSomethingInHand) 
+        {
+            StartCoroutine(CranePickupRoutine());
+        }
+        else 
+        {
+            CraneRelease();   
+        }
     }
-
-    private void CranePickup()
+    private IEnumerator CranePickupRoutine()
     {
-        // fai scendere finchè non incontro qualcosa o raggiungo limite
+        isArmMoving = true;
 
+        // Save Initial Rotation
+        Quaternion startRotation = arm.transform.localRotation;
+        
+        
+        Quaternion targetDownRotation = startRotation * Quaternion.Euler(maxRotation, 0, 0);
 
-        if (hoveredHouse == null || !hoveredHouse.TryGetComponent(out HouseChar houseComp) || !houseComp.isGrabbable()) 
+        // Rotate the arm until it reaches a house/it reaches something
+        while (Quaternion.Angle(arm.transform.localRotation, targetDownRotation) > 0.1f && hoveredHouse == null)
         {
-            return;
+            arm.transform.localRotation = Quaternion.RotateTowards(arm.transform.localRotation, targetDownRotation, Rotationspeed * 50f * Time.deltaTime);
+            yield return null;
         }
 
-        isSomethingInHand = true;
-        grabbedHouse = hoveredHouse; 
-        
-        grabbedHouse.transform.SetParent(hook.transform);
-        Vector3 newPositionHouse = new Vector3(grabbedHouse.transform.localPosition.x, grabbedHouse.transform.localPosition.y, HOOK_Z_OFFSET);
-        grabbedHouse.transform.localPosition = newPositionHouse; 
-        
-        houseComp.MakeUnmovable();
-        
-        // faccio salire braccio
+        // if a house is hovered, GRAB
+        if (hoveredHouse != null && hoveredHouse.TryGetComponent(out HouseChar houseComp) && houseComp.isGrabbable())
+        {
+            isSomethingInHand = true;
+            grabbedHouse = hoveredHouse; 
+            
+            grabbedHouse.transform.SetParent(hook.transform);
+            Vector3 newPositionHouse = new Vector3(grabbedHouse.transform.localPosition.x, grabbedHouse.transform.localPosition.y, HOOK_Z_OFFSET);
+            grabbedHouse.transform.localPosition = newPositionHouse; 
+            
+            houseComp.MakeUnmovable();
+            onHouseGrabbed?.Invoke();
 
-        onHouseGrabbed?.Invoke();
+            // necessary pause for grab
+            yield return new WaitForSeconds(0.2f);
+        }
+
+        // raise
+        while (Quaternion.Angle(arm.transform.localRotation, startRotation) > 0.1f)
+        {
+            arm.transform.localRotation = Quaternion.RotateTowards(arm.transform.localRotation, startRotation, Rotationspeed * 50f * Time.deltaTime);
+            yield return null;
+        }
+
+        // back to base rotation
+        arm.transform.localRotation = startRotation;
+        isArmMoving = false;
     }
 
     private void CraneRelease()
