@@ -284,7 +284,7 @@ public class Tutorial : MonoBehaviour
 
         craneMovement.platforms.Clear();
         craneMovement.platforms = platformsGameplay;
-        craneMovement.setSpawnPosition(spawningPlatformGameplay);
+        craneMovement.SetSpawnPosition(spawningPlatformGameplay);
 
         enableMoveDirection?.Invoke(true, true);
         enableGrab?.Invoke(true);

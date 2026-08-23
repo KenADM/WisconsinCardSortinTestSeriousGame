@@ -1,4 +1,5 @@
 using System;
+using Serilog;
 using UnityEngine;
 
 public class wentRightTriggerTutorial : MonoBehaviour
@@ -9,6 +10,7 @@ public class wentRightTriggerTutorial : MonoBehaviour
     {
         // Puoi aggiungere un controllo sul tag se vuoi che solo la gru lo attivi, es:
         // if (!other.CompareTag("Player")) return;
+        
         
         reachedRight?.Invoke();
         

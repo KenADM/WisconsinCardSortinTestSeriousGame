@@ -1,13 +1,13 @@
 using UnityEngine;
 using System;
 
-public class CubeChar : MonoBehaviour
+public class CubeCombination : MonoBehaviour
 {
     public int people;
     public int type;
     public int color;
 
-    public CubeChar(int typeNew,  int colorNew, int peopleNew)
+    public CubeCombination(int typeNew,  int colorNew, int peopleNew)
     {
         this.people = peopleNew;
         this.type = typeNew;

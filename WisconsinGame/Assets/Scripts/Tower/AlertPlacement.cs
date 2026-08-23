@@ -12,7 +12,8 @@ public class AlertPlacement : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (alignHouse != null && other.gameObject.TryGetComponent<HouseChar>(out HouseChar houseChar) && houseChar.isGrabbable())
+        Debug.Log("house placed");
+        if (alignHouse != null && other.gameObject.TryGetComponent<HouseFunction>(out HouseFunction houseChar) && houseChar.isGrabbable())
         {   
             alignHouse.PlaceHouse(other.transform);
         }

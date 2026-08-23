@@ -179,7 +179,7 @@ public class SpawnerHouse : MonoBehaviour
         removeCombination(colorIndex, typeIndex, people);
         GameObject spawnedHouse = SpawnOne(colorIndex, typeIndex, people, platform.transform.position.x + 4f, 1f, platform.transform.position.z - 5f);
         
-        spawnedHouse.GetComponent<HouseFunctions>().MakeUnmovable();
+        spawnedHouse.GetComponent<HouseFunction>().MakeUnmovable();
         spawnedHouse.transform.SetParent(platform);
         spawnedHouse.name = "BaseHouse";
     }
@@ -218,8 +218,11 @@ public class SpawnerHouse : MonoBehaviour
 
         spawnedObj.name = "NewHouse" + colorIndex + " "+ typeIndex + " "+ people + " ";
 
-        HouseChar newHouse = spawnedObj.AddComponent<HouseChar>();
-        newHouse.Initialize(colorIndex, typeIndex, people);
+        HouseFunction newHouseFunction = spawnedObj.GetComponent<HouseFunction>();
+        newHouseFunction.SetColorHouse(colorIndex);
+        newHouseFunction.SetTypeHouse(typeIndex);
+        newHouseFunction.SetPeopleHouse(people);
+
         return spawnedObj;
     }
     
