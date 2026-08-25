@@ -305,7 +305,6 @@ GameObject:
   - component: {fileID: 1429686285132701871}
   - component: {fileID: 2735046509479757469}
   - component: {fileID: 1218498846689861844}
-  - component: {fileID: 2695530994691540421}
   - component: {fileID: 5371862177426846435}
   - component: {fileID: -8132565477178250152}
   m_Layer: 0
@@ -375,7 +374,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1, y: 0.6, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.275, z: 0}
 --- !u!54 &1218498846689861844
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -403,18 +402,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &2695530994691540421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1321161550769941400}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7facc721cb0721438c119d4cfd8f0c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ChangeState
 --- !u!114 &5371862177426846435
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,8 +416,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Gravity
   floorHeight: 0
   gravityForce: 9.8
-  gravityStopped: 0
-  currentSpeed: 0
 --- !u!114 &-8132565477178250152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -443,10 +428,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4001ab5872c480249ab08718cb02fd63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HouseChar
-  color: 0
-  type: 0
-  people: 0
-  gravity: {fileID: 5371862177426846435}
+  <HouseData>k__BackingField:
+    <color>k__BackingField: 0
+    <type>k__BackingField: 0
+    <people>k__BackingField: 0
 --- !u!1 &2544870035835993872
 GameObject:
   m_ObjectHideFlags: 0
@@ -1602,7 +1587,7 @@ Transform:
   m_GameObject: {fileID: 8690199412043337631}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.19667, y: 0.2749, z: -0.29717}
+  m_LocalPosition: {x: -0.19667, y: 0.031, z: -0.29717}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

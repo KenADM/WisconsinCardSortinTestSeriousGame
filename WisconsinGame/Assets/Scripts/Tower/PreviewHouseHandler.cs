@@ -15,12 +15,12 @@ public class PreviewHouseHandler : MonoBehaviour
 
     void OnEnable()
     {
-        Tutorial.startGame += StartPreviewHandler;
+        Tutorial.StartGame += StartPreviewHandler;
     }
 
     void OnDisable()
     {
-        Tutorial.startGame -= StartPreviewHandler;
+        Tutorial.StartGame -= StartPreviewHandler;
     }
 
     void Start()
@@ -74,7 +74,7 @@ public class PreviewHouseHandler : MonoBehaviour
         }
     }
 
-    void StartPreviewHandler(string user, int level)
+    void StartPreviewHandler(string user)
     {   
         isActive = true;
     }

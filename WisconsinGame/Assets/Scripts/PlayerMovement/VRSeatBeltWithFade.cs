@@ -10,7 +10,7 @@ public class VRSeatBeltWithFade : MonoBehaviour
     public float maxOffsetRight = 0.6f;
     public float maxOffsetLeft = 0.6f;
     public float maxOffsetForward = 0.6f;
-    public float maxOffsetBackward = 0.2f; // Magari dietro vuoi meno spazio (es. lo schienale)
+    public float maxOffsetBackward = 0.2f; 
 
     [Header("Red Fade Effect")]
     [Tooltip("Trascina qui il Canvas Group dello schermo rosso")]

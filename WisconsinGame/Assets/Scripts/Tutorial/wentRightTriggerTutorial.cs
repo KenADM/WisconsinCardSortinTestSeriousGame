@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class wentRightTriggerTutorial : MonoBehaviour
 {
-    public static event Action reachedRight;
+    public static event Action ReachedRight;
 
     void OnTriggerEnter(Collider other)
     {
@@ -12,7 +12,7 @@ public class wentRightTriggerTutorial : MonoBehaviour
         // if (!other.CompareTag("Player")) return;
         
         
-        reachedRight?.Invoke();
+        ReachedRight?.Invoke();
         
         // Disattiviamo il trigger subito dopo averlo toccato per evitare doppi input
         gameObject.SetActive(false); 

@@ -223,8 +223,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 0.07294734, z: 1}
+  m_Center: {x: 0, y: -0.46352664, z: 0}
 --- !u!114 &5368554736592756049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -634,6 +634,7 @@ MonoBehaviour:
   matchingChar: {fileID: 5113406382293184171}
   trigger: {fileID: 5880240474405505185}
   baseHouse: {fileID: 0}
+  isTutorialTower: 0
 --- !u!114 &5113406382293184171
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -646,9 +647,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41976a02c25dbd54f97aa28a9fcd0fe7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerChar
-  people: 0
-  type: 0
-  color: 0
+  <TowerData>k__BackingField:
+    <color>k__BackingField: 0
+    <type>k__BackingField: 0
+    <people>k__BackingField: 0
 --- !u!82 &6283280027375620949
 AudioSource:
   m_ObjectHideFlags: 0

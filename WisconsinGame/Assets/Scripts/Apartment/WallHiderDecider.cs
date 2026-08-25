@@ -16,18 +16,8 @@ public class WallHiderDecider : MonoBehaviour
     private bool wallHidingActive = true;
     
     void Start()
-    {
-        // Grabs the camera tagged as "MainCamera"
-        // Sleep
-        
-        playerCamera = Camera.main;
-        /*
-        north = transform.Find("North");
-        south = transform.Find("South");
-        west = transform.Find("West");
-        east = transform.Find("East");
-        floor = transform.Find("Floor");
-        */
+    {        
+        playerCamera = Camera.main; // uses tag, necessary because object dont exist from the start
 
     }
 

@@ -12,30 +12,44 @@ public class GameLogicManager : MonoBehaviour
     [SerializeField] private int maxCombo = 5;
     [SerializeField] private int categoriesCompleted = 0;
     [SerializeField] private int categoriesToComplete = 9;
-
+    [SerializeField] private int maxReshuffles = 2;
+    private int numberOfTriedApartments;
 
     private List<int> conditionValues = new List<int>() {0, 1, 2};
-    private int conditionNumber;
+    /*
+        0: color
+        1: type
+        2: people
+    */
+    private int conditionNumber = 0;
     public List<Transform> platforms = new List<Transform>();
 
-    private bool isTutorial = true; // Inizia in modalità tutorial
+
+    private bool isTutorial = true; // starts at true, determines if in tutorial mode
 
     public TextMeshProUGUI displayCondition;
     public TextMeshProUGUI displayCombo;
 
     [Header("End Game UI")]
-    [SerializeField] private GameObject endGamePanel; // <-- Pannello di fine gioco da attivare
+    [SerializeField] private GameObject endGamePanel; // End Screen
+    [SerializeField] private TextMeshProUGUI testoEndGamePanel;
 
-    public static event System.Action<Transform> spawnStartingHouse;
-    public static event System.Action spawnHouse;
-    public static event System.Action endGame;
+
+    public static event System.Action<int> SendMaxReshuffles;
+    public static event System.Action<Transform> SpawnStartingHouse;
+    public static event System.Action SpawnHouse;
+    public static event System.Action EndGame;
+    public static event System.Action EnableMoveDirection;
+    public static event System.Action EnableGrab;
     
-    // Evento per dire al tutorial di generare la seconda casa
-    public static event System.Action tutorialspawnNextHouse; 
+    public static event System.Action TutorialSpawnNextHouse; // event for tutorial
+
     
     void Start()
     {
-        // Assicuriamoci che il pannello finale sia spento all'inizio
+        numberOfTriedApartments = 0;
+        SendMaxReshuffles?.Invoke(maxReshuffles);
+        // checks and deactivates End Screen
         if (endGamePanel != null)
         {
             endGamePanel.SetActive(false);
@@ -44,60 +58,67 @@ public class GameLogicManager : MonoBehaviour
 
     void OnEnable()
     {
-        Tutorial.startGame += StartGameHandler; 
-        StartingScreenManager.startGame += StartGameHandler;
+        Tutorial.StartGame += StartGameHandler; 
+        StartingScreenManager.StartGame += StartGameHandler;
         InverseTowerHandler.checkHousePlacement += CheckHousePlacementHandler;
+        SpawnerHouse.EndCausedByMaxReshuffles += EndGameMaxReshuffles;
         
-        //SpawnerHouse.onHousesFinished += OnHousesFinishedHandler; 
     }
 
     void OnDisable()
     {
-        Tutorial.startGame -= StartGameHandler;
-        StartingScreenManager.startGame -= StartGameHandler;
+        Tutorial.StartGame -= StartGameHandler;
+        StartingScreenManager.StartGame -= StartGameHandler;
         InverseTowerHandler.checkHousePlacement -= CheckHousePlacementHandler;
-        
-        //SpawnerHouse.onHousesFinished -= OnHousesFinishedHandler; 
+        SpawnerHouse.EndCausedByMaxReshuffles -= EndGameMaxReshuffles;
         
         PlayerLog.CloseLogger();
     }
 
-    // Questa funzione viene scatenata dall'evento quando premi il bottone StartGame
-    private void StartGameHandler(string codiceUtente, int numOfVariantPerCharacteristic)
+    // function called by starting game button
+    private void StartGameHandler(string codiceUtente)
     {
-        Debug.Log("Starting Game with user code: " + codiceUtente + " and number of variants per characteristic: " + numOfVariantPerCharacteristic);
+        Debug.Log("Starting Game with user code: " + codiceUtente + " and number of variants per characteristic: ");
         
-        // IL TUTORIAL FINISCE QUI UFFICIALMENTE
         isTutorial = false; 
         combo = 0;
         PlayerLog.Initialize(codiceUtente);
         
         ChooseCondition();
         PrintCondition();
-        SpawnStartingSetup(numOfVariantPerCharacteristic);
+        SpawnStartingSetup();
     }
 
-    private void SpawnStartingSetup(int numOfVariantPerCharacteristic)
+    private void SpawnStartingSetup()
     {
         Debug.Log("Spawning starting cubes");
-        for (int i = 0; i < numOfVariantPerCharacteristic; i++)
+        for (int i = 0; i < platforms.Count; i++)
         {
-            spawnStartingHouse?.Invoke(platforms[i]);
+            SpawnStartingHouse?.Invoke(platforms[i]);
         }
-        spawnHouse?.Invoke();
+        SpawnHouse?.Invoke();
     }
 
     private void CheckHousePlacementHandler(GameObject platform, int[] houseValues)
     {
-        Debug.Log("check");
         TowerChar baseTowerChar = platform.GetComponent<TowerChar>();
-        int[] platformValues = new int[] { baseTowerChar.GetColorTower(), baseTowerChar.GetTypeTower(), baseTowerChar.GetPeopleTower() };
 
+        numberOfTriedApartments++;
+
+        // We access the data package (TowerData) and read the properties directly!
+        int[] platformValues = new int[] { 
+            baseTowerChar.TowerData.color, 
+            baseTowerChar.TowerData.type, 
+            baseTowerChar.TowerData.people 
+        };
+        
         FeedbackManager feedbackHandler = platform.GetComponent<FeedbackManager>();
 
         string condition = GetCondition();
+        Debug.Log(condition);
         bool conditionMet = (platformValues[conditionNumber] == houseValues[conditionNumber]);
-        
+        Debug.Log(platformValues[conditionNumber]);
+        Debug.Log(houseValues[conditionNumber]);
         string conditionResult = "";
 
         if (conditionMet)
@@ -119,7 +140,7 @@ public class GameLogicManager : MonoBehaviour
 
         if (isTutorial)
         {
-            tutorialspawnNextHouse?.Invoke();
+            TutorialSpawnNextHouse?.Invoke();
             return;
         }
         else
@@ -140,12 +161,12 @@ public class GameLogicManager : MonoBehaviour
 
             if (categoriesCompleted >= categoriesToComplete)
             {
-                endGame?.Invoke();
+                EndGame?.Invoke();
                 EndGamePhase();
             }
             else
             {
-                spawnHouse?.Invoke();    
+                SpawnHouse?.Invoke();    
             }
 
 
@@ -208,15 +229,29 @@ public class GameLogicManager : MonoBehaviour
         return newCondition;
     }
 
-    private void EndGamePhase()
+    private void EndGameMaxReshuffles()
     {
+        EndGamePhase();
+    }
+private void EndGamePhase()
+    {
+        EnableMoveDirection?.Invoke();
+        EnableGrab?.Invoke();
         Debug.Log("Tutte le case sono state spawnate. Mostro la schermata finale.");
         if (endGamePanel != null)
         {
             endGamePanel.SetActive(true);
+            
+            testoEndGamePanel.text = "Percentuale Felicità Raggiunta: " + CalculatePoints().ToString("F0") + "%";
         }
     }
 
+    private float CalculatePoints()
+    {
+        if (numberOfTriedApartments == 0) return 0f; 
+        
+        return ((categoriesCompleted * 5f) / numberOfTriedApartments) * 100f;
+    }
     // function associated to the button to end game
     public void QuitGame()
     {

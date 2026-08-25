@@ -1,32 +1,12 @@
 using UnityEngine;
-using System;
 
-public class TowerChar: MonoBehaviour
+public class TowerChar : MonoBehaviour
 {
-    // Tower Char
-    
-    [SerializeField] private int people;
-    [SerializeField] private int type;
-    [SerializeField] private int color;
+    [Header("Tower Data")]
+    [field: SerializeField] public HouseCombination TowerData { get; private set; }
 
-    public void Initialize(int colorNew,  int typeNew, int peopleNew)
+    public void Initialize(int colorNew, int typeNew, int peopleNew)
     {
-        this.people = peopleNew;
-        this.type = typeNew;
-        this.color = colorNew;
+        TowerData = new HouseCombination(colorNew, typeNew, peopleNew);
     }
-    
-    public int GetPeopleTower()
-    {
-        return this.people;
-    }
-    public int GetTypeTower()
-    {
-        return this.type;
-    }
-    public int GetColorTower()
-    {
-        return this.color;
-    }
-    
 }

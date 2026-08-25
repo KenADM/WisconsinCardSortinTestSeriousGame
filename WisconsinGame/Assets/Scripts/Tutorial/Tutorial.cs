@@ -7,11 +7,10 @@ using System.Collections;
 public class Tutorial : MonoBehaviour
 {
     [SerializeField] private GameObject tutorialPanel; // Pannello iniziale di benvenuto (Fase 0)
-    private int numOfVariantPerCharacteristic = 4;
     string userCode = "testUser";
 
     // Questo è l'evento che "griderà" al resto del gioco che il tutorial è finito
-    public static event Action<string, int> startGame;
+    public static event Action<string> StartGame;
 
     public SpawnerHouse spawnerHouse;
 
@@ -36,9 +35,9 @@ public class Tutorial : MonoBehaviour
     [SerializeField] private GameObject rightTriggerObj; 
     [SerializeField] private GameObject leftTriggerObj;  
 
-    public static event System.Action<Transform> spawnStartingHouse;
-    public static event System.Action<bool, bool> enableMoveDirection; 
-    public static event System.Action<bool> enableGrab; 
+    public static event System.Action<Transform> SpawnStartingHouse;
+    public static event System.Action<bool, bool> EnableMoveDirection; 
+    public static event System.Action<bool> EnableGrab; 
 
     [Header("For Actual Game")]
     public List<Transform> platformsGameplay = new List<Transform>();
@@ -52,33 +51,31 @@ public class Tutorial : MonoBehaviour
 
     void OnEnable()
     {
-        StartingScreenManager.tutorialGame += TutorialGameHandler;
+        StartingScreenManager.TutorialGame += TutorialGameHandler;
 
-        wentRightTriggerTutorial.reachedRight += ReachedRightTrigger;
-        wentLeftTriggerTutorial.reachedLeft += ReachedLeftTrigger; 
+        wentRightTriggerTutorial.ReachedRight += ReachedRightTrigger;
+        wentLeftTriggerTutorial.ReachedLeft += ReachedLeftTrigger; 
 
-        CraneMovement.onHouseGrabbed += OnCraneGrab;
+        CraneMovement.OnHouseGrabbed += OnCraneGrab;
 
-        // Iscrizione all'evento di piazzamento corretto inviato dal Manager
-        GameLogicManager.tutorialspawnNextHouse += OnTutorialHousePlaced;
+        GameLogicManager.TutorialSpawnNextHouse += OnTutorialHousePlaced;
     }
 
     void OnDisable()
     {
-        StartingScreenManager.tutorialGame -= TutorialGameHandler;
+        StartingScreenManager.TutorialGame -= TutorialGameHandler;
 
-        wentRightTriggerTutorial.reachedRight -= ReachedRightTrigger;
-        wentLeftTriggerTutorial.reachedLeft -= ReachedLeftTrigger; 
+        wentRightTriggerTutorial.ReachedRight -= ReachedRightTrigger;
+        wentLeftTriggerTutorial.ReachedLeft -= ReachedLeftTrigger; 
 
-        CraneMovement.onHouseGrabbed -= OnCraneGrab;
+        CraneMovement.OnHouseGrabbed -= OnCraneGrab;
 
-        // Disiscrizione all'evento
-        GameLogicManager.tutorialspawnNextHouse -= OnTutorialHousePlaced;
+        GameLogicManager.TutorialSpawnNextHouse -= OnTutorialHousePlaced;
     }
 
     void Start()
     {
-        spawnStartingHouse?.Invoke(placingPlatformTutorial.transform);
+        SpawnStartingHouse?.Invoke(placingPlatformTutorial.transform);
         HideAllPrompts(); 
 
         if(rightTriggerObj != null) rightTriggerObj.SetActive(false);
@@ -101,7 +98,7 @@ public class Tutorial : MonoBehaviour
         }
     }
 
-    private void TutorialGameHandler(string codiceUtente, int numOfVariantPerCharacteristic)
+    private void TutorialGameHandler(string codiceUtente)
     {
         userCode = codiceUtente;
         if (tutorialPanel) tutorialPanel.SetActive(true);
@@ -140,31 +137,31 @@ public class Tutorial : MonoBehaviour
         switch (phase)
         {
             case 1:
-                enableMoveDirection?.Invoke(false, true); 
-                enableGrab?.Invoke(false);
+                EnableMoveDirection?.Invoke(false, true); 
+                EnableGrab?.Invoke(false);
                 if (phase1Prompt) phase1Prompt.SetActive(true); 
 
                 if(rightTriggerObj != null) rightTriggerObj.SetActive(true);
                 break;
 
             case 2: 
-                enableMoveDirection?.Invoke(false, false); 
-                enableGrab?.Invoke(false);
+                EnableMoveDirection?.Invoke(false, false); 
+                EnableGrab?.Invoke(false);
                 if (phase2Prompt) phase2Prompt.SetActive(true);
                 break;
 
             case 3:
-                spawnerHouse.SpawnOne(0, 0, 1, spawningPlatformTutorial.transform.position.x, spawningPlatformTutorial.transform.position.y, spawningPlatformTutorial.transform.position.z);
+                spawnerHouse.SpawnOne(1, 1, 1, spawningPlatformTutorial.transform.position.x, spawningPlatformTutorial.transform.position.y, spawningPlatformTutorial.transform.position.z);
 
-                enableMoveDirection?.Invoke(true, false); 
+                EnableMoveDirection?.Invoke(true, false); 
                 if (phase3Prompt) phase3Prompt.SetActive(true); 
 
                 if(leftTriggerObj != null) leftTriggerObj.SetActive(true);
                 break;
 
             case 4:
-                enableMoveDirection?.Invoke(true, true); 
-                enableGrab?.Invoke(true);
+                EnableMoveDirection?.Invoke(true, true); 
+                EnableGrab?.Invoke(true);
                 if (phase4Prompt) phase4Prompt.SetActive(true); 
                 break;
 
@@ -181,13 +178,13 @@ public class Tutorial : MonoBehaviour
                 break;
 
             case 8: 
-                enableMoveDirection?.Invoke(true, true); 
-                enableGrab?.Invoke(false); 
+                EnableMoveDirection?.Invoke(true, true); 
+                EnableGrab?.Invoke(false); 
                 if (phase8Prompt) phase8Prompt.SetActive(true); 
                 break;
 
             case 9: 
-                enableMoveDirection?.Invoke(false, false); 
+                EnableMoveDirection?.Invoke(false, false); 
                 if (phase9Prompt) phase9Prompt.SetActive(true); 
                 break;
         }
@@ -230,7 +227,7 @@ public class Tutorial : MonoBehaviour
             if (!hasSpawnedSecondHouse)
             {
                 hasSpawnedSecondHouse = true; 
-                spawnerHouse.SpawnOne(1, 1, 1, spawningPlatformTutorial.transform.position.x, spawningPlatformTutorial.transform.position.y, spawningPlatformTutorial.transform.position.z);
+                spawnerHouse.SpawnOne(0, 3, 1, spawningPlatformTutorial.transform.position.x, spawningPlatformTutorial.transform.position.y, spawningPlatformTutorial.transform.position.z);
             }
             SetPhase(6);
         }
@@ -245,12 +242,12 @@ public class Tutorial : MonoBehaviour
         HideAllPrompts(); 
         phase = 8;
         Debug.Log("Tutorial Phase Started: " + phase);
-        enableMoveDirection?.Invoke(true, true); 
-        enableGrab?.Invoke(false); 
+        EnableMoveDirection?.Invoke(true, true); 
+        EnableGrab?.Invoke(false); 
         
     }
 
-    public void StartGame()
+    public void StartGameHandler()
     {
         HideAllPrompts();
         StartCoroutine(SmoothTransitionToGameplayZOnly());
@@ -262,8 +259,8 @@ public class Tutorial : MonoBehaviour
     // 3. Sets up the gameplay platforms and starts the actual game
     private IEnumerator SmoothTransitionToGameplayZOnly()
     {
-        enableMoveDirection?.Invoke(false, false);
-        enableGrab?.Invoke(false);
+        EnableMoveDirection?.Invoke(false, false);
+        EnableGrab?.Invoke(false);
 
         //spawningPlatformTutorial.SetActive(false);
         //placingPlatformTutorial.SetActive(false);
@@ -286,10 +283,10 @@ public class Tutorial : MonoBehaviour
         craneMovement.platforms = platformsGameplay;
         craneMovement.SetSpawnPosition(spawningPlatformGameplay);
 
-        enableMoveDirection?.Invoke(true, true);
-        enableGrab?.Invoke(true);
+        EnableMoveDirection?.Invoke(true, true);
+        EnableGrab?.Invoke(true);
 
-        startGame?.Invoke(userCode, numOfVariantPerCharacteristic);
+        StartGame?.Invoke(userCode);
     }
 
 

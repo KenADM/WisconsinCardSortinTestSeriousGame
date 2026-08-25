@@ -16,16 +16,20 @@ public class CraneMovement : MonoBehaviour
     
     private Vector3 targetPos;
 
+    // not used in final version
     [Header("Movement Input")]
     public InputAction moveAction; 
 
+    // not used in final version
     [Header("Actions Input")]
     public InputAction pickupAction; 
-
+    
+    // not used in final version
     [Header("Keyboard Fallback Settings")]
     public Key moveLeftKey = Key.A;
     public Key moveRightKey = Key.D;
     public Key keyboardPickupKey = Key.Space;
+    private bool canTakeMoveInput = true;
 
     [Header("Piattaforme")]
     public List<Transform> platforms = new List<Transform>();
@@ -33,34 +37,32 @@ public class CraneMovement : MonoBehaviour
     [Header("Position for Spawn")]
     [SerializeField] private Transform spawnPosition = null;
 
-    [Header("Offset")]
+    [Header("Tower Related Data")]
     public float offsetTowerDistance; 
-
-    // Rinominato per chiarezza: impedisce input multipli dal joystick
-    private bool canTakeMoveInput = true;
-    public bool isSomethingInHand = false;    
+    private bool isSomethingInHand = false;    
     
-    // -- Movement State Flags --
+    // Movement State Flags
     private bool allowMoveLeft = false;
     private bool allowMoveRight = false;
     private bool allowGrab = false;
     
+    // Animation related flags
     private bool isArmMoving = false; 
-    // NUOVO FLAG: Traccia se la gru sta scivolando verso una piattaforma
     private bool isCraneSliding = false; 
 
-    // -- Events for Tutorial tracking --
-    public static event Action onHouseGrabbed;
-    public static event Action onHouseDropped;
+    // Events for Tutorial tracking 
+    public static event Action OnHouseGrabbed;
+    public static event Action OnHouseDropped;
 
     public GameObject hoveredHouse = null;
     private GameObject grabbedHouse = null;
+
+    // game object related
     [SerializeField] private GameObject hook;
     [SerializeField] private GameObject arm;
-
     [SerializeField] private float maxRotation = 30;
 
-    // --- COSTANTI ---
+    // useful constants
     private const float JOYSTICK_DEADZONE = 0.5f;
     private const float ARRIVAL_THRESHOLD = 0.001f;
     private const float ROTATION_MULTIPLIER = 50f; 
@@ -80,19 +82,19 @@ public class CraneMovement : MonoBehaviour
 
     void OnEnable()
     {
-        Tutorial.enableMoveDirection += EnableMoveDirection;
-        Tutorial.enableGrab += EnableGrab;
+        Tutorial.EnableMoveDirection += EnableMoveDirection;
+        Tutorial.EnableGrab += EnableGrab;
     }
 
     void OnDisable()
     {
-        Tutorial.enableMoveDirection -= EnableMoveDirection;
-        Tutorial.enableGrab -= EnableGrab;        
+        Tutorial.EnableMoveDirection -= EnableMoveDirection;
+        Tutorial.EnableGrab -= EnableGrab;        
     }
 
     void Update()
     {
-        HandleInput();
+        //HandleInput();
         HandleSmoothMovement();
     }
 
@@ -141,23 +143,23 @@ public class CraneMovement : MonoBehaviour
 
     private void HandleSmoothMovement()
     {
+        // if i want to use smooth movements
         if (useSmoothMovement)
         {
             if (Vector3.Distance(playerHead.position, targetPos) > ARRIVAL_THRESHOLD)
             {
-                // La gru è lontana dal target, quindi sta scivolando!
                 isCraneSliding = true;
                 playerHead.position = Vector3.MoveTowards(playerHead.position, targetPos, movementSpeed * Time.deltaTime);
             }
             else
             {
-                // È arrivata a destinazione!
                 isCraneSliding = false;
                 playerHead.position = targetPos;
             }
         }
         else
         {
+            //teleport
             isCraneSliding = false;
             playerHead.position = targetPos;
         }
@@ -165,11 +167,10 @@ public class CraneMovement : MonoBehaviour
     
     private void MoveToClosest(float direction)
     {
-        if (isCraneSliding) return; // Non calcolare un nuovo target se stiamo già scivolando
-
+        if (isCraneSliding) return; // se è già in movimento, non accetto altri input movimento
         bool isFacingFront = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 0f)) < 1f;
         bool isFacingBack = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 180f)) < 1f;
-        
+        // da rivedere, teoricamente non mi ruoto piu
         if (isFacingFront) MoveToClosestHandler(direction);
         else if (isFacingBack) MoveToClosestHandler(-direction);
     }
@@ -180,6 +181,7 @@ public class CraneMovement : MonoBehaviour
         Vector3 closest = myPosition; 
         float minDistance = Mathf.Infinity; 
         
+        //trovo la piattaforma piu vicina
         foreach (Transform nextHop in platforms)
         {
             if (IsCorrectDirection(myPosition.x, nextHop.position.x, direction))
@@ -204,7 +206,6 @@ public class CraneMovement : MonoBehaviour
 
         targetPos = new Vector3(closest.x, targetPos.y, targetPos.z);
         
-        // Se il nuovo target è diverso dalla posizione attuale, iniziamo a scivolare
         if (Vector3.Distance(playerHead.position, targetPos) > ARRIVAL_THRESHOLD)
         {
             isCraneSliding = true;
@@ -213,7 +214,6 @@ public class CraneMovement : MonoBehaviour
 
     private bool IsCorrectDirection(float myX, float targetX, float direction)
     {
-        // Rimosso MOVEMENT_THRESHOLD qui, ora ci affidiamo ad ARRIVAL_THRESHOLD in alto
         if (direction > 0) return targetX > myX + ARRIVAL_THRESHOLD;
         if (direction < 0) return targetX < myX - ARRIVAL_THRESHOLD;
         return false; 
@@ -233,7 +233,6 @@ public class CraneMovement : MonoBehaviour
     {
         if (!allowGrab || isArmMoving) return;
 
-        // MOLTO PIÙ PULITO! Controlla solo il flag invece di fare calcoli matematici
         if (isCraneSliding) 
         {
             Debug.Log("Azione bloccata: La gru è in movimento!");
@@ -277,7 +276,7 @@ public class CraneMovement : MonoBehaviour
             grabbedHouse.transform.SetParent(hook.transform, true);
             
             houseComp.Grab();
-            onHouseGrabbed?.Invoke();
+            OnHouseGrabbed?.Invoke();
 
             yield return new WaitForSeconds(0.2f);
         }
@@ -319,7 +318,7 @@ public class CraneMovement : MonoBehaviour
         }
         
         grabbedHouse = null; 
-        onHouseDropped?.Invoke();
+        OnHouseDropped?.Invoke();
     }
 
     public void MoveLeft() 

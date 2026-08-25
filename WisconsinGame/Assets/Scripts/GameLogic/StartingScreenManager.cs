@@ -10,31 +10,29 @@ public class StartingScreenManager : MonoBehaviour
     public TMP_InputField input;
     public GameObject startMenu;
 
-    private int numOfVariantPerCharacteristic = 4;
-
-    public static event Action<string, int> startGame;
-    public static event Action<string, int> tutorialGame;
+    public static event Action<string> StartGame;
+    public static event Action<string> TutorialGame;
 
     void Start()
     {
-        //startGame?.Invoke("ciao", numOfVariantPerCharacteristic);
+        //StartGame?.Invoke("ciao");
     }
 
     bool CheckInputField(){
         return input.text == "" ? false : true;
     }
 
-    public void StartGame(){
+    public void StartGameHandler(){
         if(CheckInputField()){
-            startGame?.Invoke(input.text, numOfVariantPerCharacteristic);
+            StartGame?.Invoke(input.text);
             startMenu.SetActive(false);
         }else{
             testo.text = testo.text + "!";
         }
     }
-    public void StartTutorial(){
+    public void StartTutorialHandler(){
         if(CheckInputField()){
-            tutorialGame?.Invoke(input.text, numOfVariantPerCharacteristic);
+            TutorialGame?.Invoke(input.text);
             startMenu.SetActive(false);
         }else{
             testo.text = testo.text + "!";
