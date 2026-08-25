@@ -15,6 +15,7 @@ public class GameLogicManager : MonoBehaviour
     [SerializeField] private int maxReshuffles = 2;
     private int numberOfTriedApartments;
 
+    // condition related data
     private List<int> conditionValues = new List<int>() {0, 1, 2};
     /*
         0: color
@@ -22,11 +23,15 @@ public class GameLogicManager : MonoBehaviour
         2: people
     */
     private int conditionNumber = 0;
+
+    // starts at true, determines if in tutorial mode
+    private bool isTutorial = true; 
+    
+    // platforms used in this phase
     public List<Transform> platforms = new List<Transform>();
 
 
-    private bool isTutorial = true; // starts at true, determines if in tutorial mode
-
+    // debug stuff
     public TextMeshProUGUI displayCondition;
     public TextMeshProUGUI displayCombo;
 
@@ -41,8 +46,7 @@ public class GameLogicManager : MonoBehaviour
     public static event System.Action EndGame;
     public static event System.Action EnableMoveDirection;
     public static event System.Action EnableGrab;
-    
-    public static event System.Action TutorialSpawnNextHouse; // event for tutorial
+    public static event System.Action TutorialSpawnNextHouse; 
 
     
     void Start()
@@ -105,7 +109,7 @@ public class GameLogicManager : MonoBehaviour
 
         numberOfTriedApartments++;
 
-        // We access the data package (TowerData) and read the properties directly!
+        // access platform data
         int[] platformValues = new int[] { 
             baseTowerChar.TowerData.color, 
             baseTowerChar.TowerData.type, 
@@ -126,14 +130,20 @@ public class GameLogicManager : MonoBehaviour
             Debug.Log("Condition met!");
             conditionResult = "Match";
             combo++;
-            feedbackHandler.Feedback(true);
+            if(feedbackHandler != null)
+            {
+                feedbackHandler.Feedback(true);
+            }
         }
         else
         {   
             Debug.Log("Condition not met!");
             conditionResult = "Not Match";
             combo = 0;
-            feedbackHandler.Feedback(false);
+            if(feedbackHandler != null)
+            {
+                feedbackHandler.Feedback(false);
+            }        
         }
         
 
@@ -190,7 +200,9 @@ public class GameLogicManager : MonoBehaviour
     private void ChooseCondition()
     {
         if(conditionValues.Count == 0)
+        {
             conditionValues = new List<int>() {0, 1, 2};
+        }
 
         int randomIndex = UnityEngine.Random.Range(0, conditionValues.Count);
         conditionNumber = conditionValues[randomIndex];
@@ -233,7 +245,7 @@ public class GameLogicManager : MonoBehaviour
     {
         EndGamePhase();
     }
-private void EndGamePhase()
+    private void EndGamePhase()
     {
         EnableMoveDirection?.Invoke();
         EnableGrab?.Invoke();

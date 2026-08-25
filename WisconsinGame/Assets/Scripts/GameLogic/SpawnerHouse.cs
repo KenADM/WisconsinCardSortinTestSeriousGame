@@ -112,6 +112,7 @@ public class SpawnerHouse : MonoBehaviour
             tempDeck.RemoveAt(randomIndex);
         }
 
+        // duplicate 3
         List<HouseCombination> duplicates = new List<HouseCombination>();
         for (int i = 0; i < 3; i++)
         {
@@ -176,6 +177,7 @@ public class SpawnerHouse : MonoBehaviour
 
     public GameObject SpawnOne(int colorIndex, int typeIndex, int people, float FixedX, float FixedY, float FixedZ)
     {
+        Debug.Log("combinations: " + allCombinations.Count);
         GameObject room = rooms[typeIndex];
         Material color = colors[colorIndex];
         

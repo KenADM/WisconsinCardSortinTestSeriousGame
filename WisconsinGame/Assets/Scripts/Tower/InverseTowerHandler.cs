@@ -102,8 +102,10 @@ public class InverseTowerHandler : MonoBehaviour
             TriggerPlacementLogic(newHouse);
         }
 
+        // aspetta che la casa cada abbastanza
         yield return new WaitForSeconds(1.5f); 
         
+        // la distrugge
         if (oldHouse != null)
         {
             Destroy(oldHouse.gameObject);

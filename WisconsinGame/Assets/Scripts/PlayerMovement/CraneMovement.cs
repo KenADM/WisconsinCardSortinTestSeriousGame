@@ -31,6 +31,9 @@ public class CraneMovement : MonoBehaviour
     public Key keyboardPickupKey = Key.Space;
     private bool canTakeMoveInput = true;
 
+    [Header("Sound")]
+    [SerializeField] private CraneSoundSystem craneSoundManager;
+
     [Header("Piattaforme")]
     public List<Transform> platforms = new List<Transform>();
 
@@ -155,6 +158,7 @@ public class CraneMovement : MonoBehaviour
             {
                 isCraneSliding = false;
                 playerHead.position = targetPos;
+                if (craneSoundManager != null) craneSoundManager.StopMovementSound();
             }
         }
         else
@@ -162,12 +166,12 @@ public class CraneMovement : MonoBehaviour
             //teleport
             isCraneSliding = false;
             playerHead.position = targetPos;
+            if (craneSoundManager != null) craneSoundManager.StopMovementSound();
         }
     }
     
     private void MoveToClosest(float direction)
     {
-        if (isCraneSliding) return; // se è già in movimento, non accetto altri input movimento
         bool isFacingFront = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 0f)) < 1f;
         bool isFacingBack = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 180f)) < 1f;
         // da rivedere, teoricamente non mi ruoto piu
@@ -209,6 +213,7 @@ public class CraneMovement : MonoBehaviour
         if (Vector3.Distance(playerHead.position, targetPos) > ARRIVAL_THRESHOLD)
         {
             isCraneSliding = true;
+            if (craneSoundManager != null) craneSoundManager.PlayMovementSound();
         }
     }
 
@@ -252,6 +257,7 @@ public class CraneMovement : MonoBehaviour
     private IEnumerator CranePickupRoutine()
     {
         isArmMoving = true;
+        if (craneSoundManager != null) craneSoundManager.PlayArmSound();
 
         Quaternion startRotation = arm.transform.localRotation;
         Quaternion targetDownRotation = startRotation * Quaternion.Euler(maxRotation, 0, 0);
@@ -303,6 +309,7 @@ public class CraneMovement : MonoBehaviour
         }
 
         isArmMoving = false;
+        if (craneSoundManager != null) craneSoundManager.StopArmSound();
     }
 
     private void CraneRelease()
@@ -323,11 +330,13 @@ public class CraneMovement : MonoBehaviour
 
     public void MoveLeft() 
     { 
+        if (isArmMoving || isCraneSliding) return;
         if (allowMoveLeft) MoveToClosest(-1f);
     }
 
     public void MoveRight() 
     { 
+        if (isArmMoving || isCraneSliding) return;
         if (allowMoveRight) MoveToClosest(1f);
     }
 
@@ -350,7 +359,11 @@ public class CraneMovement : MonoBehaviour
     public void MoveToPositionSmoothly(Vector3 newTargetPos)
     {
         targetPos = newTargetPos;
-        if (Vector3.Distance(playerHead.position, targetPos) > ARRIVAL_THRESHOLD) isCraneSliding = true;
+        if (Vector3.Distance(playerHead.position, targetPos) > ARRIVAL_THRESHOLD)
+        {
+            isCraneSliding = true;
+            if (craneSoundManager != null) craneSoundManager.PlayMovementSound();
+        }
     }
 
     public void SyncTargetPosition(Vector3 newPos)
@@ -358,5 +371,6 @@ public class CraneMovement : MonoBehaviour
         targetPos = newPos;
         playerHead.position = newPos;
         isCraneSliding = false;
+        if (craneSoundManager != null) craneSoundManager.StopMovementSound();
     }
 }

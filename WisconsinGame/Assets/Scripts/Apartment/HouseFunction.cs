@@ -4,14 +4,11 @@ public class HouseFunction : MonoBehaviour
 {
     [Header("House Data")]
     [field: SerializeField] public HouseCombination HouseData { get; private set; } 
-    
-    private Rigidbody rb;
     private Gravity myGravity; 
     private bool isMovable = true;
     
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
         myGravity = GetComponent<Gravity>(); 
     }
     
