@@ -17,6 +17,7 @@ public class VRSeatBeltWithFade : MonoBehaviour
     public CanvasGroup redFadeCanvas;
     
     public float fadeSpeed = 10f;
+    public float ciao;
 
     void LateUpdate()
     {
