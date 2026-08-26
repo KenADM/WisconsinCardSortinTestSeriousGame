@@ -16,10 +16,7 @@ public class InverseTowerHandler : MonoBehaviour
     
     [SerializeField] private Transform baseHouse;
 
-    [SerializeField] private bool isTutorialTower = false;
     public static event Action<GameObject, int[]> checkHousePlacement;
-    public static event Action<GameObject, int[]> checkHousePlacementTutorial;
-
     void Start()
     {
         blockCount = 0;

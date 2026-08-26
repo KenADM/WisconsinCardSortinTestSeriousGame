@@ -13,7 +13,7 @@ public class GrabbableHouseSensor : MonoBehaviour
     {
         if (craneManager != null && other.gameObject.TryGetComponent<HouseFunction>(out HouseFunction houseFunction) && houseFunction.isGrabbable())
         {
-            Debug.Log("AlertAlignment triggered by: " + other.name);
+            //Debug.Log("AlertAlignment triggered by: " + other.name);
             craneManager.HoverHouse(other.gameObject);
         }
 
@@ -23,7 +23,7 @@ public class GrabbableHouseSensor : MonoBehaviour
     {
         if (craneManager != null && other.gameObject.TryGetComponent<HouseFunction>(out _))
         {
-            Debug.Log("Calling RemovedHouse on AlignHouse");
+            //Debug.Log("Calling RemovedHouse on AlignHouse");
             craneManager.UnhoverHouse(other.gameObject);
         }
     }

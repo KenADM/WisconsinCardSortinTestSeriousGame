@@ -31,18 +31,22 @@ public class SpawnerHouse : MonoBehaviour
     public static event System.Action EndCausedByMaxReshuffles;
     void Awake()
     {
+        maxReshuffles = ExperimentSettings.maxCombo;
         colorNumber = colors.Count;
         roomNumber = rooms.Count;
         x = spawnPosition.position.x;
         y = spawnPosition.position.y;
         z = spawnPosition.position.z;
-        
         reshuffles = 0;
+    }
+
+    void Start()
+    {
+        FillCombinations();
     }
 
     void OnEnable()
     {
-        GameLogicManager.SendMaxReshuffles += SetMaxReshuffles;
         GameLogicManager.SpawnHouse += Spawn;
         Tutorial.SpawnStartingHouse += SpawnStartingHouseHandler;
         GameLogicManager.SpawnStartingHouse += SpawnStartingHouseHandler;
@@ -50,7 +54,6 @@ public class SpawnerHouse : MonoBehaviour
 
     void OnDisable()
     {
-        GameLogicManager.SendMaxReshuffles -= SetMaxReshuffles;
         GameLogicManager.SpawnHouse -= Spawn;
         Tutorial.SpawnStartingHouse -= SpawnStartingHouseHandler;
         GameLogicManager.SpawnStartingHouse -= SpawnStartingHouseHandler;

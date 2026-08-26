@@ -8,11 +8,11 @@ using static PlayerLog;
 public class GameLogicManager : MonoBehaviour
 {
     [Header("Data For Analysis")]
-    [SerializeField] private int combo = 0;
-    [SerializeField] private int maxCombo = 5;
-    [SerializeField] private int categoriesCompleted = 0;
-    [SerializeField] private int categoriesToComplete = 9;
-    [SerializeField] private int maxReshuffles = 2;
+    private int combo = 0;
+    private int maxCombo = 5;
+    private int categoriesCompleted = 0;
+    private int categoriesToComplete = 9;
+    private int maxReshuffles = 2;
     private int numberOfTriedApartments;
 
     // condition related data
@@ -39,8 +39,6 @@ public class GameLogicManager : MonoBehaviour
     [SerializeField] private GameObject endGamePanel; // End Screen
     [SerializeField] private TextMeshProUGUI testoEndGamePanel;
 
-
-    public static event System.Action<int> SendMaxReshuffles;
     public static event System.Action<Transform> SpawnStartingHouse;
     public static event System.Action SpawnHouse;
     public static event System.Action EndGame;
@@ -48,12 +46,19 @@ public class GameLogicManager : MonoBehaviour
     public static event System.Action EnableGrab;
     public static event System.Action TutorialSpawnNextHouse; 
 
+    void Awake()
+    {
+        combo = 0;
+        maxCombo = ExperimentSettings.maxCombo;
+        categoriesCompleted = 0;
+        categoriesToComplete = ExperimentSettings.categoriesToComplete;
+        maxReshuffles = ExperimentSettings.maxReshuffles;
+        numberOfTriedApartments = 0;
+
+    }
     
     void Start()
     {
-        numberOfTriedApartments = 0;
-        SendMaxReshuffles?.Invoke(maxReshuffles);
-        // checks and deactivates End Screen
         if (endGamePanel != null)
         {
             endGamePanel.SetActive(false);
@@ -63,7 +68,7 @@ public class GameLogicManager : MonoBehaviour
     void OnEnable()
     {
         Tutorial.StartGame += StartGameHandler; 
-        StartingScreenManager.StartGame += StartGameHandler;
+        //StartingScreenManager.StartGame += StartGameHandler;
         InverseTowerHandler.checkHousePlacement += CheckHousePlacementHandler;
         SpawnerHouse.EndCausedByMaxReshuffles += EndGameMaxReshuffles;
         
@@ -72,7 +77,7 @@ public class GameLogicManager : MonoBehaviour
     void OnDisable()
     {
         Tutorial.StartGame -= StartGameHandler;
-        StartingScreenManager.StartGame -= StartGameHandler;
+        //StartingScreenManager.StartGame -= StartGameHandler;
         InverseTowerHandler.checkHousePlacement -= CheckHousePlacementHandler;
         SpawnerHouse.EndCausedByMaxReshuffles -= EndGameMaxReshuffles;
         
@@ -80,13 +85,13 @@ public class GameLogicManager : MonoBehaviour
     }
 
     // function called by starting game button
-    private void StartGameHandler(string codiceUtente)
+    private void StartGameHandler()
     {
-        Debug.Log("Starting Game with user code: " + codiceUtente + " and number of variants per characteristic: ");
+        Debug.Log("Starting Game with user code: " + ExperimentSettings.userCode + " and number of variants per characteristic: ");
         
         isTutorial = false; 
         combo = 0;
-        PlayerLog.Initialize(codiceUtente);
+        PlayerLog.Initialize(ExperimentSettings.userCode);
         
         ChooseCondition();
         PrintCondition();

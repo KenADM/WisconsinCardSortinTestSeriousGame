@@ -7,10 +7,9 @@ using System.Collections;
 public class Tutorial : MonoBehaviour
 {
     [SerializeField] private GameObject tutorialPanel; // Pannello iniziale di benvenuto (Fase 0)
-    string userCode = "testUser";
 
     // Questo è l'evento che "griderà" al resto del gioco che il tutorial è finito
-    public static event Action<string> StartGame;
+    public static event Action StartGame;
 
     public SpawnerHouse spawnerHouse;
 
@@ -77,6 +76,7 @@ public class Tutorial : MonoBehaviour
     {
         SpawnStartingHouse?.Invoke(placingPlatformTutorial.transform);
         HideAllPrompts(); 
+        phase0Prompt.SetActive(true);
 
         if(rightTriggerObj != null) rightTriggerObj.SetActive(false);
         if(leftTriggerObj != null) leftTriggerObj.SetActive(false);
@@ -100,7 +100,7 @@ public class Tutorial : MonoBehaviour
 
     private void TutorialGameHandler(string codiceUtente)
     {
-        userCode = codiceUtente;
+        //userCode = codiceUtente;
         if (tutorialPanel) tutorialPanel.SetActive(true);
     }
 
@@ -286,7 +286,7 @@ public class Tutorial : MonoBehaviour
         EnableMoveDirection?.Invoke(true, true);
         EnableGrab?.Invoke(true);
 
-        StartGame?.Invoke(userCode);
+        StartGame?.Invoke();
     }
 
 

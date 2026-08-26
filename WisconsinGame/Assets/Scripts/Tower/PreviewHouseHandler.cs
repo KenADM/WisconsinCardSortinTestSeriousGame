@@ -74,7 +74,7 @@ public class PreviewHouseHandler : MonoBehaviour
         }
     }
 
-    void StartPreviewHandler(string user)
+    void StartPreviewHandler()
     {   
         isActive = true;
     }

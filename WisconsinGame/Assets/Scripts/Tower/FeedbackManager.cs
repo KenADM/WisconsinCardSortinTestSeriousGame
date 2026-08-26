@@ -14,6 +14,7 @@ public class FeedbackManager : MonoBehaviour
 
     public void Feedback(bool feedback)
     {
+        smoke.Stop();
         if (smoke != null)
         {   
             var smokeModule = smoke.main;

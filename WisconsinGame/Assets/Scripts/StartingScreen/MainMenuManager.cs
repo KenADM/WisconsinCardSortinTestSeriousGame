@@ -11,15 +11,18 @@ public class MainMenuManager : MonoBehaviour
     public TMP_Text reshufflesText;
     public Toggle vrModeToggle; 
 
+    [Header("Other Inputs")]
+    public TMP_InputField userCodeInput;
+
     [Header("Panels")]
     public GameObject mainPanel;
     public GameObject settingsPanel;
-    public string gameSceneName = "GameScene"; 
+    private string gameSceneName = "MainGame";
 
     private int tempMaxCombo;
     private int tempCategories;
     private int tempReshuffles;
-
+    
     void Start()
     {
         Cursor.visible = true;
@@ -35,17 +38,15 @@ public class MainMenuManager : MonoBehaviour
         settingsPanel.SetActive(true);
 
         // Load the saved settings into our temporary variables
-        tempMaxCombo = ExperimentSettings.MaxCombo;
-        tempCategories = ExperimentSettings.CategoriesToComplete;
-        tempReshuffles = ExperimentSettings.MaxReshuffles;
+        tempMaxCombo = ExperimentSettings.maxCombo;
+        tempCategories = ExperimentSettings.categoriesToComplete;
+        tempReshuffles = ExperimentSettings.maxReshuffles;
         
-        if (vrModeToggle != null) vrModeToggle.isOn = ExperimentSettings.VRMode;
+        if (vrModeToggle != null) vrModeToggle.isOn = ExperimentSettings.vrMode;
         
         UpdateSettingsUI();
     }
 
-    // --- BUTTON CLICK METHODS ---
-    // Note: I added "int amount" back into the parentheses here!
 
     public void ChangeMaxCombo(int amount)
     {
@@ -90,11 +91,11 @@ public class MainMenuManager : MonoBehaviour
     public void SaveAndCloseSettings()
     {
         // Save everything to the global bridge
-        ExperimentSettings.MaxCombo = tempMaxCombo;
-        ExperimentSettings.CategoriesToComplete = tempCategories;
-        ExperimentSettings.MaxReshuffles = tempReshuffles;
+        ExperimentSettings.maxCombo = tempMaxCombo;
+        ExperimentSettings.categoriesToComplete = tempCategories;
+        ExperimentSettings.maxReshuffles = tempReshuffles;
         
-        if (vrModeToggle != null) ExperimentSettings.VRMode = vrModeToggle.isOn;
+        if (vrModeToggle != null) ExperimentSettings.vrMode = vrModeToggle.isOn;
         
         settingsPanel.SetActive(false);
         mainPanel.SetActive(true); // Bring the main menu back up
@@ -102,6 +103,17 @@ public class MainMenuManager : MonoBehaviour
 
     public void PlayGame()
     {
-        SceneManager.LoadScene(gameSceneName);
+        if (userCodeInput != null)
+        {
+            ExperimentSettings.userCode = userCodeInput.text;
+        }
+
+        if (!string.IsNullOrWhiteSpace(ExperimentSettings.userCode))
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            SceneManager.LoadScene(gameSceneName);
+        }
+        
     }
 }

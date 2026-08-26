@@ -8,12 +8,14 @@ public class DesktopvrCameraSwitcher : MonoBehaviour
     [Header("Rigs")]
     public GameObject vrCamera;
     public GameObject desktopCamera;
+    public bool isDesktopMode = false;
 
-    [Header("Input (Press to Switch)")]
-    public bool isDesktopMode = false; 
+    void Awake()
+    {
+        isDesktopMode = !ExperimentSettings.vrMode;
+    }
     void Start()
     {
-        // Set the initial state when the game starts
         if (isDesktopMode)
         {
             ActivateDesktop();
@@ -22,11 +24,6 @@ public class DesktopvrCameraSwitcher : MonoBehaviour
         {
             ActivateVR();
         }
-    }
-
-    void Update()
-    {
-
     }
 
     private void ActivateDesktop()
