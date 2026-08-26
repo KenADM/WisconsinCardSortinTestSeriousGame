@@ -2165,7 +2165,7 @@ MonoBehaviour:
   categoriesText: {fileID: 728256373}
   reshufflesText: {fileID: 98657071}
   vrModeToggle: {fileID: 123448425}
-  userCodeInput: {fileID: 0}
+  userCodeInput: {fileID: 253811813}
   mainPanel: {fileID: 1410895261}
   settingsPanel: {fileID: 266652950}
 --- !u!224 &481915099

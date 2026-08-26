@@ -103,8 +103,9 @@ public class MainMenuManager : MonoBehaviour
 
     public void PlayGame()
     {
-        if (userCodeInput != null)
+        if (userCodeInput != null && userCodeInput.text != "")
         {
+
             ExperimentSettings.userCode = userCodeInput.text;
         }
 

@@ -5,9 +5,9 @@ using UnityEngine.Rendering;
 
 public class SpawnerHouse : MonoBehaviour
 {
-    [SerializeField] private float x;
-    [SerializeField] private float y;
-    [SerializeField] private float z;
+    private float x;
+    private float y;
+    private float z;
 
     [SerializeField] private Transform spawnPosition = null;
 
@@ -18,9 +18,9 @@ public class SpawnerHouse : MonoBehaviour
     private int roomNumber;
     public int peopleNumberMin;
     public int peopleNumberMax; 
-
     [SerializeField] private int maxReshuffles = 2;
     private int reshuffles;
+    [SerializeField] private GameObject player;
 
     private static Vector3 houseScale = new Vector3(2f, 2f, 2f);
     private static float houseHeight = 0.6f * houseScale.y; 
@@ -61,31 +61,18 @@ public class SpawnerHouse : MonoBehaviour
 
     public void GeneratePeople(GameObject spawnedObject, int peopleCount)
     {
-        GameObject people = spawnedObject.transform.Find("People").gameObject;
-        for (int i = 1; i <= peopleCount; i++)
+        if(spawnedObject.TryGetComponent(out CustomizeHouse customizer))
         {
-            people.transform.Find(i.ToString()).gameObject.SetActive(true);
+            customizer.ShowPeople(peopleCount);
         }
+
     }
 
     public void ColorRoom(GameObject spawnedObject, Material color)
     {   
-        foreach (Transform child in spawnedObject.transform)
+        if(spawnedObject.TryGetComponent(out CustomizeHouse customizer))
         {
-            if(child.CompareTag("Wall"))
-            {
-                foreach (Transform inner in child)
-                {
-                    if(inner.CompareTag("InnerWall"))
-                    {
-                        Renderer rend = inner.GetComponent<Renderer>();
-                        if (rend != null) 
-                        {
-                            rend.material = color;
-                        }
-                    }
-                }
-            }
+            customizer.ColorHouse(color);
         }
     }
 
@@ -190,10 +177,22 @@ public class SpawnerHouse : MonoBehaviour
         ColorRoom(spawnedObj, color);
         GeneratePeople(spawnedObj, people);
 
-        spawnedObj.name = "NewHouse " + colorIndex + " " + typeIndex + " " + people;
+        spawnedObj.name = "New House " + colorIndex + " " + typeIndex + " " + people;
 
-        HouseFunction newHouseFunction = spawnedObj.GetComponent<HouseFunction>();
-        newHouseFunction.Initialize(colorIndex, typeIndex, people);
+        spawnedObj.TryGetComponent<HouseFunction>(out HouseFunction newHouseFunction);
+        if (newHouseFunction  != null)
+        {
+            Debug.Log("shilpe");
+            newHouseFunction.Initialize(colorIndex, typeIndex, people);
+        }
+
+        spawnedObj.TryGetComponent<WallHiderDecider>(out WallHiderDecider newHouseHider);
+        if(newHouseHider != null)
+        {
+            Debug.Log("shilpe");
+
+            newHouseHider.AssignPlayer(player);
+        }
 
         return spawnedObj;
     }

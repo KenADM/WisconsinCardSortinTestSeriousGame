@@ -307,6 +307,7 @@ GameObject:
   - component: {fileID: 1218498846689861844}
   - component: {fileID: 5371862177426846435}
   - component: {fileID: -8132565477178250152}
+  - component: {fileID: 8200041306976873081}
   m_Layer: 0
   m_Name: Gym
   m_TagString: Grabbable
@@ -354,6 +355,7 @@ MonoBehaviour:
   west: {fileID: 1296425294250391118}
   east: {fileID: 616531922950539715}
   floor: {fileID: 1727645260781377477}
+  wallHidingActive: 1
 --- !u!65 &2735046509479757469
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -432,6 +434,28 @@ MonoBehaviour:
     <color>k__BackingField: 0
     <type>k__BackingField: 0
     <people>k__BackingField: 0
+--- !u!114 &8200041306976873081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1321161550769941400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 287ef4180a9c90a45a69474e2aad27b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomizeHouse
+  innerWalls:
+  - {fileID: 4653314492767701751}
+  - {fileID: 8325500037760297039}
+  - {fileID: 411905353163958871}
+  - {fileID: 5095481706646866465}
+  people:
+  - {fileID: 2395200557734694918}
+  - {fileID: 598848104297638270}
+  - {fileID: 7792321124995967232}
+  - {fileID: 6245603229437014684}
 --- !u!1 &2544870035835993872
 GameObject:
   m_ObjectHideFlags: 0

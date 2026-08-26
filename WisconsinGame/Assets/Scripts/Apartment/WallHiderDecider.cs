@@ -11,14 +11,18 @@ public class WallHiderDecider : MonoBehaviour
     [SerializeField] private Transform floor;
     
 
-    private Camera playerCamera;
+    private GameObject player;
     
-    private bool wallHidingActive = true;
+    public bool wallHidingActive = true;
     
-    void Start()
-    {        
-        playerCamera = Camera.main; // uses tag, necessary because object dont exist from the start
-
+    void Awake()
+    {
+        ActivateAllWalls();
+    }
+    public void AssignPlayer(GameObject currentPlayer)
+    {
+        this.player = currentPlayer;
+        wallHidingActive = false;
     }
 
     public void DeactivateHiding(){
@@ -27,18 +31,16 @@ public class WallHiderDecider : MonoBehaviour
     }
 
     public void ActivateAllWalls(){
-        foreach(Transform item in this.transform){
-            if(item.CompareTag("Wall"))
-            {
-                item.gameObject.SetActive(true);
-            }
-        }
+        north.gameObject.SetActive(true);
+        south.gameObject.SetActive(true);
+        west.gameObject.SetActive(true);
+        east.gameObject.SetActive(true);
         
     }
 
     void HideCloserThing(Transform wallA, Transform wallB){
-        float dist1 = Vector3.Distance(playerCamera.transform.position, wallA.position);
-        float dist2 = Vector3.Distance(playerCamera.transform.position, wallB.position);
+        float dist1 = Vector3.Distance(player.transform.position, wallA.position);
+        float dist2 = Vector3.Distance(player.transform.position, wallB.position);
         
         if(dist1 < dist2)
         {
@@ -58,8 +60,8 @@ public class WallHiderDecider : MonoBehaviour
         Transform inner = wall.Find("Wall");
         Transform outer = wall.Find("InnerWall");   
 
-        float distOut = Vector3.Distance(playerCamera.transform.position, inner.position);
-        float distIn = Vector3.Distance(playerCamera.transform.position, outer.position);
+        float distOut = Vector3.Distance(player.transform.position, inner.position);
+        float distIn = Vector3.Distance(player.transform.position, outer.position);
 
         if(distOut < distIn)
         {
@@ -69,7 +71,7 @@ public class WallHiderDecider : MonoBehaviour
     
     void Update()
     {
-        if(!wallHidingActive)
+        if(wallHidingActive)
         {
             return;
         }

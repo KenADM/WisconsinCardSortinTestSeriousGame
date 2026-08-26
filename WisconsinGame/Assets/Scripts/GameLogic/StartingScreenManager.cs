@@ -6,13 +6,18 @@ using TMPro;
 
 public class StartingScreenManager : MonoBehaviour
 {
+    // may be used
     public TextMeshProUGUI testo;
     public TMP_InputField input;
     public GameObject startMenu;
 
-    public static event Action<string> StartGame;
-    public static event Action<string> TutorialGame;
+    public static event Action StartGame;
+    public static event Action TutorialGame;
 
+    void Awake()
+    {
+        input.text = ExperimentSettings.userCode;
+    }
     void Start()
     {
         //StartGame?.Invoke("ciao");
@@ -22,17 +27,11 @@ public class StartingScreenManager : MonoBehaviour
         return input.text == "" ? false : true;
     }
 
-    public void StartGameHandler(){
-        if(CheckInputField()){
-            StartGame?.Invoke(input.text);
-            startMenu.SetActive(false);
-        }else{
-            testo.text = testo.text + "!";
-        }
-    }
     public void StartTutorialHandler(){
         if(CheckInputField()){
-            TutorialGame?.Invoke(input.text);
+            Debug.Log("ciao");
+            ExperimentSettings.userCode = input.text;
+            TutorialGame?.Invoke();
             startMenu.SetActive(false);
         }else{
             testo.text = testo.text + "!";

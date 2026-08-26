@@ -76,7 +76,7 @@ public class Tutorial : MonoBehaviour
     {
         SpawnStartingHouse?.Invoke(placingPlatformTutorial.transform);
         HideAllPrompts(); 
-        phase0Prompt.SetActive(true);
+        //phase0Prompt.SetActive(true);
 
         if(rightTriggerObj != null) rightTriggerObj.SetActive(false);
         if(leftTriggerObj != null) leftTriggerObj.SetActive(false);
@@ -98,7 +98,7 @@ public class Tutorial : MonoBehaviour
         }
     }
 
-    private void TutorialGameHandler(string codiceUtente)
+    private void TutorialGameHandler()
     {
         //userCode = codiceUtente;
         if (tutorialPanel) tutorialPanel.SetActive(true);
