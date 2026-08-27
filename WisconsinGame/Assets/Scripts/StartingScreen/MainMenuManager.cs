@@ -103,18 +103,18 @@ public class MainMenuManager : MonoBehaviour
 
     public void PlayGame()
     {
-        if (userCodeInput != null && userCodeInput.text != "")
-        {
+        //if (userCodeInput != null && userCodeInput.text != "")
+        //{
 
-            ExperimentSettings.userCode = userCodeInput.text;
-        }
+        //    ExperimentSettings.userCode = userCodeInput.text;
+        //}
 
-        if (!string.IsNullOrWhiteSpace(ExperimentSettings.userCode))
-        {
+        //if (!string.IsNullOrWhiteSpace(ExperimentSettings.userCode))
+        //{
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
             SceneManager.LoadScene(gameSceneName);
-        }
+        //}
         
     }
 }

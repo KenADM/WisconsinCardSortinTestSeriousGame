@@ -136,7 +136,15 @@ public class SpawnerHouse : MonoBehaviour
             baseTowerChar.TowerData.people 
         };
         
-        GameObject spawnedHouse = SpawnOne(platformValues[0], platformValues[1], platformValues[2], platform.transform.position.x + 4f, 1f, platform.transform.position.z - 5f);
+        // Pass the position directly as a Vector3
+        GameObject spawnedHouse = SpawnOne(
+            platformValues[0], 
+            platformValues[1], 
+            platformValues[2], 
+            baseTowerChar.HouseBaseSpawn.transform.position.x,
+            baseTowerChar.HouseBaseSpawn.transform.position.y,
+            baseTowerChar.HouseBaseSpawn.transform.position.z
+        );
         
         spawnedHouse.GetComponent<HouseFunction>().MakeUnmovable();
         spawnedHouse.transform.SetParent(platform);

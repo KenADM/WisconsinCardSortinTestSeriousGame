@@ -634,7 +634,6 @@ MonoBehaviour:
   matchingChar: {fileID: 5113406382293184171}
   trigger: {fileID: 5880240474405505185}
   baseHouse: {fileID: 0}
-  isTutorialTower: 0
 --- !u!114 &5113406382293184171
 MonoBehaviour:
   m_ObjectHideFlags: 0

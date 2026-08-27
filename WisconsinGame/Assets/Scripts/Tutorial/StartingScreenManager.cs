@@ -16,6 +16,7 @@ public class StartingScreenManager : MonoBehaviour
 
     void Awake()
     {
+        startMenu.SetActive(true);
         input.text = ExperimentSettings.userCode;
     }
     void Start()
@@ -29,12 +30,12 @@ public class StartingScreenManager : MonoBehaviour
 
     public void StartTutorialHandler(){
         if(CheckInputField()){
-            Debug.Log("ciao");
+            //Debug.Log("ciao");
             ExperimentSettings.userCode = input.text;
             TutorialGame?.Invoke();
             startMenu.SetActive(false);
         }else{
-            testo.text = testo.text + "!";
+            testo.text += "!";
         }
     }
 

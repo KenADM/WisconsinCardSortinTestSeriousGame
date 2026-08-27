@@ -6,7 +6,6 @@ using System.Collections;
 
 public class Tutorial : MonoBehaviour
 {
-    [SerializeField] private GameObject tutorialPanel; // Pannello iniziale di benvenuto (Fase 0)
 
     // Questo è l'evento che "griderà" al resto del gioco che il tutorial è finito
     public static event Action StartGame;
@@ -22,6 +21,7 @@ public class Tutorial : MonoBehaviour
     [SerializeField] private GameObject phase0Prompt; // Muoviti a destra
     [SerializeField] private GameObject phase1Prompt; // Muoviti a destra
     [SerializeField] private GameObject phase2Prompt; // Mostra appartamento ideale e bottone
+    [SerializeField] private GameObject phase21Prompt; // Mostra appartamento ideale e bottone
     [SerializeField] private GameObject phase3Prompt; // Muoviti a sinistra
     [SerializeField] private GameObject phase4Prompt; // Raccogli la prima casa
     [SerializeField] private GameObject phase5Prompt; // Rilascia la prima casa
@@ -101,12 +101,12 @@ public class Tutorial : MonoBehaviour
     private void TutorialGameHandler()
     {
         //userCode = codiceUtente;
-        if (tutorialPanel) tutorialPanel.SetActive(true);
+        if (phase0Prompt) phase0Prompt.SetActive(true);
     }
 
     public void CloseTutorialPanel()
     {
-        if (tutorialPanel) tutorialPanel.SetActive(false);
+        if (phase0Prompt) phase0Prompt.SetActive(false);
         SetPhase(1); 
     }
 
@@ -116,6 +116,7 @@ public class Tutorial : MonoBehaviour
         if (phase0Prompt) phase0Prompt.SetActive(false);
         if (phase1Prompt) phase1Prompt.SetActive(false);
         if (phase2Prompt) phase2Prompt.SetActive(false);
+        if (phase2Prompt) phase21Prompt.SetActive(false);
         if (phase3Prompt) phase3Prompt.SetActive(false);
         if (phase4Prompt) phase4Prompt.SetActive(false);
         if (phase5Prompt) phase5Prompt.SetActive(false);
@@ -196,6 +197,15 @@ public class Tutorial : MonoBehaviour
         if (phase == 1) SetPhase(2); 
     }
 
+    public void ProceedToPhase21()
+    {
+        if(phase == 2)
+        {
+            HideAllPrompts();
+            phase21Prompt.SetActive(true);
+        }
+    }
+
     // associated to a button to ack the preview base house
     public void ProceedToPhase3()
     {
@@ -204,6 +214,8 @@ public class Tutorial : MonoBehaviour
             SetPhase(3); 
         }
     }
+
+    
 
     // once returned to the spawning platform
     public void ReachedLeftTrigger()
