@@ -6,7 +6,6 @@ using System.Collections;
 
 public class Tutorial : MonoBehaviour
 {
-
     // Questo è l'evento che "griderà" al resto del gioco che il tutorial è finito
     public static event Action StartGame;
 
@@ -76,7 +75,6 @@ public class Tutorial : MonoBehaviour
     {
         SpawnStartingHouse?.Invoke(placingPlatformTutorial.transform);
         HideAllPrompts(); 
-        //phase0Prompt.SetActive(true);
 
         if(rightTriggerObj != null) rightTriggerObj.SetActive(false);
         if(leftTriggerObj != null) leftTriggerObj.SetActive(false);
@@ -100,7 +98,6 @@ public class Tutorial : MonoBehaviour
 
     private void TutorialGameHandler()
     {
-        //userCode = codiceUtente;
         if (phase0Prompt) phase0Prompt.SetActive(true);
     }
 
@@ -116,7 +113,7 @@ public class Tutorial : MonoBehaviour
         if (phase0Prompt) phase0Prompt.SetActive(false);
         if (phase1Prompt) phase1Prompt.SetActive(false);
         if (phase2Prompt) phase2Prompt.SetActive(false);
-        if (phase2Prompt) phase21Prompt.SetActive(false);
+        if (phase21Prompt) phase21Prompt.SetActive(false); // FIXED TYPO
         if (phase3Prompt) phase3Prompt.SetActive(false);
         if (phase4Prompt) phase4Prompt.SetActive(false);
         if (phase5Prompt) phase5Prompt.SetActive(false);
@@ -152,9 +149,9 @@ public class Tutorial : MonoBehaviour
                 break;
 
             case 3:
-                spawnerHouse.SpawnOne(1, 1, 1, spawningPlatformTutorial.transform.position.x, spawningPlatformTutorial.transform.position.y, spawningPlatformTutorial.transform.position.z);
+                spawnerHouse.SpawnOne(1, 1, 1, spawningPlatformTutorial.transform.position.x,spawningPlatformTutorial.transform.position.y ,spawningPlatformTutorial.transform.position.z );
 
-                EnableMoveDirection?.Invoke(true, false); 
+                EnableMoveDirection?.Invoke(true, true); 
                 if (phase3Prompt) phase3Prompt.SetActive(true); 
 
                 if(leftTriggerObj != null) leftTriggerObj.SetActive(true);
@@ -215,8 +212,6 @@ public class Tutorial : MonoBehaviour
         }
     }
 
-    
-
     // once returned to the spawning platform
     public void ReachedLeftTrigger()
     {
@@ -235,11 +230,11 @@ public class Tutorial : MonoBehaviour
     {
         if (phase == 5)
         {
-            // spawna la casa solo se è già stata piazzata
             if (!hasSpawnedSecondHouse)
             {
-                hasSpawnedSecondHouse = true; 
-                spawnerHouse.SpawnOne(0, 3, 1, spawningPlatformTutorial.transform.position.x, spawningPlatformTutorial.transform.position.y, spawningPlatformTutorial.transform.position.z);
+                hasSpawnedSecondHouse = true;
+                spawnerHouse.SpawnOne(0, 3, 1, spawningPlatformTutorial.transform.position.x,spawningPlatformTutorial.transform.position.y ,spawningPlatformTutorial.transform.position.z );
+
             }
             SetPhase(6);
         }
@@ -256,7 +251,6 @@ public class Tutorial : MonoBehaviour
         Debug.Log("Tutorial Phase Started: " + phase);
         EnableMoveDirection?.Invoke(true, true); 
         EnableGrab?.Invoke(false); 
-        
     }
 
     public void StartGameHandler()
@@ -274,13 +268,9 @@ public class Tutorial : MonoBehaviour
         EnableMoveDirection?.Invoke(false, false);
         EnableGrab?.Invoke(false);
 
-        //spawningPlatformTutorial.SetActive(false);
-        //placingPlatformTutorial.SetActive(false);
-        //TutorialPlatforms.SetActive(false);
-
         Vector3 targetPos = new Vector3(crane.transform.position.x, crane.transform.position.y, spawningPlatformGameplay.transform.position.z - 8);
 
-        CraneMovement craneMovement = crane.GetComponent<CraneMovement>(); //add as variable
+        CraneMovement craneMovement = crane.GetComponent<CraneMovement>(); 
         craneMovement.MoveToPositionSmoothly(targetPos);
 
         while (Vector3.Distance(crane.transform.position, targetPos) > 0.05f)
@@ -300,6 +290,4 @@ public class Tutorial : MonoBehaviour
 
         StartGame?.Invoke();
     }
-
-
 }

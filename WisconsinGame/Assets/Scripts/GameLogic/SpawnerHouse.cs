@@ -31,12 +31,15 @@ public class SpawnerHouse : MonoBehaviour
     public static event System.Action EndCausedByMaxReshuffles;
     void Awake()
     {
+        
         maxReshuffles = ExperimentSettings.maxCombo;
         colorNumber = colors.Count;
         roomNumber = rooms.Count;
+
         x = spawnPosition.position.x;
         y = spawnPosition.position.y;
         z = spawnPosition.position.z;
+
         reshuffles = 0;
     }
 
@@ -135,22 +138,28 @@ public class SpawnerHouse : MonoBehaviour
             baseTowerChar.TowerData.type, 
             baseTowerChar.TowerData.people 
         };
-        
+        Debug.Log("adnasfb");
+
         // Pass the position directly as a Vector3
-        GameObject spawnedHouse = SpawnOne(
-            platformValues[0], 
-            platformValues[1], 
-            platformValues[2], 
-            baseTowerChar.HouseBaseSpawn.transform.position.x,
-            baseTowerChar.HouseBaseSpawn.transform.position.y,
-            baseTowerChar.HouseBaseSpawn.transform.position.z
-        );
-        
-        spawnedHouse.GetComponent<HouseFunction>().MakeUnmovable();
-        spawnedHouse.transform.SetParent(platform);
-        spawnedHouse.name = "BaseHouse";
+        if(baseTowerChar != null)
+        {
+            GameObject spawnedHouse = SpawnOne(
+                platformValues[0], 
+                platformValues[1], 
+                platformValues[2], 
+                baseTowerChar.HouseBaseSpawn.transform.position.x,
+                baseTowerChar.HouseBaseSpawn.transform.position.y,
+                baseTowerChar.HouseBaseSpawn.transform.position.z
+            );
+            
+            spawnedHouse.GetComponent<HouseFunction>().MakeUnmovable();
+            spawnedHouse.transform.SetParent(platform);
+            spawnedHouse.name = "BaseHouse";
+        }
+
     }
 
+    // spawn a random house and reshuffles if necessary;
     public void Spawn()
     {
         if (allCombinations.Count <= 0)
@@ -190,15 +199,12 @@ public class SpawnerHouse : MonoBehaviour
         spawnedObj.TryGetComponent<HouseFunction>(out HouseFunction newHouseFunction);
         if (newHouseFunction  != null)
         {
-            Debug.Log("shilpe");
             newHouseFunction.Initialize(colorIndex, typeIndex, people);
         }
 
         spawnedObj.TryGetComponent<WallHiderDecider>(out WallHiderDecider newHouseHider);
         if(newHouseHider != null)
         {
-            Debug.Log("shilpe");
-
             newHouseHider.AssignPlayer(player);
         }
 

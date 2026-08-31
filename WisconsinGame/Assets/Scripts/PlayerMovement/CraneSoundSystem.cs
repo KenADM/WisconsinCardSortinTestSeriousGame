@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class CraneSoundSystem : MonoBehaviour
 {
+    // crane sound system
     [SerializeField] private AudioClip craneSoundUp;
     [SerializeField] private AudioClip movementSound;
 

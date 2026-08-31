@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System;
-using System.Collections; 
+using System.Collections;
+using Unity.VisualScripting;
 
 public class CraneMovement : MonoBehaviour
 {
@@ -172,6 +173,7 @@ public class CraneMovement : MonoBehaviour
     
     private void MoveToClosest(float direction)
     {
+        Debug.Log("moving");
         bool isFacingFront = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 0f)) < 1f;
         bool isFacingBack = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 180f)) < 1f;
         // da rivedere, teoricamente non mi ruoto piu
@@ -331,12 +333,14 @@ public class CraneMovement : MonoBehaviour
     public void MoveLeft() 
     { 
         if (isArmMoving || isCraneSliding) return;
+        Debug.Log("Left");
         if (allowMoveLeft) MoveToClosest(-1f);
     }
 
     public void MoveRight() 
     { 
         if (isArmMoving || isCraneSliding) return;
+        Debug.Log("Right");
         if (allowMoveRight) MoveToClosest(1f);
     }
 

@@ -15,7 +15,7 @@ public class GameLogicManager : MonoBehaviour
     private int maxReshuffles = 2;
     private int numberOfTriedApartments;
 
-    // condition related data
+    // condition related data ------
     private List<int> conditionValues = new List<int>() {0, 1, 2};
     /*
         0: color
@@ -24,14 +24,16 @@ public class GameLogicManager : MonoBehaviour
     */
     private int conditionNumber = 0;
 
-    // starts at true, determines if in tutorial mode
+    // starts at true, determines if in tutorial mode ------
     private bool isTutorial = true; 
     
-    // platforms used in this phase
+    [Header("Platforms")]
     public List<Transform> platforms = new List<Transform>();
 
 
     // debug stuff
+    [Header("Debug Displays")]
+
     public TextMeshProUGUI displayCondition;
     public TextMeshProUGUI displayCombo;
 
@@ -39,6 +41,7 @@ public class GameLogicManager : MonoBehaviour
     [SerializeField] private GameObject endGamePanel; // End Screen
     [SerializeField] private TextMeshProUGUI testoEndGamePanel;
 
+    // events called
     public static event System.Action<Transform> SpawnStartingHouse;
     public static event System.Action SpawnHouse;
     public static event System.Action EndGame;
@@ -98,6 +101,7 @@ public class GameLogicManager : MonoBehaviour
         SpawnStartingSetup();
     }
 
+    // function called to spawn the base houses in the 4 towers
     private void SpawnStartingSetup()
     {
         Debug.Log("Spawning starting cubes");
@@ -108,6 +112,7 @@ public class GameLogicManager : MonoBehaviour
         SpawnHouse?.Invoke();
     }
 
+    // function called to check the placement of a house on a tower
     private void CheckHousePlacementHandler(GameObject platform, int[] houseValues)
     {
         TowerChar baseTowerChar = platform.GetComponent<TowerChar>();
@@ -150,8 +155,6 @@ public class GameLogicManager : MonoBehaviour
                 feedbackHandler.Feedback(false);
             }        
         }
-        
-
 
         if (isTutorial)
         {
@@ -246,6 +249,7 @@ public class GameLogicManager : MonoBehaviour
         return newCondition;
     }
 
+    // called when the max reshuffles are met before completing the wanted categories
     private void EndGameMaxReshuffles()
     {
         EndGamePhase();
@@ -269,6 +273,7 @@ public class GameLogicManager : MonoBehaviour
         
         return ((categoriesCompleted * 5f) / numberOfTriedApartments) * 100f;
     }
+
     // function associated to the button to end game
     public void QuitGame()
     {

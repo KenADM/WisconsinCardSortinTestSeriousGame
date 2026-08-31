@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class StringGravity : MonoBehaviour
 {
-
-
+    // gravity for the string
     [Tooltip("RodTip")]
     public Transform rodTip;
 
