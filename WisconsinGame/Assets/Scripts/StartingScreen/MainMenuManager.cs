@@ -3,39 +3,47 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Manages the Main Menu UI, allowing the researcher/player to adjust experiment settings 
+/// (combo targets, categories, reshuffles, VR mode) before loading the main simulation scene.
+/// </summary>
 public class MainMenuManager : MonoBehaviour
 {
     [Header("Settings Displays (Text)")]
-    public TMP_Text maxComboText;
-    public TMP_Text categoriesText;
-    public TMP_Text reshufflesText;
-    public Toggle vrModeToggle; 
-
-    [Header("Other Inputs")]
-    public TMP_InputField userCodeInput;
+    [SerializeField] private TMP_Text maxComboText;
+    [SerializeField] private TMP_Text categoriesText;
+    [SerializeField] private TMP_Text reshufflesText;
+    [SerializeField] private Toggle vrModeToggle; 
 
     [Header("Panels")]
-    public GameObject mainPanel;
-    public GameObject settingsPanel;
-    private string gameSceneName = "MainGame";
+    [SerializeField] private GameObject mainPanel;
+    [SerializeField] private GameObject settingsPanel;
+    
+    [Header("Scene Routing")]
+    [SerializeField] private string gameSceneName = "MainGame";
 
+    // Temporary variables to hold settings while the user adjusts them before saving
     private int tempMaxCombo;
     private int tempCategories;
     private int tempReshuffles;
     
-    void Start()
+    private void Start()
     {
+        // Ensure the cursor is visible and unlocked for menu navigation
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         
-        mainPanel.SetActive(true);
-        settingsPanel.SetActive(false);
+        if (mainPanel != null) mainPanel.SetActive(true);
+        if (settingsPanel != null) settingsPanel.SetActive(false);
     }
 
+    /// <summary>
+    /// Swaps the UI to the settings panel and pre-loads the current global experiment settings.
+    /// </summary>
     public void OpenSettings()
     {
-        mainPanel.SetActive(false);
-        settingsPanel.SetActive(true);
+        if (mainPanel != null) mainPanel.SetActive(false);
+        if (settingsPanel != null) settingsPanel.SetActive(true);
 
         // Load the saved settings into our temporary variables
         tempMaxCombo = ExperimentSettings.maxCombo;
@@ -47,29 +55,37 @@ public class MainMenuManager : MonoBehaviour
         UpdateSettingsUI();
     }
 
-
-    public void ChangeMaxCombo(int amount)
+    /// <summary>
+    /// Core calculation method to safely adjust the temporary Max Combo setting.
+    /// </summary>
+    private void ChangeMaxCombo(int amount)
     {
         tempMaxCombo += amount;
         if (tempMaxCombo < 1) tempMaxCombo = 1; // Prevent going below 1
         UpdateSettingsUI();
     }
 
-    public void ChangeCategories(int amount)
+    /// <summary>
+    /// Core calculation method to safely adjust the temporary Categories setting.
+    /// </summary>
+    private void ChangeCategories(int amount)
     {
         tempCategories += amount;
         if (tempCategories < 1) tempCategories = 1; 
         UpdateSettingsUI();
     }
 
-    public void ChangeReshuffles(int amount)
+    /// <summary>
+    /// Core calculation method to safely adjust the temporary Reshuffles setting.
+    /// </summary>
+    private void ChangeReshuffles(int amount)
     {
         tempReshuffles += amount;
         if (tempReshuffles < 0) tempReshuffles = 0; // Prevent negative reshuffles
         UpdateSettingsUI();
     }
 
-    // --- WRAPPER METHODS FOR YOUR BUTTONS ---
+    // --- WRAPPER METHODS FOR UI BUTTONS ---
 
     public void RaiseMaxCombo() { ChangeMaxCombo(1); }
     public void LowerMaxCombo() { ChangeMaxCombo(-1); }
@@ -80,7 +96,9 @@ public class MainMenuManager : MonoBehaviour
     public void RaiseReshuffles() { ChangeReshuffles(1); }
     public void LowerReshuffles() { ChangeReshuffles(-1); }
 
-    // Refreshes the text on screen so the player sees the numbers change
+    /// <summary>
+    /// Refreshes the text on screen so the player sees the numbers change dynamically.
+    /// </summary>
     private void UpdateSettingsUI()
     {
         if (maxComboText != null) maxComboText.text = tempMaxCombo.ToString();
@@ -88,33 +106,28 @@ public class MainMenuManager : MonoBehaviour
         if (reshufflesText != null) reshufflesText.text = tempReshuffles.ToString();
     }
 
+    /// <summary>
+    /// Commits the temporary settings to the global ExperimentSettings bridge and returns to the main menu.
+    /// </summary>
     public void SaveAndCloseSettings()
     {
-        // Save everything to the global bridge
         ExperimentSettings.maxCombo = tempMaxCombo;
         ExperimentSettings.categoriesToComplete = tempCategories;
         ExperimentSettings.maxReshuffles = tempReshuffles;
         
         if (vrModeToggle != null) ExperimentSettings.vrMode = vrModeToggle.isOn;
         
-        settingsPanel.SetActive(false);
-        mainPanel.SetActive(true); // Bring the main menu back up
+        if (settingsPanel != null) settingsPanel.SetActive(false);
+        if (mainPanel != null) mainPanel.SetActive(true); 
     }
 
+    /// <summary>
+    /// Locks the cursor and transitions the player into the main gameplay scene.
+    /// </summary>
     public void PlayGame()
     {
-        //if (userCodeInput != null && userCodeInput.text != "")
-        //{
-
-        //    ExperimentSettings.userCode = userCodeInput.text;
-        //}
-
-        //if (!string.IsNullOrWhiteSpace(ExperimentSettings.userCode))
-        //{
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-            SceneManager.LoadScene(gameSceneName);
-        //}
-        
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        SceneManager.LoadScene(gameSceneName);
     }
 }

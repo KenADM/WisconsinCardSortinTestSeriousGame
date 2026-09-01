@@ -4,85 +4,81 @@ using TMPro;
 using System.Collections.Generic;
 using System.Collections;
 
+/// <summary>
+/// Manages the step-by-step tutorial sequence (Phases 0-10). 
+/// Acts as the "Director" by locking/unlocking player controls, spawning specific practice houses, 
+/// and handing over control to the GameLogicManager when the tutorial concludes.
+/// </summary>
 public class Tutorial : MonoBehaviour
 {
-    // Questo è l'evento che "griderà" al resto del gioco che il tutorial è finito
+    // --- EVENTS ---
+    public static event Action<Transform> SpawnStartingHouse;
+    public static event Action<int, int, int, float, float, float> SpawnSpecificHouse;
+    public static event Action<bool, bool> EnableMoveDirection; 
+    public static event Action<bool> EnableGrab; 
     public static event Action StartGame;
-
-    public SpawnerHouse spawnerHouse;
 
     [Header("For Tutorial")]
     [SerializeField] private GameObject spawningPlatformTutorial;
     [SerializeField] private GameObject placingPlatformTutorial;
     [SerializeField] private GameObject TutorialPlatforms;
 
-    [Header("Tutorial Text Prompts (Fasi 1-9)")]
-    [SerializeField] private GameObject phase0Prompt; // Muoviti a destra
-    [SerializeField] private GameObject phase1Prompt; // Muoviti a destra
-    [SerializeField] private GameObject phase2Prompt; // Mostra appartamento ideale e bottone
-    [SerializeField] private GameObject phase21Prompt; // Mostra appartamento ideale e bottone
-    [SerializeField] private GameObject phase3Prompt; // Muoviti a sinistra
-    [SerializeField] private GameObject phase4Prompt; // Raccogli la prima casa
-    [SerializeField] private GameObject phase5Prompt; // Rilascia la prima casa
-    [SerializeField] private GameObject phase6Prompt; // Raccogli la seconda casa
-    [SerializeField] private GameObject phase7Prompt; // Rilascia la seconda casa
-    [SerializeField] private GameObject phase8Prompt; // Muoviti a sinistra finale
-    [SerializeField] private GameObject phase9Prompt; // Bottone "Inizia Gioco"
+    [Header("Tutorial Text Prompts (Fasi 0-10)")]
+    [SerializeField] private GameObject phase0Prompt;
+    [SerializeField] private GameObject phase1Prompt;
+    [SerializeField] private GameObject phase2Prompt;
+    [SerializeField] private GameObject phase3Prompt;
+    [SerializeField] private GameObject phase4Prompt; 
+    [SerializeField] private GameObject phase5Prompt; 
+    [SerializeField] private GameObject phase6Prompt; 
+    [SerializeField] private GameObject phase7Prompt; 
+    [SerializeField] private GameObject phase8Prompt; 
+    [SerializeField] private GameObject phase9Prompt; 
+    [SerializeField] private GameObject phase10Prompt; 
 
     [Header("Tutorial Triggers")]
     [SerializeField] private GameObject rightTriggerObj; 
     [SerializeField] private GameObject leftTriggerObj;  
 
-    public static event System.Action<Transform> SpawnStartingHouse;
-    public static event System.Action<bool, bool> EnableMoveDirection; 
-    public static event System.Action<bool> EnableGrab; 
-
     [Header("For Actual Game")]
-    public List<Transform> platformsGameplay = new List<Transform>();
+    [SerializeField] private List<Transform> platformsGameplay = new List<Transform>();
     [SerializeField] private GameObject crane;
-    public GameObject spawningPlatformGameplay;
+    [SerializeField] private GameObject spawningPlatformGameplay;
 
     private int phase = 0;
+    private bool hasSpawnedSecondHouse = false;
 
-    // Variabile per evitare lo spawn multiplo della seconda casa
-    private bool hasSpawnedSecondHouse = false; 
-
-    void OnEnable()
+    private void OnEnable()
     {
         StartingScreenManager.TutorialGame += TutorialGameHandler;
-
         wentRightTriggerTutorial.ReachedRight += ReachedRightTrigger;
         wentLeftTriggerTutorial.ReachedLeft += ReachedLeftTrigger; 
-
         CraneMovement.OnHouseGrabbed += OnCraneGrab;
-
         GameLogicManager.TutorialSpawnNextHouse += OnTutorialHousePlaced;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         StartingScreenManager.TutorialGame -= TutorialGameHandler;
-
         wentRightTriggerTutorial.ReachedRight -= ReachedRightTrigger;
         wentLeftTriggerTutorial.ReachedLeft -= ReachedLeftTrigger; 
-
         CraneMovement.OnHouseGrabbed -= OnCraneGrab;
-
         GameLogicManager.TutorialSpawnNextHouse -= OnTutorialHousePlaced;
     }
 
-    void Start()
+    private void Start()
     {
         SpawnStartingHouse?.Invoke(placingPlatformTutorial.transform);
         HideAllPrompts(); 
 
-        if(rightTriggerObj != null) rightTriggerObj.SetActive(false);
-        if(leftTriggerObj != null) leftTriggerObj.SetActive(false);
+        if (rightTriggerObj != null) rightTriggerObj.SetActive(false);
+        if (leftTriggerObj != null) leftTriggerObj.SetActive(false);
     }
 
-    void Update()
+    private void Update()
     {
-        if (phase == 8)
+        // Continuously check distance during Phase 9 to trigger the final UI prompt
+        if (phase == 9)
         {
             float targetX = spawningPlatformGameplay.transform.position.x;
 
@@ -91,29 +87,27 @@ public class Tutorial : MonoBehaviour
                 Vector3 exactPos = new Vector3(targetX, crane.transform.position.y, crane.transform.position.z);
                 crane.GetComponent<CraneMovement>().SyncTargetPosition(exactPos);
 
-                SetPhase(9); 
+                SetPhase(10); 
             }
         }
     }
 
+    /// <summary>
+    /// Enables the initial welcome panel
+    /// </summary>
     private void TutorialGameHandler()
     {
         if (phase0Prompt) phase0Prompt.SetActive(true);
     }
 
-    public void CloseTutorialPanel()
-    {
-        if (phase0Prompt) phase0Prompt.SetActive(false);
-        SetPhase(1); 
-    }
-
-    // Spegne tutti i prompt di tutte le fasi
+    /// <summary>
+    /// Resets the UI state to ensure overlapping tutorial panels do not occur during transitions.
+    /// </summary>
     private void HideAllPrompts()
     {
         if (phase0Prompt) phase0Prompt.SetActive(false);
         if (phase1Prompt) phase1Prompt.SetActive(false);
         if (phase2Prompt) phase2Prompt.SetActive(false);
-        if (phase21Prompt) phase21Prompt.SetActive(false); // FIXED TYPO
         if (phase3Prompt) phase3Prompt.SetActive(false);
         if (phase4Prompt) phase4Prompt.SetActive(false);
         if (phase5Prompt) phase5Prompt.SetActive(false);
@@ -121,25 +115,27 @@ public class Tutorial : MonoBehaviour
         if (phase7Prompt) phase7Prompt.SetActive(false);
         if (phase8Prompt) phase8Prompt.SetActive(false);
         if (phase9Prompt) phase9Prompt.SetActive(false);
+        if (phase10Prompt) phase10Prompt.SetActive(false);
     }
 
+    /// <summary>
+    /// The core state machine of the tutorial. Enables/disables specific player controls 
+    /// (grabbing, movement directions) and displays the relevant instructions for each step.
+    /// </summary>
     private void SetPhase(int newPhase)
     {
         phase = newPhase;
         Debug.Log("Tutorial Phase Started: " + phase);
 
-        // at the start of all phases, hide all pannels
         HideAllPrompts(); 
 
-        // activate right pannel
         switch (phase)
         {
             case 1:
                 EnableMoveDirection?.Invoke(false, true); 
                 EnableGrab?.Invoke(false);
                 if (phase1Prompt) phase1Prompt.SetActive(true); 
-
-                if(rightTriggerObj != null) rightTriggerObj.SetActive(true);
+                if (rightTriggerObj != null) rightTriggerObj.SetActive(true);
                 break;
 
             case 2: 
@@ -148,26 +144,26 @@ public class Tutorial : MonoBehaviour
                 if (phase2Prompt) phase2Prompt.SetActive(true);
                 break;
 
-            case 3:
-                spawnerHouse.SpawnOne(1, 1, 1, spawningPlatformTutorial.transform.position.x,spawningPlatformTutorial.transform.position.y ,spawningPlatformTutorial.transform.position.z );
-
-                EnableMoveDirection?.Invoke(true, true); 
-                if (phase3Prompt) phase3Prompt.SetActive(true); 
-
-                if(leftTriggerObj != null) leftTriggerObj.SetActive(true);
+            case 3: 
+                EnableMoveDirection?.Invoke(false, false); 
+                EnableGrab?.Invoke(false);
+                if (phase3Prompt) phase3Prompt.SetActive(true);
                 break;
 
-            case 4:
+            case 4: 
+                SpawnSpecificHouse?.Invoke(1, 1, 1, spawningPlatformTutorial.transform.position.x, spawningPlatformTutorial.transform.position.y, spawningPlatformTutorial.transform.position.z);
+                EnableMoveDirection?.Invoke(true, true); 
+                if (phase4Prompt) phase4Prompt.SetActive(true); 
+                if (leftTriggerObj != null) leftTriggerObj.SetActive(true);
+                break;
+
+            case 5: 
                 EnableMoveDirection?.Invoke(true, true); 
                 EnableGrab?.Invoke(true);
-                if (phase4Prompt) phase4Prompt.SetActive(true); 
-                break;
-
-            case 5:
                 if (phase5Prompt) phase5Prompt.SetActive(true); 
                 break;
 
-            case 6:
+            case 6: 
                 if (phase6Prompt) phase6Prompt.SetActive(true); 
                 break;
 
@@ -176,118 +172,149 @@ public class Tutorial : MonoBehaviour
                 break;
 
             case 8: 
-                EnableMoveDirection?.Invoke(true, true); 
-                EnableGrab?.Invoke(false); 
                 if (phase8Prompt) phase8Prompt.SetActive(true); 
                 break;
 
-            case 9: 
-                EnableMoveDirection?.Invoke(false, false); 
+            case 9:
+                EnableMoveDirection?.Invoke(true, true); 
+                EnableGrab?.Invoke(false); 
                 if (phase9Prompt) phase9Prompt.SetActive(true); 
+                break;
+
+            case 10: 
+                EnableMoveDirection?.Invoke(false, false); 
+                if (phase10Prompt) phase10Prompt.SetActive(true); 
                 break;
         }
     }
 
-    // once it reaches the platform on the right
+    // --- Function associated to buttons ---
+
+    /// <summary>
+    /// Closes the initial welcome panel and begins the first interactive movement phase.
+    /// </summary>
+    public void CloseTutorialPanel()
+    {
+        if (phase0Prompt) phase0Prompt.SetActive(false);
+        SetPhase(1); 
+    }
+    /// <summary>
+    /// Triggered when the crane physically touches the right-side boundary box.
+    /// </summary>
     private void ReachedRightTrigger()
     {
         if (phase == 1) SetPhase(2); 
     }
 
-    public void ProceedToPhase21()
-    {
-        if(phase == 2)
-        {
-            HideAllPrompts();
-            phase21Prompt.SetActive(true);
-        }
-    }
-
-    // associated to a button to ack the preview base house
+    /// <summary>
+    /// Advances the UI after the player acknowledges the ideal apartment preview.
+    /// </summary>
     public void ProceedToPhase3()
     {
-        if (phase == 2)
-        {
-            SetPhase(3); 
-        }
+        if (phase == 2) SetPhase(3);
     }
 
-    // once returned to the spawning platform
-    public void ReachedLeftTrigger()
+    /// <summary>
+    /// Moves from the extra explanation panel back into active player control.
+    /// </summary>
+    public void ProceedToPhase4()
     {
         if (phase == 3) SetPhase(4); 
     }
 
-    // grab in CraneMovement calls event that is handled by Tutorial 
+    /// <summary>
+    /// Triggered when the crane returns to the left-side spawning platform.
+    /// </summary>
+    public void ReachedLeftTrigger()
+    {
+        if (phase == 4) SetPhase(5); 
+    }
+
+    /// <summary>
+    /// Listens to the CraneMovement script to advance the tutorial immediately upon grabbing a house.
+    /// </summary>
     private void OnCraneGrab()
     {
-        if (phase == 4) SetPhase(5);
-        else if (phase == 6) SetPhase(7);
+        if (phase == 5) SetPhase(6);
+        else if (phase == 7) SetPhase(8);
     }
 
-    // InverseTowerHandler calls event during housePlacement and it is handled byt Tutorial if its in tutorial mode
-    private void OnTutorialHousePlaced()
-    {
-        if (phase == 5)
-        {
-            if (!hasSpawnedSecondHouse)
-            {
-                hasSpawnedSecondHouse = true;
-                spawnerHouse.SpawnOne(0, 3, 1, spawningPlatformTutorial.transform.position.x,spawningPlatformTutorial.transform.position.y ,spawningPlatformTutorial.transform.position.z );
-
-            }
-            SetPhase(6);
-        }
-        else if (phase == 7)
-        {
-            SetPhase(8);
-        }
-    }
-
+    /// <summary>
+    /// Bypasses all remaining tutorial steps and prepares the crane for gameplay transition.
+    /// </summary>
     public void SkipTutorial()
     {
         HideAllPrompts(); 
-        phase = 8;
-        Debug.Log("Tutorial Phase Started: " + phase);
+        phase = 9;
         EnableMoveDirection?.Invoke(true, true); 
         EnableGrab?.Invoke(false); 
     }
 
+    /// <summary>
+    /// Triggers the final automated sequence to bridge the tutorial environment and the main gameplay environment.
+    /// </summary>
     public void StartGameHandler()
     {
         HideAllPrompts();
-        StartCoroutine(SmoothTransitionToGameplayZOnly());
+        StartCoroutine(SmoothTransitionToGameplay());
     }
 
-    // Coroutine for the final transition:
-    // 1. Locks player controls
-    // 2. Waits for the crane to physically reach the target destination
-    // 3. Sets up the gameplay platforms and starts the actual game
-    private IEnumerator SmoothTransitionToGameplayZOnly()
+    /// <summary>
+    /// Listens to the GameLogicManager to confirm a successful practice placement.
+    /// </summary>
+    private void OnTutorialHousePlaced()
     {
+        if (phase == 6)
+        {
+            // Ensures the second tutorial house is only generated once per session
+            if (!hasSpawnedSecondHouse)
+            {
+                hasSpawnedSecondHouse = true;
+                SpawnSpecificHouse?.Invoke(0, 3, 1, spawningPlatformTutorial.transform.position.x, spawningPlatformTutorial.transform.position.y, spawningPlatformTutorial.transform.position.z);
+            }
+            SetPhase(7);
+        }
+        else if (phase == 8)
+        {
+            SetPhase(9);
+        }
+    }
+
+    /// <summary>
+    /// Automates crane movement in full 2D space (X and Z) toward the primary gameplay platforms.
+    /// Upon arrival, it swaps the active platform lists and fires the global StartGame event.
+    /// </summary>
+    private IEnumerator SmoothTransitionToGameplay()
+    {
+        // 1. Lock controls during cinematic movement
         EnableMoveDirection?.Invoke(false, false);
         EnableGrab?.Invoke(false);
 
-        Vector3 targetPos = new Vector3(crane.transform.position.x, crane.transform.position.y, spawningPlatformGameplay.transform.position.z - 8);
+        // 2. Define target (matching target platform's X/Z but retaining crane's current Y height)
+        Vector3 targetPos = new Vector3(
+            spawningPlatformGameplay.transform.position.x, 
+            crane.transform.position.y, 
+            spawningPlatformGameplay.transform.position.z - 8f
+        );
 
         CraneMovement craneMovement = crane.GetComponent<CraneMovement>(); 
         craneMovement.MoveToPositionSmoothly(targetPos);
 
+        // 3. Wait until the physical position matches the target
         while (Vector3.Distance(crane.transform.position, targetPos) > 0.05f)
         {
             yield return null; 
         }
 
-        crane.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        // 4. Finalize position and swap operational data to gameplay mode
         craneMovement.SyncTargetPosition(targetPos);
-
         craneMovement.platforms.Clear();
         craneMovement.platforms = platformsGameplay;
         craneMovement.SetSpawnPosition(spawningPlatformGameplay);
 
+        // 5. Restore controls and wake up the GameLogicManager
         EnableMoveDirection?.Invoke(true, true);
         EnableGrab?.Invoke(true);
-
         StartGame?.Invoke();
     }
 }

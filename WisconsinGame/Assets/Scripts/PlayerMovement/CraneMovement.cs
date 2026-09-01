@@ -5,6 +5,10 @@ using System;
 using System.Collections;
 using Unity.VisualScripting;
 
+/// <summary>
+/// Controls the physical movement, smooth sliding, and grabbing mechanics of the crane.
+/// Responds to Player Input (Joystick/Keyboard) and automated cinematic commands from the Tutorial.
+/// </summary>
 public class CraneMovement : MonoBehaviour
 {
     [Header("Settings")]
@@ -71,7 +75,7 @@ public class CraneMovement : MonoBehaviour
     private const float ARRIVAL_THRESHOLD = 0.001f;
     private const float ROTATION_MULTIPLIER = 50f; 
 
-    void Start()
+    private void Start()
     {
         moveAction.Enable();
         pickupAction.Enable(); 
@@ -84,24 +88,31 @@ public class CraneMovement : MonoBehaviour
         targetPos = playerHead.position;
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         Tutorial.EnableMoveDirection += EnableMoveDirection;
         Tutorial.EnableGrab += EnableGrab;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         Tutorial.EnableMoveDirection -= EnableMoveDirection;
         Tutorial.EnableGrab -= EnableGrab;        
     }
 
-    void Update()
+    private void Update()
     {
-        //HandleInput();
+        // Listen for player input and translate it into crane movement commands.
+        HandleInput();
+
+        // Handle the smooth movement of the crane towards its target position.
         HandleSmoothMovement();
     }
 
+    /// <summary>
+    /// Listens for VR Joystick or Keyboard inputs. Translates raw input into 
+    /// crane movement commands while respecting tutorial movement locks.
+    /// </summary>
     private void HandleInput()
     {
         Vector2 joystick = moveAction.ReadValue<Vector2>();
@@ -135,8 +146,7 @@ public class CraneMovement : MonoBehaviour
         // PICKUP LOGIC
         if (allowGrab)
         {       
-            bool pickupPressedThisFrame = pickupAction.WasPressedThisFrame() || 
-                                          (Keyboard.current != null && Keyboard.current[keyboardPickupKey].wasPressedThisFrame);
+            bool pickupPressedThisFrame = pickupAction.WasPressedThisFrame() || (Keyboard.current != null && Keyboard.current[keyboardPickupKey].wasPressedThisFrame);
 
             if (pickupPressedThisFrame)
             {
@@ -145,11 +155,16 @@ public class CraneMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the actual physical sliding of the crane towards its target position.
+    /// Can toggle between smooth interpolation and instant teleportation.
+    /// </summary>
     private void HandleSmoothMovement()
     {
         // if i want to use smooth movements
         if (useSmoothMovement)
         {
+            // if the crane is not at the target position, move it closer
             if (Vector3.Distance(playerHead.position, targetPos) > ARRIVAL_THRESHOLD)
             {
                 isCraneSliding = true;
@@ -181,13 +196,16 @@ public class CraneMovement : MonoBehaviour
         else if (isFacingBack) MoveToClosestHandler(-direction);
     }
     
+    /// <summary>
+    /// Calculates the closest valid platform in the requested direction and sets it as the new target position.
+    /// </summary>
     private void MoveToClosestHandler(float direction)
     {
         Vector3 myPosition = targetPos; 
         Vector3 closest = myPosition; 
         float minDistance = Mathf.Infinity; 
         
-        //trovo la piattaforma piu vicina
+        // find the closest platform in the correct direction
         foreach (Transform nextHop in platforms)
         {
             if (IsCorrectDirection(myPosition.x, nextHop.position.x, direction))
@@ -201,6 +219,7 @@ public class CraneMovement : MonoBehaviour
             }          
         }
 
+        // checks if the spawning platform is closer
         if (spawnPosition != null && IsCorrectDirection(myPosition.x, spawnPosition.position.x, direction))
         {
             float dist = Vector3.Distance(myPosition, spawnPosition.position);
@@ -210,6 +229,8 @@ public class CraneMovement : MonoBehaviour
             }
         }
 
+
+        // move to closer target
         targetPos = new Vector3(closest.x, targetPos.y, targetPos.z);
         
         if (Vector3.Distance(playerHead.position, targetPos) > ARRIVAL_THRESHOLD)
@@ -226,16 +247,25 @@ public class CraneMovement : MonoBehaviour
         return false; 
     }
 
+    /// <summary>
+    /// If GrabbableHouseSensor detects a valid house, this method is called to set it as the currently hovered house.
+    /// </summary>
     public void HoverHouse(GameObject house)
     {
         if (!isSomethingInHand) hoveredHouse = house;
     }
 
+    /// <summary>
+    /// If GrabbableHouseSensor detects the exit of a valid house in his sensor, it removes it from current hovered house.
+    /// </summary>
     public void UnhoverHouse(GameObject house)
     {
         if (hoveredHouse == house) hoveredHouse = null;
     }
 
+    /// <summary>
+    /// Blocks Pickup during any movement.
+    /// </summary>
     public void TogglePickup()
     {
         if (!allowGrab || isArmMoving) return;
@@ -256,6 +286,9 @@ public class CraneMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Crane arm, locking onto a house, and pulling it back up.
+    /// </summary>
     private IEnumerator CranePickupRoutine()
     {
         isArmMoving = true;
@@ -273,7 +306,7 @@ public class CraneMovement : MonoBehaviour
         float lockedWorldZ = 0f;
         Quaternion lockedRotation = Quaternion.identity;
 
-        if (hoveredHouse != null && hoveredHouse.TryGetComponent(out HouseFunction houseComp) && houseComp.isGrabbable())
+        if (hoveredHouse != null && hoveredHouse.TryGetComponent(out HouseFunction houseComp) && houseComp.IsGrabbable())
         {
             isSomethingInHand = true;
             grabbedHouse = hoveredHouse; 
@@ -314,6 +347,9 @@ public class CraneMovement : MonoBehaviour
         if (craneSoundManager != null) craneSoundManager.StopArmSound();
     }
 
+    /// <summary>
+    /// Drops the currently held house and fires the global drop event.
+    /// </summary>
     private void CraneRelease()
     {
         if (grabbedHouse == null) return;
@@ -330,6 +366,10 @@ public class CraneMovement : MonoBehaviour
         OnHouseDropped?.Invoke();
     }
 
+    /// <summary>
+    /// Triggers a smooth crane movement to the left.
+    /// Used by a movement button ingame.
+    /// </summary>   
     public void MoveLeft() 
     { 
         if (isArmMoving || isCraneSliding) return;
@@ -337,6 +377,10 @@ public class CraneMovement : MonoBehaviour
         if (allowMoveLeft) MoveToClosest(-1f);
     }
 
+    /// <summary>
+    /// Triggers a smooth crane movement to the right.
+    /// Used by a movement button ingame.
+    /// </summary>   
     public void MoveRight() 
     { 
         if (isArmMoving || isCraneSliding) return;
@@ -344,22 +388,44 @@ public class CraneMovement : MonoBehaviour
         if (allowMoveRight) MoveToClosest(1f);
     }
 
+    /// <summary>
+    /// Sets the spawn position.
+    /// Used by Tutorial to inform the crane of the new current spawn platform.
+    /// </summary>  
     public void SetSpawnPosition(GameObject spawnPos) 
     { 
         spawnPosition = spawnPos.transform; 
     }
 
-    void EnableMoveDirection(bool left, bool right)
+    /// <summary>
+    /// Enables or disables the crane's ability to move left or right based on tutorial progression and at the end of the game.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    private void EnableMoveDirection(bool left, bool right)
     {
         allowMoveLeft = left;
         allowMoveRight = right;
     }
 
-    void EnableGrab(bool state)
+    /// <summary>
+    /// Enables or disables the crane's ability to grab houses based on tutorial progression and at the end of the game.
+    /// </summary>
+    /// <param name="state"></param>
+    private void EnableGrab(bool state)
     {
         allowGrab = state;
     }
 
+
+    // function used by tutorial to move the crane to a specific position without player input.
+
+    /// <summary>
+    /// Set target position.
+    /// Play movement crane sound if moving.
+    /// set isCraneSliding to true if moving.
+    /// </summary>
+    /// <param name="newTargetPos">The world position to move the crane to.</param>
     public void MoveToPositionSmoothly(Vector3 newTargetPos)
     {
         targetPos = newTargetPos;
@@ -370,6 +436,10 @@ public class CraneMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Instantly teleports the crane to a specific position and halts any sliding momentum.
+    /// </summary>
+    /// <param name="newPos">The new position to teleport the crane to.</param>
     public void SyncTargetPosition(Vector3 newPos)
     {
         targetPos = newPos;

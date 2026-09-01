@@ -2,6 +2,10 @@ using System;
 using UnityEngine;
 
 [Serializable]
+
+/// <summary>
+/// Holds the defining characteristics (Color, Type, People) for a specific house.
+/// </summary>
 public class HouseCombination 
 {
     [field: SerializeField] public int color { get; private set; }

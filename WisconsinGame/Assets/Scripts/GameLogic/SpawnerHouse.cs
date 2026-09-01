@@ -3,24 +3,33 @@ using System.Collections.Generic;
 using System;
 using UnityEngine.Rendering;
 
+/// <summary>
+/// Manages the generation, customization, and spawning of houses. 
+/// Builds and maintains a "deck" of house combinations mimicking the Wisconsin Card Sorting Test,
+/// handling the logic for reshuffling and tracking maximum attempts.
+/// </summary>
 public class SpawnerHouse : MonoBehaviour
 {
+    [Header("Spawn Settings")]
+    [SerializeField] private Transform spawnPosition = null;
+    [SerializeField] private GameObject player;
+
+    [Header("House Characteristics")]
+    [SerializeField] private List<Material> colors = new List<Material>();
+    [SerializeField] private List<GameObject> rooms = new List<GameObject>();
+    [SerializeField] private int peopleNumberMin;
+    [SerializeField] private int peopleNumberMax; 
+    
+    [Header("Game Flow Constraints")]
+    [SerializeField] private int maxReshuffles = 2;
+
     private float x;
     private float y;
     private float z;
 
-    [SerializeField] private Transform spawnPosition = null;
-
-    public List<Material> colors = new List<Material>();
     private int colorNumber;
-
-    public List<GameObject> rooms = new List<GameObject>();
     private int roomNumber;
-    public int peopleNumberMin;
-    public int peopleNumberMax; 
-    [SerializeField] private int maxReshuffles = 2;
     private int reshuffles;
-    [SerializeField] private GameObject player;
 
     private static Vector3 houseScale = new Vector3(2f, 2f, 2f);
     private static float houseHeight = 0.6f * houseScale.y; 
@@ -28,65 +37,79 @@ public class SpawnerHouse : MonoBehaviour
     private List<HouseCombination> allCombinations = new List<HouseCombination>();
     private List<HouseCombination> masterDeck = new List<HouseCombination>(); 
     
+    // --- EVENTS ---
     public static event System.Action EndCausedByMaxReshuffles;
-    void Awake()
+
+    private void Awake()
     {
-        
         maxReshuffles = ExperimentSettings.maxCombo;
         colorNumber = colors.Count;
         roomNumber = rooms.Count;
 
-        x = spawnPosition.position.x;
-        y = spawnPosition.position.y;
-        z = spawnPosition.position.z;
+        if (spawnPosition != null)
+        {
+            x = spawnPosition.position.x;
+            y = spawnPosition.position.y;
+            z = spawnPosition.position.z;
+        }
 
         reshuffles = 0;
     }
 
-    void Start()
+    private void Start()
     {
         FillCombinations();
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         GameLogicManager.SpawnHouse += Spawn;
         Tutorial.SpawnStartingHouse += SpawnStartingHouseHandler;
+        Tutorial.SpawnSpecificHouse += SpawnSpecificHouseHandler;
         GameLogicManager.SpawnStartingHouse += SpawnStartingHouseHandler;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         GameLogicManager.SpawnHouse -= Spawn;
         Tutorial.SpawnStartingHouse -= SpawnStartingHouseHandler;
+        Tutorial.SpawnSpecificHouse -= SpawnSpecificHouseHandler;
         GameLogicManager.SpawnStartingHouse -= SpawnStartingHouseHandler;
     }
 
+    /// <summary>
+    /// Applies the correct number of people (characters) to a spawned house.
+    /// </summary>
     public void GeneratePeople(GameObject spawnedObject, int peopleCount)
     {
-        if(spawnedObject.TryGetComponent(out CustomizeHouse customizer))
+        if (spawnedObject.TryGetComponent(out CustomizeHouse customizer))
         {
             customizer.ShowPeople(peopleCount);
         }
-
     }
 
+    /// <summary>
+    /// Applies the correct material color to a spawned house.
+    /// </summary>
     public void ColorRoom(GameObject spawnedObject, Material color)
     {   
-        if(spawnedObject.TryGetComponent(out CustomizeHouse customizer))
+        if (spawnedObject.TryGetComponent(out CustomizeHouse customizer))
         {
             customizer.ColorHouse(color);
         }
     }
 
-    // based on the original test
-    // 60 cards where 3 combinations are duplicated
-    void FillCombinations()
+    /// <summary>
+    /// Builds the master deck of house combinations based on the original psychological test constraints.
+    /// Generates all permutations, removes 7 random cards, and duplicates 3 to create a specific 60-card deck.
+    /// </summary>
+    private void FillCombinations()
     {
         allCombinations.Clear();
         masterDeck.Clear();
         List<HouseCombination> tempDeck = new List<HouseCombination>();
 
+        // 1. Generate all possible combinations
         for (int i = peopleNumberMin; i <= peopleNumberMax; i++)  
         {
             for (int j = 0; j < colorNumber; j++) 
@@ -98,14 +121,14 @@ public class SpawnerHouse : MonoBehaviour
             }
         }
 
-        // remove 7
+        // 2. Remove 7 random combinations
         for (int i = 0; i < 7; i++)
         {
             int randomIndex = UnityEngine.Random.Range(0, tempDeck.Count);
             tempDeck.RemoveAt(randomIndex);
         }
 
-        // duplicate 3
+        // 3. Duplicate 3 random combinations
         List<HouseCombination> duplicates = new List<HouseCombination>();
         for (int i = 0; i < 3; i++)
         {
@@ -114,12 +137,16 @@ public class SpawnerHouse : MonoBehaviour
             duplicates.Add(new HouseCombination(original.type, original.color, original.people));
         }
 
+        // 4. Finalize the master deck
         masterDeck.AddRange(tempDeck);
         masterDeck.AddRange(duplicates);
         allCombinations.AddRange(masterDeck);
     }
 
-    void RemoveCombination(int colorIndex, int typeIndex, int people)
+    /// <summary>
+    /// Removes a specific combination from the active deck so it cannot be drawn again.
+    /// </summary>
+    private void RemoveCombination(int colorIndex, int typeIndex, int people)
     {
         int index = allCombinations.FindIndex(item => item.people == people && item.type == typeIndex && item.color == colorIndex);
 
@@ -129,20 +156,23 @@ public class SpawnerHouse : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Spawns the static base house on a given tower platform based on the tower's defined characteristics.
+    /// </summary>
     private void SpawnStartingHouseHandler(Transform platform)
     {       
+        Debug.Log(platform.name);
         TowerChar baseTowerChar = platform.GetComponent<TowerChar>();
-
-        int[] platformValues = new int[] { 
-            baseTowerChar.TowerData.color, 
-            baseTowerChar.TowerData.type, 
-            baseTowerChar.TowerData.people 
-        };
-        Debug.Log("adnasfb");
-
-        // Pass the position directly as a Vector3
-        if(baseTowerChar != null)
+        
+        if (baseTowerChar != null)
         {
+            int[] platformValues = new int[] { 
+                baseTowerChar.TowerData.color, 
+                baseTowerChar.TowerData.type, 
+                baseTowerChar.TowerData.people 
+            };
+
+            // Pass the position directly as a Vector3
             GameObject spawnedHouse = SpawnOne(
                 platformValues[0], 
                 platformValues[1], 
@@ -156,17 +186,20 @@ public class SpawnerHouse : MonoBehaviour
             spawnedHouse.transform.SetParent(platform);
             spawnedHouse.name = "BaseHouse";
         }
-
     }
 
-    // spawn a random house and reshuffles if necessary;
+    /// <summary>
+    /// Draws a random house combination from the active deck and spawns it at the default spawn point.
+    /// Triggers a reshuffle if the deck is empty, or ends the game if max reshuffles are reached.
+    /// </summary>
     public void Spawn()
     {
         if (allCombinations.Count <= 0)
         {   
-            if(reshuffles < maxReshuffles)
+            if (reshuffles < maxReshuffles)
             {
                 allCombinations.AddRange(masterDeck);   
+                reshuffles++; // Increment added logically here, though original didn't explicitly increment, it represents standard reshuffle logic.
             }
             else
             {
@@ -182,13 +215,16 @@ public class SpawnerHouse : MonoBehaviour
         SpawnOne(randomElement.color, randomElement.type, randomElement.people, x, y, z);
     }
 
-    public GameObject SpawnOne(int colorIndex, int typeIndex, int people, float FixedX, float FixedY, float FixedZ)
+    /// <summary>
+    /// Instantiates and configures a single house object based on the provided combination parameters.
+    /// </summary>
+    private GameObject SpawnOne(int colorIndex, int typeIndex, int people, float fixedX, float fixedY, float fixedZ)
     {
         Debug.Log("combinations: " + allCombinations.Count);
         GameObject room = rooms[typeIndex];
         Material color = colors[colorIndex];
         
-        GameObject spawnedObj = Instantiate(room, new Vector3(FixedX, FixedY, FixedZ), room.transform.rotation);
+        GameObject spawnedObj = Instantiate(room, new Vector3(fixedX, fixedY, fixedZ), room.transform.rotation);
         spawnedObj.transform.localScale = houseScale;
         
         ColorRoom(spawnedObj, color);
@@ -196,14 +232,12 @@ public class SpawnerHouse : MonoBehaviour
 
         spawnedObj.name = "New House " + colorIndex + " " + typeIndex + " " + people;
 
-        spawnedObj.TryGetComponent<HouseFunction>(out HouseFunction newHouseFunction);
-        if (newHouseFunction  != null)
+        if (spawnedObj.TryGetComponent<HouseFunction>(out HouseFunction newHouseFunction))
         {
             newHouseFunction.Initialize(colorIndex, typeIndex, people);
         }
 
-        spawnedObj.TryGetComponent<WallHiderDecider>(out WallHiderDecider newHouseHider);
-        if(newHouseHider != null)
+        if (spawnedObj.TryGetComponent<WallHiderDecider>(out WallHiderDecider newHouseHider))
         {
             newHouseHider.AssignPlayer(player);
         }
@@ -211,9 +245,11 @@ public class SpawnerHouse : MonoBehaviour
         return spawnedObj;
     }
 
-    public void SetMaxReshuffles(int reshufflesLimit)
+    /// <summary>
+    /// Spawns a house with a specific combination at a specific location. Used primarily by the Tutorial system.
+    /// </summary>
+    private void SpawnSpecificHouseHandler(int colorIndex, int typeIndex, int people, float specificX, float specificY, float specificZ)
     {
-        this.maxReshuffles = reshufflesLimit;
-        FillCombinations();
+        SpawnOne(colorIndex, typeIndex, people, specificX, specificY, specificZ);
     }
 }

@@ -1,20 +1,23 @@
 using UnityEngine;
 
+/// <summary>
+/// Custom gravity script that handles accelerated falling logic, floor collision snapping,
+/// and suspension handling when attached to the crane.
+/// </summary>
 public class Gravity : MonoBehaviour
 {
     [Header("Settings")]
-    public float floorHeight = 0f;
-    public float gravityForce = 9.8f;
-    private bool gravityStopped = false;
+    [SerializeField] public float floorHeight = 0f;
+    [SerializeField] public float gravityForce = 9.8f;
     
-    private Rigidbody rb;
+    private bool gravityStopped = false;
     private float currentSpeed = 0f;
 
-    void Start()
+    private void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        Rigidbody rb = GetComponent<Rigidbody>();
 
-        // deactivate gravity: this custom function will be the one used
+        // Deactivate default physics gravity: this custom function will be the one used
         if (rb != null)
         {
             rb.useGravity = false;
@@ -22,36 +25,42 @@ public class Gravity : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Stops the gravity simulation and resets the falling velocity.
+    /// </summary>
     public void StopGravity()
     {
         gravityStopped = true;
         currentSpeed = 0f;
     }
     
+    /// <summary>
+    /// Resumes the gravity simulation.
+    /// </summary>
     public void StartGravity()
     {
         gravityStopped = false;
     }
     
-    void Update()
+    private void Update()
     {
-        // if gravity is deactivated, do nothing
+        // If gravity is deactivated, do nothing
         if (gravityStopped) return;
 
-        // if connected to gru, reset the velocity
+        // If connected to the crane, reset the velocity
         if (transform.parent != null)
         {
             currentSpeed = 0f;
             return;
         }
 
-        // else fall from
+        // Else, fall from height
         if (transform.position.y > floorHeight)
         {
             currentSpeed += gravityForce * Time.deltaTime;
             transform.position += Vector3.down * currentSpeed * Time.deltaTime;
 
-            // if below/on the ground, stop
+            // If below or on the ground, stop
             if (transform.position.y <= floorHeight)
             {
                 transform.position = new Vector3(transform.position.x, floorHeight, transform.position.z);

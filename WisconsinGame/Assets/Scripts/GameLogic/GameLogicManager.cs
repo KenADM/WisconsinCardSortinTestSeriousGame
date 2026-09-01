@@ -1,10 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System;
+using System; 
 using TMPro;
 using Serilog;
 using static PlayerLog;
 
+/// <summary>
+/// Acts as the central "Referee" for the experiment. 
+/// Evaluates player placements, manages the active psychological condition (Color, Type, People), 
+/// and tracks clinical data metrics (combos, attempts, and overall score).
+/// </summary>
 public class GameLogicManager : MonoBehaviour
 {
     [Header("Data For Analysis")]
@@ -13,43 +18,37 @@ public class GameLogicManager : MonoBehaviour
     private int categoriesCompleted = 0;
     private int categoriesToComplete = 9;
     private int maxReshuffles = 2;
+    
+    // Tracked to calculate the final Happiness Percentage metric at the end of the game
     private int numberOfTriedApartments;
 
-    // condition related data ------
+    // 0: Color | 1: Type | 2: People
     private List<int> conditionValues = new List<int>() {0, 1, 2};
-    /*
-        0: color
-        1: type
-        2: people
-    */
     private int conditionNumber = 0;
 
-    // starts at true, determines if in tutorial mode ------
+    // Prevents clinical data logging and end-game triggers during practice rounds
     private bool isTutorial = true; 
     
     [Header("Platforms")]
-    public List<Transform> platforms = new List<Transform>();
+    [SerializeField] private List<Transform> platforms = new List<Transform>();
 
-
-    // debug stuff
     [Header("Debug Displays")]
-
-    public TextMeshProUGUI displayCondition;
-    public TextMeshProUGUI displayCombo;
+    [SerializeField] private TextMeshProUGUI displayCondition;
+    [SerializeField] private TextMeshProUGUI displayCombo;
 
     [Header("End Game UI")]
-    [SerializeField] private GameObject endGamePanel; // End Screen
+    [SerializeField] private GameObject endGamePanel; 
     [SerializeField] private TextMeshProUGUI testoEndGamePanel;
 
-    // events called
-    public static event System.Action<Transform> SpawnStartingHouse;
-    public static event System.Action SpawnHouse;
-    public static event System.Action EndGame;
-    public static event System.Action EnableMoveDirection;
-    public static event System.Action EnableGrab;
-    public static event System.Action TutorialSpawnNextHouse; 
+    // --- EVENTS ---
+    public static event Action<Transform> SpawnStartingHouse;
+    public static event Action SpawnHouse;
+    public static event Action EndGame;
+    public static event Action<bool, bool> EnableMoveDirection;
+    public static event Action<bool> EnableGrab;
+    public static event Action TutorialSpawnNextHouse; 
 
-    void Awake()
+    private void Awake()
     {
         combo = 0;
         maxCombo = ExperimentSettings.maxCombo;
@@ -57,10 +56,9 @@ public class GameLogicManager : MonoBehaviour
         categoriesToComplete = ExperimentSettings.categoriesToComplete;
         maxReshuffles = ExperimentSettings.maxReshuffles;
         numberOfTriedApartments = 0;
-
     }
     
-    void Start()
+    private void Start()
     {
         if (endGamePanel != null)
         {
@@ -68,29 +66,29 @@ public class GameLogicManager : MonoBehaviour
         }
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         Tutorial.StartGame += StartGameHandler; 
-        //StartingScreenManager.StartGame += StartGameHandler;
         InverseTowerHandler.checkHousePlacement += CheckHousePlacementHandler;
         SpawnerHouse.EndCausedByMaxReshuffles += EndGameMaxReshuffles;
-        
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         Tutorial.StartGame -= StartGameHandler;
-        //StartingScreenManager.StartGame -= StartGameHandler;
         InverseTowerHandler.checkHousePlacement -= CheckHousePlacementHandler;
         SpawnerHouse.EndCausedByMaxReshuffles -= EndGameMaxReshuffles;
         
         PlayerLog.CloseLogger();
     }
 
-    // function called by starting game button
+    /// <summary>
+    /// Initializes the clinical data collection phase, disabling tutorial protections, 
+    /// setting the first sorting rule, and populating the gameplay towers.
+    /// </summary>
     private void StartGameHandler()
     {
-        Debug.Log("Starting Game with user code: " + ExperimentSettings.userCode + " and number of variants per characteristic: ");
+        Debug.Log("Starting Game with user code: " + ExperimentSettings.userCode);
         
         isTutorial = false; 
         combo = 0;
@@ -101,10 +99,11 @@ public class GameLogicManager : MonoBehaviour
         SpawnStartingSetup();
     }
 
-    // function called to spawn the base houses in the 4 towers
+    /// <summary>
+    /// Commands the Spawner Unit to build the unmovable base houses on all available platforms.
+    /// </summary>
     private void SpawnStartingSetup()
     {
-        Debug.Log("Spawning starting cubes");
         for (int i = 0; i < platforms.Count; i++)
         {
             SpawnStartingHouse?.Invoke(platforms[i]);
@@ -112,14 +111,15 @@ public class GameLogicManager : MonoBehaviour
         SpawnHouse?.Invoke();
     }
 
-    // function called to check the placement of a house on a tower
+    /// <summary>
+    /// Evaluates the player's placement of a house on a given tower against the currently active sorting rule (Condition).
+    /// Handles visual feedback, combo tracking, and logging the clinical result.
+    /// </summary>
     private void CheckHousePlacementHandler(GameObject platform, int[] houseValues)
     {
         TowerChar baseTowerChar = platform.GetComponent<TowerChar>();
-
         numberOfTriedApartments++;
 
-        // access platform data
         int[] platformValues = new int[] { 
             baseTowerChar.TowerData.color, 
             baseTowerChar.TowerData.type, 
@@ -129,65 +129,52 @@ public class GameLogicManager : MonoBehaviour
         FeedbackManager feedbackHandler = platform.GetComponent<FeedbackManager>();
 
         string condition = GetCondition();
-        Debug.Log(condition);
         bool conditionMet = (platformValues[conditionNumber] == houseValues[conditionNumber]);
-        Debug.Log(platformValues[conditionNumber]);
-        Debug.Log(houseValues[conditionNumber]);
         string conditionResult = "";
 
         if (conditionMet)
         {
-            Debug.Log("Condition met!");
             conditionResult = "Match";
             combo++;
-            if(feedbackHandler != null)
-            {
-                feedbackHandler.Feedback(true);
-            }
+            if (feedbackHandler != null) feedbackHandler.Feedback(true);
         }
         else
         {   
-            Debug.Log("Condition not met!");
             conditionResult = "Not Match";
             combo = 0;
-            if(feedbackHandler != null)
-            {
-                feedbackHandler.Feedback(false);
-            }        
+            if (feedbackHandler != null) feedbackHandler.Feedback(false);
         }
 
+        // if it's in tutorial mode, the choice is not registered 
         if (isTutorial)
         {
             TutorialSpawnNextHouse?.Invoke();
             return;
         }
+        
+        // Pass to next category if the combo max has been reached
+        if (combo >= maxCombo)
+        {
+            ChooseCondition();
+            PrintCondition();
+            combo = 0;
+            categoriesCompleted++;
+        }
+        
+        PrintCombo();
+
+        Log.Information("Check Condition\nCube:\tColor: {ColorNewCube} Type: {TypeNewCube} People: {PeopleNewCube}\nBase:\tColor: {ColorBase} Type: {TypeBase} People: {PeopleBase}\nCondition: {Condition}\nResult: {ConditionResult} ({RealInARow})\n", 
+        houseValues[0], houseValues[1], houseValues[2], platformValues[0], platformValues[1], platformValues[2], condition, conditionResult, combo);
+
+        // End game if the required number of categories has been completed, otherwise spawn a new house
+        if (categoriesCompleted >= categoriesToComplete)
+        {
+            EndGame?.Invoke();
+            EndGamePhase();
+        }
         else
         {
-            if (combo >= maxCombo)
-            {
-                Debug.Log("Change condition!");
-                ChooseCondition();
-                PrintCondition();
-                combo = 0;
-                PrintCombo();
-                categoriesCompleted++;
-            }
-            PrintCombo();
-
-            Log.Information("Check Condition\nCube:\tColor: {ColorNewCube} Type: {TypeNewCube} People: {PeopleNewCube}\nBase:\tColor: {ColorBase} Type: {TypeBase} People: {PeopleBase}\nCondition: {Condition}\nResult: {ConditionResult} ({RealInARow})\n", 
-            houseValues[0], houseValues[1], houseValues[2], platformValues[0], platformValues[1], platformValues[2], condition, conditionResult, combo);
-
-            if (categoriesCompleted >= categoriesToComplete)
-            {
-                EndGame?.Invoke();
-                EndGamePhase();
-            }
-            else
-            {
-                SpawnHouse?.Invoke();    
-            }
-
-
+            SpawnHouse?.Invoke();    
         }
     }
 
@@ -201,13 +188,17 @@ public class GameLogicManager : MonoBehaviour
     private void PrintCombo()
     {
         string comboPrint = "Combo " + combo;
-        Debug.Log(comboPrint);
         displayCombo.text = comboPrint;
     }
 
+    /// <summary>
+    /// Randomly selects a new sorting rule from the remaining pool.
+    /// It refills the pool if the categories have not been completed enough time.
+    /// </summary>
     private void ChooseCondition()
     {
-        if(conditionValues.Count == 0)
+        // Replenish the pool if all conditions have been exhausted
+        if (conditionValues.Count == 0)
         {
             conditionValues = new List<int>() {0, 1, 2};
         }
@@ -215,58 +206,53 @@ public class GameLogicManager : MonoBehaviour
         int randomIndex = UnityEngine.Random.Range(0, conditionValues.Count);
         conditionNumber = conditionValues[randomIndex];
 
-        switch (conditionNumber)
-            {
-                case 0: 
-                    Debug.Log("Condition: Color!");
-                    break;
-                case 1: 
-                    Debug.Log("Condition: Type!");
-                    break;
-                case 2: 
-                    Debug.Log("Condition: People!");
-                    break;
-            }
-
+        Debug.Log("New active condition: " + GetCondition());
         conditionValues.RemoveAt(randomIndex);
     }
 
+    /// <summary>
+    /// Converts the current condition integer into its human-readable string equivalent.
+    /// </summary>
     private string GetCondition()
     {
-        string newCondition = "";
         switch (conditionNumber)
-            {
-                case 0:
-                    newCondition = "Color";
-                    break;
-                case 1:
-                    newCondition = "Type";
-                    break;
-                case 2:
-                    newCondition = "People";
-                    break;
-            }
-        return newCondition;
+        {
+            case 0: return "Color";
+            case 1: return "Type";
+            case 2: return "People";
+            default: return "Unknown";
+        }
     }
 
-    // called when the max reshuffles are met before completing the wanted categories
+    /// <summary>
+    /// If the reshuffles have been maxed before completing enough categories, the experiment ends
+    /// </summary>    
     private void EndGameMaxReshuffles()
     {
+        Debug.Log("Experiment ended early due to maximum reshuffles.");
         EndGamePhase();
     }
+    
+    /// <summary>
+    /// Locks player controls and displays the final performance metrics.
+    /// </summary>
     private void EndGamePhase()
     {
-        EnableMoveDirection?.Invoke();
-        EnableGrab?.Invoke();
-        Debug.Log("Tutte le case sono state spawnate. Mostro la schermata finale.");
+        EnableMoveDirection?.Invoke(false, false);
+        EnableGrab?.Invoke(false);
+        
+        
         if (endGamePanel != null)
         {
             endGamePanel.SetActive(true);
-            
             testoEndGamePanel.text = "Percentuale Felicità Raggiunta: " + CalculatePoints().ToString("F0") + "%";
         }
     }
 
+    /// <summary>
+    /// Calculates the player's overall performance score based on successful categories 
+    /// relative to total attempts. Returns a percentage from 0 to 100.
+    /// </summary>
     private float CalculatePoints()
     {
         if (numberOfTriedApartments == 0) return 0f; 
@@ -274,17 +260,17 @@ public class GameLogicManager : MonoBehaviour
         return ((categoriesCompleted * 5f) / numberOfTriedApartments) * 100f;
     }
 
-    // function associated to the button to end game
+    /// <summary>
+    /// Safely terminates the application, ensuring all clinical data is written to the log file before closing.
+    /// </summary>
     public void QuitGame()
     {
-        Debug.Log("Uscita dal gioco...");
+        Debug.Log("Exiting game and saving logs...");
         
-        // Save log
         PlayerLog.CloseLogger(); 
         
-        // Close Application
         Application.Quit();
-        // for testing
+        
         #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
         #endif

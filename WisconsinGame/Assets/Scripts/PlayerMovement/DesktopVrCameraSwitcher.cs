@@ -3,18 +3,25 @@ using UnityEngine.InputSystem;
 using UnityEngine.XR.Management;
 using System.Collections;
 
+/// <summary>
+/// Handles the initialization and switching between the Desktop camera and the VR camera rigs 
+/// based on the global experiment settings.
+/// </summary>
 public class DesktopvrCameraSwitcher : MonoBehaviour
 {
     [Header("Rigs")]
-    public GameObject vrCamera;
-    public GameObject desktopCamera;
-    public bool isDesktopMode = false;
+    [SerializeField] private GameObject vrCamera;
+    [SerializeField] private GameObject desktopCamera;
+    
+    [Tooltip("Read-only view of the current mode. Set via ExperimentSettings at runtime.")]
+    [SerializeField] private bool isDesktopMode = false;
 
-    void Awake()
+    private void Awake()
     {
         isDesktopMode = !ExperimentSettings.vrMode;
     }
-    void Start()
+    
+    private void Start()
     {
         if (isDesktopMode)
         {
@@ -22,10 +29,13 @@ public class DesktopvrCameraSwitcher : MonoBehaviour
         }
         else
         {
-            ActivateVR();
+            StartCoroutine(ActivateVR());
         }
     }
 
+    /// <summary>
+    /// Safely halts VR subsystems and enables the standard flat-screen desktop camera.
+    /// </summary>
     private void ActivateDesktop()
     {
         // 1. Stop VR rendering and tracking (if it's running)
@@ -43,6 +53,10 @@ public class DesktopvrCameraSwitcher : MonoBehaviour
         Debug.Log("Switched to Desktop Mode");
     }
 
+    /// <summary>
+    /// Initializes the XR subsystems if necessary, turns off the desktop rig, 
+    /// and activates the VR headset tracking and rendering.
+    /// </summary>
     private IEnumerator ActivateVR()
     {
         // 1. Initialize VR if it hasn't been initialized yet

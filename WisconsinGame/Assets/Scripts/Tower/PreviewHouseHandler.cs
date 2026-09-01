@@ -2,39 +2,47 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
+/// <summary>
+/// Tracks the crane's position in real-time to find the closest gameplay platform.
+/// Commands the closest tower to display a "preview" (ghost) house, providing visual feedback for where the house will drop.
+/// </summary>
 public class PreviewHouseHandler : MonoBehaviour
 {
     [Header("For Actual Game")]
-    public List<Transform> platforms = new List<Transform>();
-    [SerializeField] private GameObject player; // La gru
-    public GameObject spawningPlatform;
+    [SerializeField] private List<Transform> platforms = new List<Transform>();
+    
+    // The crane controlled by the player
+    [SerializeField] private GameObject player; 
+    
+    [SerializeField] private GameObject spawningPlatform;
 
     private bool isActive;
-    
     private Transform currentClosestPlatform = null;
 
-    void OnEnable()
+    private void OnEnable()
     {
         Tutorial.StartGame += StartPreviewHandler;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         Tutorial.StartGame -= StartPreviewHandler;
     }
 
-    void Start()
+    private void Start()
     {
         isActive = false;
     }
 
-    void Update()
+    private void Update()
     {
+        // Only run distance calculations if the main game is active
         if (isActive)
         {
             Transform closestPlatform = null;
             float minDistance = float.MaxValue;
 
+            // 1. Find the closest gameplay tower
             foreach (Transform tower in platforms)
             {
                 float distance = Vector3.Distance(player.transform.position, tower.position);
@@ -45,14 +53,17 @@ public class PreviewHouseHandler : MonoBehaviour
                 }
             }
 
+            // 2. Check if the spawning platform is actually the closest point
             float spawnDistance = Vector3.Distance(player.transform.position, spawningPlatform.transform.position);
             if (spawnDistance < minDistance)
             {
                 closestPlatform = spawningPlatform.transform;
             }
 
+            // 3. If the closest platform has changed this frame, update the visual previews
             if (closestPlatform != currentClosestPlatform)
             {
+                // Hide the preview on the previous platform
                 if (currentClosestPlatform != null && currentClosestPlatform != spawningPlatform.transform)
                 {
                     if (currentClosestPlatform.TryGetComponent(out InverseTowerHandler oldTower))
@@ -63,6 +74,7 @@ public class PreviewHouseHandler : MonoBehaviour
 
                 currentClosestPlatform = closestPlatform;
 
+                // Show the preview on the new closest platform
                 if (currentClosestPlatform != null && currentClosestPlatform != spawningPlatform.transform)
                 {
                     if (currentClosestPlatform.TryGetComponent(out InverseTowerHandler newTower))
@@ -74,7 +86,10 @@ public class PreviewHouseHandler : MonoBehaviour
         }
     }
 
-    void StartPreviewHandler()
+    /// <summary>
+    /// Activates the preview tracking system once the main game begins.
+    /// </summary>
+    private void StartPreviewHandler()
     {   
         isActive = true;
     }

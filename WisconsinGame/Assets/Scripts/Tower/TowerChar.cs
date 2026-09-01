@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Holds the defining characteristics (Color, Type, People) for a specific tower platform.
+/// </summary>
 public class TowerChar : MonoBehaviour
 {
     [Header("Tower Data")]
