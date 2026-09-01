@@ -23,7 +23,7 @@ public class Tutorial : MonoBehaviour
     [SerializeField] private GameObject placingPlatformTutorial;
     [SerializeField] private GameObject TutorialPlatforms;
 
-    [Header("Tutorial Text Prompts (Fasi 0-10)")]
+    [Header("Tutorial Text Prompts (Fasi 0-10) and look at the buttons Prompt")]
     [SerializeField] private GameObject phase0Prompt;
     [SerializeField] private GameObject phase1Prompt;
     [SerializeField] private GameObject phase2Prompt;
@@ -35,6 +35,7 @@ public class Tutorial : MonoBehaviour
     [SerializeField] private GameObject phase8Prompt; 
     [SerializeField] private GameObject phase9Prompt; 
     [SerializeField] private GameObject phase10Prompt; 
+    [SerializeField] private GameObject lookAtTheButtonsPrompt; 
 
     [Header("Tutorial Triggers")]
     [SerializeField] private GameObject rightTriggerObj; 
@@ -116,6 +117,7 @@ public class Tutorial : MonoBehaviour
         if (phase8Prompt) phase8Prompt.SetActive(false);
         if (phase9Prompt) phase9Prompt.SetActive(false);
         if (phase10Prompt) phase10Prompt.SetActive(false);
+        if (lookAtTheButtonsPrompt) lookAtTheButtonsPrompt.SetActive(false);
     }
 
     /// <summary>
@@ -135,6 +137,7 @@ public class Tutorial : MonoBehaviour
                 EnableMoveDirection?.Invoke(false, true); 
                 EnableGrab?.Invoke(false);
                 if (phase1Prompt) phase1Prompt.SetActive(true); 
+                if (lookAtTheButtonsPrompt) lookAtTheButtonsPrompt.SetActive(true);
                 if (rightTriggerObj != null) rightTriggerObj.SetActive(true);
                 break;
 
@@ -151,9 +154,10 @@ public class Tutorial : MonoBehaviour
                 break;
 
             case 4: 
-                SpawnSpecificHouse?.Invoke(1, 1, 1, spawningPlatformTutorial.transform.position.x, spawningPlatformTutorial.transform.position.y, spawningPlatformTutorial.transform.position.z);
+                SpawnSpecificHouse?.Invoke(1, 1, 1, spawningPlatformTutorial.transform.position.x, spawningPlatformTutorial.transform.position.y + 3f, spawningPlatformTutorial.transform.position.z);
                 EnableMoveDirection?.Invoke(true, true); 
                 if (phase4Prompt) phase4Prompt.SetActive(true); 
+                if (lookAtTheButtonsPrompt) lookAtTheButtonsPrompt.SetActive(true);
                 if (leftTriggerObj != null) leftTriggerObj.SetActive(true);
                 break;
 
@@ -161,6 +165,7 @@ public class Tutorial : MonoBehaviour
                 EnableMoveDirection?.Invoke(true, true); 
                 EnableGrab?.Invoke(true);
                 if (phase5Prompt) phase5Prompt.SetActive(true); 
+                if (lookAtTheButtonsPrompt) lookAtTheButtonsPrompt.SetActive(true);
                 break;
 
             case 6: 
@@ -270,7 +275,7 @@ public class Tutorial : MonoBehaviour
             if (!hasSpawnedSecondHouse)
             {
                 hasSpawnedSecondHouse = true;
-                SpawnSpecificHouse?.Invoke(0, 3, 1, spawningPlatformTutorial.transform.position.x, spawningPlatformTutorial.transform.position.y, spawningPlatformTutorial.transform.position.z);
+                SpawnSpecificHouse?.Invoke(0, 3, 1, spawningPlatformTutorial.transform.position.x, spawningPlatformTutorial.transform.position.y + 3f, spawningPlatformTutorial.transform.position.z);
             }
             SetPhase(7);
         }
@@ -281,8 +286,8 @@ public class Tutorial : MonoBehaviour
     }
 
     /// <summary>
-    /// Automates crane movement in full 2D space (X and Z) toward the primary gameplay platforms.
-    /// Upon arrival, it swaps the active platform lists and fires the global StartGame event.
+    /// Automates crane movement toward the spawning gameplay platform.
+    /// Upon arrival, it swaps the active platform lists to enable correct crane movement and fires the global StartGame event.
     /// </summary>
     private IEnumerator SmoothTransitionToGameplay()
     {

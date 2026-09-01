@@ -212,7 +212,7 @@ public class SpawnerHouse : MonoBehaviour
         HouseCombination randomElement = allCombinations[index];
 
         RemoveCombination(randomElement.color, randomElement.type, randomElement.people);
-        SpawnOne(randomElement.color, randomElement.type, randomElement.people, x, y, z);
+        SpawnOne(randomElement.color, randomElement.type, randomElement.people, x, y + 3f, z);
     }
 
     /// <summary>

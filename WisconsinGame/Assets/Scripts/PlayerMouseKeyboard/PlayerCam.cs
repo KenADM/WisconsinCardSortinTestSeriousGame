@@ -1,10 +1,13 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // Added to use the New Input System
+using UnityEngine.InputSystem;
 
+/// <summary>
+/// Handles the player's camera movement based on mouse input, allowing for smooth rotation and orientation control in a first-person perspective.
+/// </summary>
 public class PlayerCam : MonoBehaviour
 {
-    public float sensX = 10f; // Note: You may need to lower your sensitivity values
-    public float sensY = 10f; // because raw mouse deltas feel different in the new system!
+    public float sensX = 10f; 
+    public float sensY = 10f; 
 
     public Transform Orientation;
 

@@ -38,16 +38,13 @@ public class DesktopvrCameraSwitcher : MonoBehaviour
     /// </summary>
     private void ActivateDesktop()
     {
-        // 1. Stop VR rendering and tracking (if it's running)
+        // Stop VR rendering and tracking (if it's running)
         if (XRGeneralSettings.Instance.Manager.isInitializationComplete)
         {
             XRGeneralSettings.Instance.Manager.StopSubsystems();
         }
 
-        // 2. Turn OFF the VR rig
         vrCamera.SetActive(false);
-
-        // 3. Turn ON the Desktop rig
         desktopCamera.SetActive(true);
 
         Debug.Log("Switched to Desktop Mode");
@@ -59,19 +56,16 @@ public class DesktopvrCameraSwitcher : MonoBehaviour
     /// </summary>
     private IEnumerator ActivateVR()
     {
-        // 1. Initialize VR if it hasn't been initialized yet
+        // Initialize VR if it hasn't been initialized yet
         if (!XRGeneralSettings.Instance.Manager.isInitializationComplete)
         {
             yield return XRGeneralSettings.Instance.Manager.InitializeLoader();
         }
 
-        // 2. Start VR rendering and tracking
+        // Start VR rendering and tracking
         XRGeneralSettings.Instance.Manager.StartSubsystems();
 
-        // 3. Turn OFF the Desktop rig
         desktopCamera.SetActive(false);
-
-        // 4. Turn ON the VR rig
         vrCamera.SetActive(true);
 
         Debug.Log("Switched to VR Mode");

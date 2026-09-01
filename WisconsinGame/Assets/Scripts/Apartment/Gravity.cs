@@ -68,4 +68,8 @@ public class Gravity : MonoBehaviour
             }
         }
     }
+    public void SetFloorHeight(float newHeight)
+    {
+        floorHeight = newHeight;
+    }
 }
