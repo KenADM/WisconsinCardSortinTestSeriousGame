@@ -5,4 +5,6 @@ public static class ExperimentSettings
     public static int maxReshuffles = 2;
     public static string userCode; 
     public static bool vrMode = false; 
+    public static bool timeMode = true;
+    public static int time = 600;
 }
