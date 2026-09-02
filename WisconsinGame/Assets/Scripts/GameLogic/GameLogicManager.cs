@@ -36,6 +36,8 @@ public class GameLogicManager : MonoBehaviour
     [SerializeField] private List<Transform> platforms = new List<Transform>();
 
     [Header("Debug Displays")]
+    [SerializeField] private GameObject debugConditionComboPanel;
+    [SerializeField] private GameObject consolPanel;
     [SerializeField] private TextMeshProUGUI displayCondition;
     [SerializeField] private TextMeshProUGUI displayCombo;
 
@@ -67,6 +69,20 @@ public class GameLogicManager : MonoBehaviour
         numberOfTriedApartments = 0;
         rightChoices = 0;
         timeMode = ExperimentSettings.timeMode;
+        if (ExperimentSettings.debugMode)
+        {
+            debugPanels(true);
+        }
+        else
+        {
+            debugPanels(false);
+        }
+    }
+    
+    private void debugPanels(bool state)
+    {
+        if (consolPanel != null) consolPanel.SetActive(state);
+        if (debugConditionComboPanel != null) debugConditionComboPanel.SetActive(state);
     }
     
     private void Start()

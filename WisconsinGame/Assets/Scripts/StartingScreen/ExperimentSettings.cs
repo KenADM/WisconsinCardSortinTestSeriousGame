@@ -6,5 +6,6 @@ public static class ExperimentSettings
     public static string userCode; 
     public static bool vrMode = false; 
     public static bool timeMode = true;
-    public static int time = 600;
+    public static int time = 60;
+    public static bool debugMode = false;
 }

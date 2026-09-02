@@ -18,6 +18,7 @@ public class MainMenuManager : MonoBehaviour
     [Header("Toggles")]
     [SerializeField] private Toggle vrModeToggle; 
     [SerializeField] private Toggle timeModeToggle; 
+    [SerializeField] private Toggle debugModeToggle; 
 
     [Header("Panels")]
     [SerializeField] private GameObject mainPanel;
@@ -60,6 +61,7 @@ public class MainMenuManager : MonoBehaviour
         
         if (vrModeToggle != null) vrModeToggle.isOn = ExperimentSettings.vrMode;
         if (timeModeToggle != null) timeModeToggle.isOn = ExperimentSettings.timeMode;
+        if (debugModeToggle != null) debugModeToggle.isOn = ExperimentSettings.debugMode;
 
         UpdateSettingsUI();
     }
@@ -100,7 +102,7 @@ public class MainMenuManager : MonoBehaviour
     private void ChangeTimeAmmount(int amount) // Kept original spelling to preserve Inspector button assignments
     {
         ExperimentSettings.time += amount;
-        if (ExperimentSettings.time < 10) ExperimentSettings.time = 10; // Prevent going below 10 seconds
+        if (ExperimentSettings.time < 0) ExperimentSettings.time = 0; // Prevent going below 0 seconds
         UpdateSettingsUI();
     }
 
@@ -115,8 +117,8 @@ public class MainMenuManager : MonoBehaviour
     public void RaiseReshuffles() { ChangeReshuffles(1); }
     public void LowerReshuffles() { ChangeReshuffles(-1); }
 
-    public void RaiseTime() { ChangeTimeAmmount(10); }
-    public void LowerTime() { ChangeTimeAmmount(-10); }
+    public void RaiseTime() { ChangeTimeAmmount(30); }
+    public void LowerTime() { ChangeTimeAmmount(-30); }
 
     /// <summary>
     /// Refreshes the text on screen so the player sees the numbers change dynamically.
@@ -140,6 +142,7 @@ public class MainMenuManager : MonoBehaviour
         
         if (vrModeToggle != null) ExperimentSettings.vrMode = vrModeToggle.isOn;
         if (timeModeToggle != null) ExperimentSettings.timeMode = timeModeToggle.isOn; 
+        if (debugModeToggle != null) ExperimentSettings.debugMode = debugModeToggle.isOn;
         if (settingsPanel != null) settingsPanel.SetActive(false);
         if (mainPanel != null) mainPanel.SetActive(true); 
     }
