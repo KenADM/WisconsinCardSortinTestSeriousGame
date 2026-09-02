@@ -18,10 +18,13 @@ public class GameLogicManager : MonoBehaviour
     private int categoriesCompleted = 0;
     private int categoriesToComplete = 9;
     private int maxReshuffles = 2;
+    private int rightChoices = 0; // Tracked to calculate the final Happiness Percentage metric at the end of the game
     
     // Tracked to calculate the final Happiness Percentage metric at the end of the game
     private int numberOfTriedApartments;
-
+    
+    // Checks if the game is in time mode or category mode, affecting how the game ends and how scores are calculated
+    private bool timeMode = true;
     // 0: Color | 1: Type | 2: People
     private List<int> conditionValues = new List<int>() {0, 1, 2};
     private int conditionNumber = 0;
@@ -36,6 +39,9 @@ public class GameLogicManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI displayCondition;
     [SerializeField] private TextMeshProUGUI displayCombo;
 
+    [Header("Game Object Timer Display")]
+    [SerializeField] private GameObject timerGameObject;
+
     [Header("End Game UI")]
     [SerializeField] private GameObject endGamePanel; 
     [SerializeField] private TextMeshProUGUI testoEndGamePanel;
@@ -47,6 +53,9 @@ public class GameLogicManager : MonoBehaviour
     public static event Action<bool, bool> EnableMoveDirection;
     public static event Action<bool> EnableGrab;
     public static event Action TutorialSpawnNextHouse; 
+    public static event Action OnCorrectPlacement; 
+    public static event Action OnWrongPlacement; 
+
 
     private void Awake()
     {
@@ -56,6 +65,8 @@ public class GameLogicManager : MonoBehaviour
         categoriesToComplete = ExperimentSettings.categoriesToComplete;
         maxReshuffles = ExperimentSettings.maxReshuffles;
         numberOfTriedApartments = 0;
+        rightChoices = 0;
+        timeMode = ExperimentSettings.timeMode;
     }
     
     private void Start()
@@ -64,6 +75,20 @@ public class GameLogicManager : MonoBehaviour
         {
             endGamePanel.SetActive(false);
         }
+        if(timerGameObject != null)
+        {
+            if (timeMode)
+            {
+            timerGameObject.SetActive(true);
+
+            }
+            else
+            {
+            timerGameObject.SetActive(false);
+                
+            }
+        }
+
     }
 
     private void OnEnable()
@@ -71,6 +96,7 @@ public class GameLogicManager : MonoBehaviour
         Tutorial.StartGame += StartGameHandler; 
         InverseTowerHandler.checkHousePlacement += CheckHousePlacementHandler;
         SpawnerHouse.EndCausedByMaxReshuffles += EndGameMaxReshuffles;
+        ArcadeTimerManager.OnTimeOut += EndGamePhase;
     }
 
     private void OnDisable()
@@ -78,7 +104,7 @@ public class GameLogicManager : MonoBehaviour
         Tutorial.StartGame -= StartGameHandler;
         InverseTowerHandler.checkHousePlacement -= CheckHousePlacementHandler;
         SpawnerHouse.EndCausedByMaxReshuffles -= EndGameMaxReshuffles;
-        
+        ArcadeTimerManager.OnTimeOut -= EndGamePhase;
         PlayerLog.CloseLogger();
     }
 
@@ -136,12 +162,18 @@ public class GameLogicManager : MonoBehaviour
         {
             conditionResult = "Match";
             combo++;
+            if (!isTutorial) 
+            {
+                rightChoices++;
+                OnCorrectPlacement?.Invoke();
+            }
             if (feedbackHandler != null) feedbackHandler.Feedback(true);
         }
         else
         {   
             conditionResult = "Not Match";
             combo = 0;
+            if (!isTutorial) OnWrongPlacement?.Invoke();
             if (feedbackHandler != null) feedbackHandler.Feedback(false);
         }
 
@@ -167,7 +199,8 @@ public class GameLogicManager : MonoBehaviour
         houseValues[0], houseValues[1], houseValues[2], platformValues[0], platformValues[1], platformValues[2], condition, conditionResult, combo);
 
         // End game if the required number of categories has been completed, otherwise spawn a new house
-        if (categoriesCompleted >= categoriesToComplete)
+        // only in category mode, in time mode the game ends when the timer reaches 0
+        if (!timeMode && categoriesCompleted >= categoriesToComplete)
         {
             EndGame?.Invoke();
             EndGamePhase();
@@ -245,7 +278,15 @@ public class GameLogicManager : MonoBehaviour
         if (endGamePanel != null)
         {
             endGamePanel.SetActive(true);
-            testoEndGamePanel.text = "Percentuale Felicità Raggiunta: " + CalculatePoints().ToString("F0") + "%";
+            if(timeMode){
+                
+                testoEndGamePanel.text = "Paga Giornaliera: " + ((rightChoices * 100) - ((numberOfTriedApartments - rightChoices) * 50)) + "€";
+            }
+            else
+            {
+                testoEndGamePanel.text = "Percentuale Felicità Raggiunta: " + CalculatePoints().ToString("F0") + "%";    
+            }
+            
         }
     }
 

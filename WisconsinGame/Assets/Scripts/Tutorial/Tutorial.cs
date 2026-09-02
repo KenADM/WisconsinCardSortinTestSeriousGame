@@ -36,6 +36,7 @@ public class Tutorial : MonoBehaviour
     [SerializeField] private GameObject phase9Prompt; 
     [SerializeField] private GameObject phase10Prompt; 
     [SerializeField] private GameObject lookAtTheButtonsPrompt; 
+    [SerializeField] private GameObject lookAtTimePrompt;
 
     [Header("Tutorial Triggers")]
     [SerializeField] private GameObject rightTriggerObj; 
@@ -48,7 +49,12 @@ public class Tutorial : MonoBehaviour
 
     private int phase = 0;
     private bool hasSpawnedSecondHouse = false;
+    private bool timeMode;
 
+    void Awake()
+    {
+        timeMode = ExperimentSettings.timeMode;
+    }
     private void OnEnable()
     {
         StartingScreenManager.TutorialGame += TutorialGameHandler;
@@ -118,6 +124,7 @@ public class Tutorial : MonoBehaviour
         if (phase9Prompt) phase9Prompt.SetActive(false);
         if (phase10Prompt) phase10Prompt.SetActive(false);
         if (lookAtTheButtonsPrompt) lookAtTheButtonsPrompt.SetActive(false);
+        if (lookAtTimePrompt) lookAtTimePrompt.SetActive(false);
     }
 
     /// <summary>
@@ -187,8 +194,15 @@ public class Tutorial : MonoBehaviour
                 break;
 
             case 10: 
-                EnableMoveDirection?.Invoke(false, false); 
-                if (phase10Prompt) phase10Prompt.SetActive(true); 
+                EnableMoveDirection?.Invoke(false, false);
+                if(timeMode)
+                {
+                    if (lookAtTimePrompt) lookAtTimePrompt.SetActive(true);
+                }
+                else
+                {
+                    if (phase10Prompt) phase10Prompt.SetActive(true); 
+                }
                 break;
         }
     }
@@ -255,6 +269,14 @@ public class Tutorial : MonoBehaviour
         EnableGrab?.Invoke(false); 
     }
 
+    /// <summary>
+    /// close look at time prompt and show phase 10 prompt.
+    /// </summary>
+    public void TimeModePromptButton()
+    {
+        if (lookAtTimePrompt) lookAtTimePrompt.SetActive(false);
+        if (phase10Prompt) phase10Prompt.SetActive(true);
+    }
     /// <summary>
     /// Triggers the final automated sequence to bridge the tutorial environment and the main gameplay environment.
     /// </summary>

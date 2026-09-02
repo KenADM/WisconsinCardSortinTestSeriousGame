@@ -92,12 +92,16 @@ public class CraneMovement : MonoBehaviour
     {
         Tutorial.EnableMoveDirection += EnableMoveDirection;
         Tutorial.EnableGrab += EnableGrab;
+        GameLogicManager.EnableMoveDirection += EnableMoveDirection;
+        GameLogicManager.EnableGrab += EnableGrab;
     }
 
     private void OnDisable()
     {
         Tutorial.EnableMoveDirection -= EnableMoveDirection;
-        Tutorial.EnableGrab -= EnableGrab;        
+        Tutorial.EnableGrab -= EnableGrab;
+        GameLogicManager.EnableMoveDirection -= EnableMoveDirection;
+        GameLogicManager.EnableGrab -= EnableGrab;        
     }
 
     private void Update()

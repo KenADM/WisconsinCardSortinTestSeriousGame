@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Manages the Main Menu UI, allowing the researcher/player to adjust experiment settings 
-/// (combo targets, categories, reshuffles, VR mode) before loading the main simulation scene.
+/// (combo targets, categories, reshuffles, time limits, VR mode) before loading the main simulation scene.
 /// </summary>
 public class MainMenuManager : MonoBehaviour
 {
@@ -13,12 +13,21 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private TMP_Text maxComboText;
     [SerializeField] private TMP_Text categoriesText;
     [SerializeField] private TMP_Text reshufflesText;
+    [SerializeField] private TMP_Text timeText;
+    
+    [Header("Toggles")]
     [SerializeField] private Toggle vrModeToggle; 
+    [SerializeField] private Toggle timeModeToggle; 
 
     [Header("Panels")]
     [SerializeField] private GameObject mainPanel;
     [SerializeField] private GameObject settingsPanel;
-    
+
+    [Header("Mode Inputs")]
+    [SerializeField] private GameObject MaxTimeInputField;
+    [SerializeField] private GameObject MaxReshufflesInputField;
+    [SerializeField] private GameObject MaxCategoriesInputField;
+
     [Header("Scene Routing")]
     [SerializeField] private string gameSceneName = "MainGame";
 
@@ -45,13 +54,13 @@ public class MainMenuManager : MonoBehaviour
         if (mainPanel != null) mainPanel.SetActive(false);
         if (settingsPanel != null) settingsPanel.SetActive(true);
 
-        // Load the saved settings into our temporary variables
         tempMaxCombo = ExperimentSettings.maxCombo;
         tempCategories = ExperimentSettings.categoriesToComplete;
         tempReshuffles = ExperimentSettings.maxReshuffles;
         
         if (vrModeToggle != null) vrModeToggle.isOn = ExperimentSettings.vrMode;
-        
+        if (timeModeToggle != null) timeModeToggle.isOn = ExperimentSettings.timeMode;
+
         UpdateSettingsUI();
     }
 
@@ -85,6 +94,16 @@ public class MainMenuManager : MonoBehaviour
         UpdateSettingsUI();
     }
 
+    /// <summary>
+    /// Core calculation method to safely adjust the starting time for the Arcade Mode.
+    /// </summary>
+    private void ChangeTimeAmmount(int amount) // Kept original spelling to preserve Inspector button assignments
+    {
+        ExperimentSettings.time += amount;
+        if (ExperimentSettings.time < 10) ExperimentSettings.time = 10; // Prevent going below 10 seconds
+        UpdateSettingsUI();
+    }
+
     // --- WRAPPER METHODS FOR UI BUTTONS ---
 
     public void RaiseMaxCombo() { ChangeMaxCombo(1); }
@@ -96,6 +115,9 @@ public class MainMenuManager : MonoBehaviour
     public void RaiseReshuffles() { ChangeReshuffles(1); }
     public void LowerReshuffles() { ChangeReshuffles(-1); }
 
+    public void RaiseTime() { ChangeTimeAmmount(10); }
+    public void LowerTime() { ChangeTimeAmmount(-10); }
+
     /// <summary>
     /// Refreshes the text on screen so the player sees the numbers change dynamically.
     /// </summary>
@@ -104,6 +126,7 @@ public class MainMenuManager : MonoBehaviour
         if (maxComboText != null) maxComboText.text = tempMaxCombo.ToString();
         if (categoriesText != null) categoriesText.text = tempCategories.ToString();
         if (reshufflesText != null) reshufflesText.text = tempReshuffles.ToString();
+        if (timeText != null) timeText.text = ExperimentSettings.time.ToString(); 
     }
 
     /// <summary>
@@ -116,7 +139,7 @@ public class MainMenuManager : MonoBehaviour
         ExperimentSettings.maxReshuffles = tempReshuffles;
         
         if (vrModeToggle != null) ExperimentSettings.vrMode = vrModeToggle.isOn;
-        
+        if (timeModeToggle != null) ExperimentSettings.timeMode = timeModeToggle.isOn; 
         if (settingsPanel != null) settingsPanel.SetActive(false);
         if (mainPanel != null) mainPanel.SetActive(true); 
     }
@@ -129,5 +152,52 @@ public class MainMenuManager : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         SceneManager.LoadScene(gameSceneName);
+    }
+
+    public void TimeCateogryToggleChange()
+    {
+        ExperimentSettings.timeMode = timeModeToggle.isOn;
+        Debug.Log("Time Mode Toggle Changed: " + ExperimentSettings.timeMode);
+    }
+    public void TimeMode()
+    {
+        if(MaxTimeInputField != null) MaxTimeInputField.SetActive(true);
+        if(MaxReshufflesInputField != null) MaxReshufflesInputField.SetActive(false);
+        if(MaxCategoriesInputField != null) MaxCategoriesInputField.SetActive(false);
+    }
+        public void CategoryMode()
+    {
+        if(MaxTimeInputField != null) MaxTimeInputField.SetActive(false);
+        if(MaxReshufflesInputField != null) MaxReshufflesInputField.SetActive(true);
+        if(MaxCategoriesInputField != null) MaxCategoriesInputField.SetActive(true);
+    }
+
+    void Awake()
+    {
+        // Initialize temporary settings to current global settings
+        tempMaxCombo = ExperimentSettings.maxCombo;
+        tempCategories = ExperimentSettings.categoriesToComplete;
+        tempReshuffles = ExperimentSettings.maxReshuffles;
+        if (vrModeToggle != null) vrModeToggle.isOn = ExperimentSettings.vrMode;
+        if (timeModeToggle != null) timeModeToggle.isOn = ExperimentSettings.timeMode;
+        if (timeModeToggle.isOn)
+        {
+            TimeMode();
+        }
+        else
+        {
+            CategoryMode();
+        }
+    }
+    void Update()
+    {
+        if (timeModeToggle != null && timeModeToggle.isOn)
+        {
+            TimeMode();
+        }
+        else
+        {
+            CategoryMode();
+        }
     }
 }

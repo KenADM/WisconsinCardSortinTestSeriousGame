@@ -22,6 +22,7 @@ public class SpawnerHouse : MonoBehaviour
     
     [Header("Game Flow Constraints")]
     [SerializeField] private int maxReshuffles = 2;
+    private bool timeMode ;
 
     private float x;
     private float y;
@@ -45,6 +46,7 @@ public class SpawnerHouse : MonoBehaviour
         maxReshuffles = ExperimentSettings.maxCombo;
         colorNumber = colors.Count;
         roomNumber = rooms.Count;
+        timeMode = ExperimentSettings.timeMode;
 
         if (spawnPosition != null)
         {
@@ -196,7 +198,8 @@ public class SpawnerHouse : MonoBehaviour
     {
         if (allCombinations.Count <= 0)
         {   
-            if (reshuffles < maxReshuffles)
+            // if its in timeMode, reshuffles are always possible
+            if (timeMode || reshuffles < maxReshuffles)
             {
                 allCombinations.AddRange(masterDeck);   
                 reshuffles++; // Increment added logically here, though original didn't explicitly increment, it represents standard reshuffle logic.
