@@ -12,11 +12,12 @@ public class StartingScreenManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI testo;
     [SerializeField] private TMP_InputField input;
     [SerializeField] private GameObject startMenu;
+    private string userCode;
 
     // --- EVENTS ---
     public static event Action TutorialGame;
 
-    private void Awake()
+    private void Start()
     {
         if (startMenu != null)
         {
@@ -25,7 +26,11 @@ public class StartingScreenManager : MonoBehaviour
         
         if (input != null)
         {
-            input.text = ExperimentSettings.userCode;
+            Debug.Log($"Loading user code: {input.text}");
+            //input.text = ExperimentSettings.userCode;
+        }else
+        {
+            Debug.LogWarning("Input field reference is missing in StartingScreenManager.");
         }
     }
 
@@ -35,6 +40,7 @@ public class StartingScreenManager : MonoBehaviour
     /// <returns>True if the field is not empty or just blank spaces, otherwise false.</returns>
     private bool CheckInputField()
     {
+        Debug.Log($"Checking input field: '{input.text}'");
         return !string.IsNullOrWhiteSpace(input.text);
     }
 
