@@ -183,7 +183,8 @@ public static class JsonTelemetryLogger
     /// <param name="combo">The combo after the placement.</param>
     /// <param name="houseValues">The values associated with the house being placed.</param>
     /// <param name="baseValues">The values associated with the target tower.</param>
-    public static void LogPlacement(string activeCondition, bool isMatch, int combo, int[] houseValues, int[] baseValues)
+    /// <param name="currentPosX">The current X position of the tower.</param>
+    public static void LogPlacement(string activeCondition, bool isMatch, int combo, int[] houseValues, int[] baseValues, float currentPosX)
     {
         if (!isTracking) return;
 
@@ -195,7 +196,8 @@ public static class JsonTelemetryLogger
             isMatch = isMatch,
             comboAfter = combo,
             houseValues = houseValues,
-            towerTarget = baseValues
+            towerTarget = baseValues,
+            positionX = currentPosX
         });
     }
 

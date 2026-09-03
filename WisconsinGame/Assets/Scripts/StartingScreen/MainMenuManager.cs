@@ -2,6 +2,9 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System;
+using System.IO;
+
 
 /// <summary>
 /// Manages the Main Menu UI, allowing the researcher/player to adjust experiment settings 
@@ -218,5 +221,13 @@ public class MainMenuManager : MonoBehaviour
         #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
         #endif
+    }
+
+    public void OpenLogLocation()
+    {
+        string folderName = "PlayerLog";
+        string logDirectory = Path.Combine(Application.persistentDataPath, folderName);
+        Debug.Log("Opening log directory: " + logDirectory);
+        Application.OpenURL(logDirectory);
     }
 }
