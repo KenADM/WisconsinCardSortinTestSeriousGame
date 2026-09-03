@@ -18,4 +18,9 @@ public class HouseCombination
         Type = typeNew;
         People = peopleNew;   
     }
+
+    public override string ToString()
+    {
+        return $"Color: {Color}, Type: {Type}, People: {People}";
+    }
 }

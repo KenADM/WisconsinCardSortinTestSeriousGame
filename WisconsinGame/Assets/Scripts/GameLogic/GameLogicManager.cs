@@ -225,7 +225,7 @@ public class GameLogicManager : MonoBehaviour
         
         PrintCombo();
 
-        JsonTelemetryLogger.LogPlacement(condition, conditionMet, combo, houseValues, platformValues, platform.transform.position.x);
+        JsonTelemetryLogger.LogPlacement(conditionNumber, conditionMet, combo, houseValues, platformValues, platform.transform.position.x);
 
         // Check if the game has reached its end conditions: max categories completed (used in category mode only).
         if (!timeMode && categoriesCompleted >= categoriesToComplete)
@@ -276,6 +276,8 @@ public class GameLogicManager : MonoBehaviour
             default: return "Unknown";
         }
     }
+
+
 
 
     /// <summary>

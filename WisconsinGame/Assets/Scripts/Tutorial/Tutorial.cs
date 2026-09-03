@@ -21,7 +21,7 @@ public class Tutorial : MonoBehaviour
     [Header("For Tutorial")]
     [SerializeField] private GameObject spawningPlatformTutorial;
     [SerializeField] private GameObject placingPlatformTutorial;
-    [SerializeField] private GameObject TutorialPlatforms;
+    [SerializeField] private GameObject tutorialPlatforms;
 
     [Header("Tutorial Text Prompts (Fasi 0-10) and look at the buttons Prompt")]
     [SerializeField] private GameObject phase0Prompt;
@@ -37,6 +37,8 @@ public class Tutorial : MonoBehaviour
     [SerializeField] private GameObject phase10Prompt; 
     [SerializeField] private GameObject lookAtTheButtonsPrompt; 
     [SerializeField] private GameObject lookAtTimePrompt;
+
+    [SerializeField] private GameObject startGamePrompt;
 
     [Header("Tutorial Triggers")]
     [SerializeField] private GameObject rightTriggerObj; 

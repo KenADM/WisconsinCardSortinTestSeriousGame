@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using Newtonsoft.Json;
 
 /// <summary>
 /// Serializable class representing the root structure of the JSON telemetry file.
@@ -69,18 +70,16 @@ public class LogEvent
     public float timeFromStart;
     public string eventType; // "Movement", "Grab", "Drop", "Placement"
     
-    // Variables used by Movement/Interaction
     public string direction;
-    public float positionX;
+    public float? positionX;
+    public int? activeCondition;
     
-    // Variables used by Placements
-    public string activeCondition;
-    public bool isMatch;
-    public int comboAfter;
+    public bool? isMatch; 
+    public int? comboAfter; 
     
-    // Variables used by both (Interactions and Placements)
-    public int[] houseValues; 
-    public int[] towerTarget;
+    // Arrays default to null if not assigned, so they don't need a '?'
+    public string[] houseValues; 
+    public string[] towerTarget;
 }
 
 
@@ -169,8 +168,13 @@ public static class JsonTelemetryLogger
         {
             timeFromStart = Time.time - sessionStartTime,
             eventType = isGrab ? "Grab" : "Drop",
-            positionX = currentPosX,
-            houseValues = houseValues
+            //positionX = currentPosX,
+            houseValues = new string[]
+            {
+                houseValues[0].ToString(),
+                houseValues[1].ToString(),
+                houseValues[2].ToString()
+            }
         });
     }
 
@@ -184,7 +188,7 @@ public static class JsonTelemetryLogger
     /// <param name="houseValues">The values associated with the house being placed.</param>
     /// <param name="baseValues">The values associated with the target tower.</param>
     /// <param name="currentPosX">The current X position of the tower.</param>
-    public static void LogPlacement(string activeCondition, bool isMatch, int combo, int[] houseValues, int[] baseValues, float currentPosX)
+    public static void LogPlacement(int activeCondition, bool isMatch, int combo, int[] houseValues, int[] baseValues, float currentPosX)
     {
         if (!isTracking) return;
 
@@ -195,9 +199,19 @@ public static class JsonTelemetryLogger
             activeCondition = activeCondition,
             isMatch = isMatch,
             comboAfter = combo,
-            houseValues = houseValues,
-            towerTarget = baseValues,
-            positionX = currentPosX
+            houseValues = new string[]
+            {
+                houseValues[0].ToString(),
+                houseValues[1].ToString(),
+                houseValues[2].ToString()
+            },
+            towerTarget = new string[]
+            {
+                baseValues[0].ToString(),
+                baseValues[1].ToString(),
+                baseValues[2].ToString()
+            },
+            //positionX = currentPosX
         });
     }
 
@@ -221,8 +235,11 @@ public static class JsonTelemetryLogger
         sessionData.finalGameState.totalAttempts = totalAttempts;
         sessionData.finalGameState.categoriesCompleted = categoriesCompleted;
 
-        string jsonData = JsonUtility.ToJson(sessionData, true);
-
+        //string jsonData = JsonUtility.ToJson(sessionData, true);
+        string jsonData = JsonConvert.SerializeObject(sessionData, Formatting.Indented, new JsonSerializerSettings 
+        { 
+            NullValueHandling = NullValueHandling.Ignore 
+        });
         string folderName = "PlayerLog";
         
         // determines the directory path based on the platform, using standard path
@@ -234,7 +251,7 @@ public static class JsonTelemetryLogger
         }
 
         string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        string fileName = $"Telemetry_{sessionData.username}_{timestamp}.json";
+        string fileName = $"Wisconsin_{sessionData.username}_{timestamp}.json";
         string filePath = Path.Combine(directoryPath, fileName);
 
         File.WriteAllText(filePath, jsonData);

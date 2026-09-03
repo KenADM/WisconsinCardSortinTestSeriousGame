@@ -205,15 +205,7 @@ public class CraneMovement : MonoBehaviour
     private void MoveToClosest(float direction)
     {
         Debug.Log("moving");
-
-        string directionString = direction > 0 ? "Right" : "Left";
-        JsonTelemetryLogger.LogMovement(directionString, playerHead.position.x);
-
-        bool isFacingFront = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 0f)) < 1f;
-        bool isFacingBack = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 180f)) < 1f;
-
-        if (isFacingFront) MoveToClosestHandler(direction);
-        else if (isFacingBack) MoveToClosestHandler(-direction);
+        MoveToClosestHandler(direction);
     }
     
     /// <summary>
@@ -258,6 +250,9 @@ public class CraneMovement : MonoBehaviour
             isCraneSliding = true;
             if (craneSoundManager != null) craneSoundManager.PlayMovementSound();
         }
+
+        string directionString = direction > 0 ? "Right" : "Left";
+        JsonTelemetryLogger.LogMovement(directionString, targetPos.x);
     }
 
     private bool IsCorrectDirection(float myX, float targetX, float direction)

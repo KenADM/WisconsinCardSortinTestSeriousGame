@@ -99,11 +99,28 @@ public class MainMenuManager : MonoBehaviour
     {
         if (XRGeneralSettings.Instance != null && XRGeneralSettings.Instance.Manager != null)
         {
+            // 1. Se il sistema non è inizializzato, aspetta che lo faccia
             if (!XRGeneralSettings.Instance.Manager.isInitializationComplete)
             {
                 yield return XRGeneralSettings.Instance.Manager.InitializeLoader();
             }
-            XRGeneralSettings.Instance.Manager.StartSubsystems();
+
+            // Procediamo solo se Unity ha effettivamente trovato e caricato un visore valido
+            if (XRGeneralSettings.Instance.Manager.activeLoader != null)
+            {
+                XRGeneralSettings.Instance.Manager.StartSubsystems();
+                Debug.Log("[MainMenu] VR Driver inizializzati e avviati con successo.");
+            }
+            else
+            {
+                Debug.LogWarning("[MainMenu] Impossibile avviare il VR. Passaggio forzato alla visuale Desktop.");
+                vrModeToggle.isOn = false;
+                ExperimentSettings.vrMode = false;
+                /*
+                // Se non c'è un visore valido, disabilitiamo la modalità VR
+
+                vrModeToggle.gameObject.SetActive(false);*/
+            }
         }
     }
 

@@ -14,4 +14,8 @@ public class TowerChar : MonoBehaviour
     {
         TowerData = new HouseCombination(colorNew, typeNew, peopleNew);
     }
+    public override string ToString()
+    {
+        return $"Color: {TowerData.Color}, Type: {TowerData.Type}, People: {TowerData.People}";
+    }
 }
