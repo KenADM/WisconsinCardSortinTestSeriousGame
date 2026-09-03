@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Collections;
 using Unity.VisualScripting;
+using UnityEngine.XR.Management;
 
 /// <summary>
 /// Controls the physical movement, smooth sliding, and grabbing mechanics of the crane.
@@ -120,6 +121,7 @@ public class CraneMovement : MonoBehaviour
     void Awake()
     {
         debugMode = ExperimentSettings.debugMode;
+
     }
 
     /// <summary>

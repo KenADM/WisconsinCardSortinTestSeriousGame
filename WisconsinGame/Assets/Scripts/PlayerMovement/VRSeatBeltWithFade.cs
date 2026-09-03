@@ -94,7 +94,6 @@ public class VRSeatBeltWithFade : MonoBehaviour
         camZ = vrCamera.localPosition.z;
 
         isOriginSet = true;
-        Debug.Log("VR Headset worn detected. Seatbelt origin set!");
     }
 
     /// <summary>

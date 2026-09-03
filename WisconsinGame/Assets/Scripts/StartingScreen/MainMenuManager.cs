@@ -2,6 +2,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.XR.Management;
+using System.Collections;
 using System;
 using System.IO;
 
@@ -42,7 +44,14 @@ public class MainMenuManager : MonoBehaviour
     
     private void Awake()
     {
-        // Initialize temporary settings to current global settings
+        // Load previously saved settings from PlayerPrefs, if they exist
+        if (PlayerPrefs.HasKey("MaxCombo")) ExperimentSettings.maxCombo = PlayerPrefs.GetInt("MaxCombo");
+        if (PlayerPrefs.HasKey("CategoriesToComplete")) ExperimentSettings.categoriesToComplete = PlayerPrefs.GetInt("CategoriesToComplete");
+        if (PlayerPrefs.HasKey("MaxReshuffles")) ExperimentSettings.maxReshuffles = PlayerPrefs.GetInt("MaxReshuffles");
+        if (PlayerPrefs.HasKey("vrMode")) ExperimentSettings.vrMode = PlayerPrefs.GetInt("vrMode") == 1;
+        if (PlayerPrefs.HasKey("TimeMode")) ExperimentSettings.timeMode = PlayerPrefs.GetInt("TimeMode") == 1;  
+        if (PlayerPrefs.HasKey("DebugMode")) ExperimentSettings.debugMode = PlayerPrefs.GetInt("DebugMode") == 1;
+
         tempMaxCombo = ExperimentSettings.maxCombo;
         tempCategories = ExperimentSettings.categoriesToComplete;
         tempReshuffles = ExperimentSettings.maxReshuffles;
@@ -56,6 +65,7 @@ public class MainMenuManager : MonoBehaviour
         {
             CategoryMode();
         }
+
     }
     
     private void Start()
@@ -66,6 +76,11 @@ public class MainMenuManager : MonoBehaviour
         
         if (mainPanel != null) mainPanel.SetActive(true);
         if (settingsPanel != null) settingsPanel.SetActive(false);
+
+        ExperimentSettings.userCode = ""; // Reset user code at the start of the session
+
+        // Start the XR initialization coroutine to ensure VR subsystems are ready if VR mode is enabled
+        StartCoroutine(StartXRSafely());
     }
     
     private void Update()
@@ -77,6 +92,30 @@ public class MainMenuManager : MonoBehaviour
         else
         {
             CategoryMode();
+        }
+    }
+
+    private IEnumerator StartXRSafely()
+    {
+        if (XRGeneralSettings.Instance != null && XRGeneralSettings.Instance.Manager != null)
+        {
+            if (!XRGeneralSettings.Instance.Manager.isInitializationComplete)
+            {
+                yield return XRGeneralSettings.Instance.Manager.InitializeLoader();
+            }
+            XRGeneralSettings.Instance.Manager.StartSubsystems();
+        }
+    }
+
+    private void StopXR()
+    {
+        if (XRGeneralSettings.Instance != null && XRGeneralSettings.Instance.Manager != null)
+        {
+            if (XRGeneralSettings.Instance.Manager.isInitializationComplete)
+            {
+                XRGeneralSettings.Instance.Manager.StopSubsystems();
+                XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+            }
         }
     }
 
@@ -178,6 +217,15 @@ public class MainMenuManager : MonoBehaviour
         if (debugModeToggle != null) ExperimentSettings.debugMode = debugModeToggle.isOn;
         if (settingsPanel != null) settingsPanel.SetActive(false);
         if (mainPanel != null) mainPanel.SetActive(true); 
+
+        PlayerPrefs.SetInt("MaxCombo", ExperimentSettings.maxCombo);
+        PlayerPrefs.SetInt("CategoriesToComplete", ExperimentSettings.categoriesToComplete);
+        PlayerPrefs.SetInt("MaxReshuffles", ExperimentSettings.maxReshuffles);
+        PlayerPrefs.SetInt("vrMode", ExperimentSettings.vrMode ? 1 : 0);
+        PlayerPrefs.SetInt("TimeMode", ExperimentSettings.timeMode ? 1 : 0);
+        PlayerPrefs.SetInt("DebugMode", ExperimentSettings.debugMode ? 1 : 0);
+
+
     }
 
     /// <summary>
@@ -185,8 +233,15 @@ public class MainMenuManager : MonoBehaviour
     /// </summary>
     public void PlayGame()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
+
+        // If VR mode is disabled, ensure XR subsystems are stopped before loading the game scene
+        if (!ExperimentSettings.vrMode)
+        {
+            StopXR();
+        }
+
         SceneManager.LoadScene(gameSceneName);
     }
 
