@@ -21203,12 +21203,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
+      propertyPath: <TowerData>k__BackingField.<Type>k__BackingField
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
       propertyPath: <TowerData>k__BackingField.<type>k__BackingField
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
       propertyPath: <TowerData>k__BackingField.<color>k__BackingField
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
+      propertyPath: <TowerData>k__BackingField.<People>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
       propertyPath: <TowerData>k__BackingField.<people>k__BackingField
@@ -23627,11 +23635,23 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
+      propertyPath: <TowerData>k__BackingField.<Type>k__BackingField
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
       propertyPath: <TowerData>k__BackingField.<type>k__BackingField
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
+      propertyPath: <TowerData>k__BackingField.<Color>k__BackingField
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
       propertyPath: <TowerData>k__BackingField.<color>k__BackingField
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
+      propertyPath: <TowerData>k__BackingField.<People>k__BackingField
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
@@ -30743,6 +30763,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
+      propertyPath: <TowerData>k__BackingField.<People>k__BackingField
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
       propertyPath: <TowerData>k__BackingField.<people>k__BackingField
       value: 4
       objectReference: {fileID: 0}
@@ -31210,7 +31234,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &832081372
 Transform:
   m_ObjectHideFlags: 0
@@ -37966,11 +37990,23 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
+      propertyPath: <TowerData>k__BackingField.<Type>k__BackingField
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
       propertyPath: <TowerData>k__BackingField.<type>k__BackingField
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
+      propertyPath: <TowerData>k__BackingField.<Color>k__BackingField
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
       propertyPath: <TowerData>k__BackingField.<color>k__BackingField
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
+      propertyPath: <TowerData>k__BackingField.<People>k__BackingField
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
@@ -47330,6 +47366,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 11490438, guid: 67117722a812a2e46ab8cb8eafbf5f5e, type: 3}
+    - {fileID: 114573443145823088, guid: 67117722a812a2e46ab8cb8eafbf5f5e, type: 3}
     m_RemovedGameObjects:
     - {fileID: 109254, guid: 67117722a812a2e46ab8cb8eafbf5f5e, type: 3}
     m_AddedGameObjects: []
@@ -57679,11 +57716,13 @@ MonoBehaviour:
   - {fileID: 2070200801}
   debugConditionComboPanel: {fileID: 793912655}
   consolPanel: {fileID: 1695888754}
+  skipButton: {fileID: 1680430138}
   displayCondition: {fileID: 334525225}
   displayCombo: {fileID: 1715155034}
   timerGameObject: {fileID: 797875489}
   endGamePanel: {fileID: 826308280}
   testoEndGamePanel: {fileID: 547191008}
+  ExitKey: 19
 --- !u!114 &1624173998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77484,9 +77523,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerChar
   <TowerData>k__BackingField:
-    <color>k__BackingField: 0
-    <type>k__BackingField: 2
-    <people>k__BackingField: 3
+    <Color>k__BackingField: 0
+    <Type>k__BackingField: 0
+    <People>k__BackingField: 0
   HouseBaseSpawn: {fileID: 0}
 --- !u!33 &5120028294378302034
 MeshFilter:
@@ -82599,6 +82638,18 @@ PrefabInstance:
     - target: {fileID: 381001342310972030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
+      propertyPath: <TowerData>k__BackingField.<Type>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
+      propertyPath: <TowerData>k__BackingField.<Color>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822568720017759030, guid: f2443499199f65a4983d204e7c18663d, type: 3}
+      propertyPath: <TowerData>k__BackingField.<People>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

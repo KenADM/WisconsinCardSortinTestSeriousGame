@@ -136,7 +136,7 @@ public class SpawnerHouse : MonoBehaviour
         {
             int randomIndex = UnityEngine.Random.Range(0, tempDeck.Count);
             HouseCombination original = tempDeck[randomIndex];
-            duplicates.Add(new HouseCombination(original.type, original.color, original.people));
+            duplicates.Add(new HouseCombination(original.Type, original.Color, original.People));
         }
 
         // 4. Finalize the master deck
@@ -150,7 +150,7 @@ public class SpawnerHouse : MonoBehaviour
     /// </summary>
     private void RemoveCombination(int colorIndex, int typeIndex, int people)
     {
-        int index = allCombinations.FindIndex(item => item.people == people && item.type == typeIndex && item.color == colorIndex);
+        int index = allCombinations.FindIndex(item => item.People == people && item.Type == typeIndex && item.Color == colorIndex);
 
         if (index != -1)
         {
@@ -169,9 +169,9 @@ public class SpawnerHouse : MonoBehaviour
         if (baseTowerChar != null)
         {
             int[] platformValues = new int[] { 
-                baseTowerChar.TowerData.color, 
-                baseTowerChar.TowerData.type, 
-                baseTowerChar.TowerData.people 
+                baseTowerChar.TowerData.Color, 
+                baseTowerChar.TowerData.Type, 
+                baseTowerChar.TowerData.People 
             };
 
             // Pass the position directly as a Vector3
@@ -214,8 +214,8 @@ public class SpawnerHouse : MonoBehaviour
         int index = UnityEngine.Random.Range(0, allCombinations.Count); 
         HouseCombination randomElement = allCombinations[index];
 
-        RemoveCombination(randomElement.color, randomElement.type, randomElement.people);
-        SpawnOne(randomElement.color, randomElement.type, randomElement.people, x, y + 3f, z);
+        RemoveCombination(randomElement.Color, randomElement.Type, randomElement.People);
+        SpawnOne(randomElement.Color, randomElement.Type, randomElement.People, x, y + 3f, z);
     }
 
     /// <summary>

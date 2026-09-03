@@ -1,15 +1,10 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement; 
 using System.Collections.Generic;
 using System; 
 using TMPro;
-using Serilog;
-using static PlayerLog;
 
-/// <summary>
-/// Acts as the central "Referee" for the experiment. 
-/// Evaluates player placements, manages the active psychological condition (Color, Type, People), 
-/// and tracks clinical data metrics (combos, attempts, and overall score).
-/// </summary>
 public class GameLogicManager : MonoBehaviour
 {
     [Header("Data For Analysis")]
@@ -18,19 +13,16 @@ public class GameLogicManager : MonoBehaviour
     private int categoriesCompleted = 0;
     private int categoriesToComplete = 9;
     private int maxReshuffles = 2;
-    private int rightChoices = 0; // Tracked to calculate the final Happiness Percentage metric at the end of the game
+    private int rightChoices = 0; 
     
-    // Tracked to calculate the final Happiness Percentage metric at the end of the game
     private int numberOfTriedApartments;
     
-    // Checks if the game is in time mode or category mode, affecting how the game ends and how scores are calculated
     private bool timeMode = true;
-    // 0: Color | 1: Type | 2: People
     private List<int> conditionValues = new List<int>() {0, 1, 2};
     private int conditionNumber = 0;
 
-    // Prevents clinical data logging and end-game triggers during practice rounds
     private bool isTutorial = true; 
+    private string endReason = "Quit";
     
     [Header("Platforms")]
     [SerializeField] private List<Transform> platforms = new List<Transform>();
@@ -38,6 +30,8 @@ public class GameLogicManager : MonoBehaviour
     [Header("Debug Displays")]
     [SerializeField] private GameObject debugConditionComboPanel;
     [SerializeField] private GameObject consolPanel;
+    [SerializeField] private GameObject skipButton;
+
     [SerializeField] private TextMeshProUGUI displayCondition;
     [SerializeField] private TextMeshProUGUI displayCombo;
 
@@ -48,7 +42,14 @@ public class GameLogicManager : MonoBehaviour
     [SerializeField] private GameObject endGamePanel; 
     [SerializeField] private TextMeshProUGUI testoEndGamePanel;
 
-    // --- EVENTS ---
+    [Header("Panic Button")]
+    [SerializeField] private Key ExitKey = Key.E;
+    
+    private float panicHoldTimer = 0f;
+    private float requiredHoldTime = 3f;
+    
+    private bool isExiting = false;
+
     public static event Action<Transform> SpawnStartingHouse;
     public static event Action SpawnHouse;
     public static event Action EndGame;
@@ -57,7 +58,6 @@ public class GameLogicManager : MonoBehaviour
     public static event Action TutorialSpawnNextHouse; 
     public static event Action OnCorrectPlacement; 
     public static event Action OnWrongPlacement; 
-
 
     private void Awake()
     {
@@ -69,42 +69,25 @@ public class GameLogicManager : MonoBehaviour
         numberOfTriedApartments = 0;
         rightChoices = 0;
         timeMode = ExperimentSettings.timeMode;
-        if (ExperimentSettings.debugMode)
-        {
-            debugPanels(true);
-        }
-        else
-        {
-            debugPanels(false);
-        }
+        
+        DebugPanels(ExperimentSettings.debugMode);
     }
-    
-    private void debugPanels(bool state)
+
+    /// <summary>
+    /// Function that activates or deactivates the debug panels based on the provided state.
+    /// </summary>
+    /// <param name="state">The state to set the debug panels to.</param>
+    private void DebugPanels(bool state)
     {
         if (consolPanel != null) consolPanel.SetActive(state);
         if (debugConditionComboPanel != null) debugConditionComboPanel.SetActive(state);
+        if (skipButton != null) skipButton.SetActive(state);
     }
     
     private void Start()
     {
-        if (endGamePanel != null)
-        {
-            endGamePanel.SetActive(false);
-        }
-        if(timerGameObject != null)
-        {
-            if (timeMode)
-            {
-            timerGameObject.SetActive(true);
-
-            }
-            else
-            {
-            timerGameObject.SetActive(false);
-                
-            }
-        }
-
+        if (endGamePanel != null) endGamePanel.SetActive(false);
+        if (timerGameObject != null) timerGameObject.SetActive(timeMode);
     }
 
     private void OnEnable()
@@ -112,7 +95,7 @@ public class GameLogicManager : MonoBehaviour
         Tutorial.StartGame += StartGameHandler; 
         InverseTowerHandler.checkHousePlacement += CheckHousePlacementHandler;
         SpawnerHouse.EndCausedByMaxReshuffles += EndGameMaxReshuffles;
-        ArcadeTimerManager.OnTimeOut += EndGamePhase;
+        ArcadeTimerManager.OnTimeOut += EndTimeOut;
     }
 
     private void OnDisable()
@@ -120,21 +103,51 @@ public class GameLogicManager : MonoBehaviour
         Tutorial.StartGame -= StartGameHandler;
         InverseTowerHandler.checkHousePlacement -= CheckHousePlacementHandler;
         SpawnerHouse.EndCausedByMaxReshuffles -= EndGameMaxReshuffles;
-        ArcadeTimerManager.OnTimeOut -= EndGamePhase;
-        PlayerLog.CloseLogger();
+        ArcadeTimerManager.OnTimeOut -= EndTimeOut;
+        
+        // save only if the tutorial has been passed
+        if (!isTutorial)
+        {
+            JsonTelemetryLogger.SaveAndClose(endReason, CalculatePoints(), rightChoices, numberOfTriedApartments, categoriesCompleted);
+        }
+    }
+
+    private void Update()
+    {
+        if (isExiting) return;
+
+        if (Keyboard.current != null && Keyboard.current[ExitKey].isPressed)
+        {
+            panicHoldTimer += Time.deltaTime;
+            
+            if (panicHoldTimer >= requiredHoldTime)
+            {
+                isExiting = true; 
+                panicHoldTimer = 0f; 
+                endReason = "PanicButton";
+                ReturnToMenu();
+            }
+        }
+        else
+        {
+            panicHoldTimer = 0f;
+        }
     }
 
     /// <summary>
-    /// Initializes the clinical data collection phase, disabling tutorial protections, 
-    /// setting the first sorting rule, and populating the gameplay towers.
+    /// Returns the menu screen, effectively ending the current game session and saving any necessary data.
     /// </summary>
+    private void ReturnToMenu()
+    {
+        SceneManager.LoadScene("Menu");
+    }
+
     private void StartGameHandler()
     {
-        Debug.Log("Starting Game with user code: " + ExperimentSettings.userCode);
-        
         isTutorial = false; 
         combo = 0;
-        PlayerLog.Initialize(ExperimentSettings.userCode);
+        
+        JsonTelemetryLogger.Initialize(ExperimentSettings.userCode, timeMode ? "TimeMode" : "CategoryMode");
         
         ChooseCondition();
         PrintCondition();
@@ -142,7 +155,7 @@ public class GameLogicManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Commands the Spawner Unit to build the unmovable base houses on all available platforms.
+    /// Spawns the initial setup of houses on the platforms at the start of the game or tutorial.
     /// </summary>
     private void SpawnStartingSetup()
     {
@@ -154,29 +167,32 @@ public class GameLogicManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Evaluates the player's placement of a house on a given tower against the currently active sorting rule (Condition).
-    /// Handles visual feedback, combo tracking, and logging the clinical result.
+    /// Handles the logic for checking the placement of a house on a platform. 
+    /// It compares the characteristics of the placed house with the target platform's characteristics based on the current condition (Color, Type, or People). 
+    /// It updates the combo count, categories completed, and triggers feedback events accordingly. 
+    /// If the game is in tutorial mode, it simply spawns the next house without affecting the game state.
     /// </summary>
+    /// <param name="platform">The platform on which the house is placed.</param>
+    /// <param name="houseValues">The values associated with the placed house.</param>
     private void CheckHousePlacementHandler(GameObject platform, int[] houseValues)
     {
         TowerChar baseTowerChar = platform.GetComponent<TowerChar>();
         numberOfTriedApartments++;
 
         int[] platformValues = new int[] { 
-            baseTowerChar.TowerData.color, 
-            baseTowerChar.TowerData.type, 
-            baseTowerChar.TowerData.people 
+            baseTowerChar.TowerData.Color, 
+            baseTowerChar.TowerData.Type, 
+            baseTowerChar.TowerData.People 
         };
         
         FeedbackManager feedbackHandler = platform.GetComponent<FeedbackManager>();
 
         string condition = GetCondition();
         bool conditionMet = (platformValues[conditionNumber] == houseValues[conditionNumber]);
-        string conditionResult = "";
 
+        // check if the condition is met and update combo and categories accordingly
         if (conditionMet)
         {
-            conditionResult = "Match";
             combo++;
             if (!isTutorial) 
             {
@@ -187,20 +203,18 @@ public class GameLogicManager : MonoBehaviour
         }
         else
         {   
-            conditionResult = "Not Match";
             combo = 0;
             if (!isTutorial) OnWrongPlacement?.Invoke();
             if (feedbackHandler != null) feedbackHandler.Feedback(false);
         }
 
-        // if it's in tutorial mode, the choice is not registered 
         if (isTutorial)
         {
             TutorialSpawnNextHouse?.Invoke();
             return;
         }
         
-        // Pass to next category if the combo max has been reached
+        // check if the combo has reached the maxCombo threshold, and if so, choose a new condition and reset the combo
         if (combo >= maxCombo)
         {
             ChooseCondition();
@@ -211,13 +225,12 @@ public class GameLogicManager : MonoBehaviour
         
         PrintCombo();
 
-        Log.Information("Check Condition\nCube:\tColor: {ColorNewCube} Type: {TypeNewCube} People: {PeopleNewCube}\nBase:\tColor: {ColorBase} Type: {TypeBase} People: {PeopleBase}\nCondition: {Condition}\nResult: {ConditionResult} ({RealInARow})\n", 
-        houseValues[0], houseValues[1], houseValues[2], platformValues[0], platformValues[1], platformValues[2], condition, conditionResult, combo);
+        JsonTelemetryLogger.LogPlacement(condition, conditionMet, combo, houseValues, platformValues);
 
-        // End game if the required number of categories has been completed, otherwise spawn a new house
-        // only in category mode, in time mode the game ends when the timer reaches 0
+        // Check if the game has reached its end conditions: max categories completed (used in category mode only).
         if (!timeMode && categoriesCompleted >= categoriesToComplete)
         {
+            endReason = "MaxCategories";
             EndGame?.Invoke();
             EndGamePhase();
         }
@@ -229,24 +242,20 @@ public class GameLogicManager : MonoBehaviour
 
     private void PrintCondition()
     {
-        string newCondition = GetCondition();
-        Log.Information("New Condition: {Condition}!\n", newCondition); 
-        displayCondition.text  = newCondition;
+        displayCondition.text  = GetCondition();
     }
 
     private void PrintCombo()
     {
-        string comboPrint = "Combo " + combo;
-        displayCombo.text = comboPrint;
+        displayCombo.text = "Combo " + combo;
     }
 
     /// <summary>
-    /// Randomly selects a new sorting rule from the remaining pool.
-    /// It refills the pool if the categories have not been completed enough time.
+    /// Chooses a new condition for the game (Color, Type, or People) randomly from the available conditions.
+    /// Refills the conditionValues list if all conditions have been used and max reshuffles have not been reached.
     /// </summary>
     private void ChooseCondition()
     {
-        // Replenish the pool if all conditions have been exhausted
         if (conditionValues.Count == 0)
         {
             conditionValues = new List<int>() {0, 1, 2};
@@ -254,14 +263,9 @@ public class GameLogicManager : MonoBehaviour
 
         int randomIndex = UnityEngine.Random.Range(0, conditionValues.Count);
         conditionNumber = conditionValues[randomIndex];
-
-        Debug.Log("New active condition: " + GetCondition());
         conditionValues.RemoveAt(randomIndex);
     }
 
-    /// <summary>
-    /// Converts the current condition integer into its human-readable string equivalent.
-    /// </summary>
     private string GetCondition()
     {
         switch (conditionNumber)
@@ -273,63 +277,72 @@ public class GameLogicManager : MonoBehaviour
         }
     }
 
+
     /// <summary>
-    /// If the reshuffles have been maxed before completing enough categories, the experiment ends
-    /// </summary>    
+    /// Handles the end of the game due to a timeout (only used in time mode).
+    /// </summary>
+    private void EndTimeOut()
+    {
+        endReason = "TimeOut";
+        EndGamePhase();
+    }
+    /// <summary>
+    /// Handles the end of the game due to a max reshuffles limit (only used in category mode).
+    /// </summary>
     private void EndGameMaxReshuffles()
     {
-        Debug.Log("Experiment ended early due to maximum reshuffles.");
+        endReason = "MaxReshuffles";
         EndGamePhase();
     }
     
+
     /// <summary>
-    /// Locks player controls and displays the final performance metrics.
+    /// Handles the end of the game and calculates the final score based on the game mode.
     /// </summary>
     private void EndGamePhase()
     {
         EnableMoveDirection?.Invoke(false, false);
         EnableGrab?.Invoke(false);
         
-        
         if (endGamePanel != null)
         {
             endGamePanel.SetActive(true);
             if(timeMode){
-                
                 testoEndGamePanel.text = "Paga Giornaliera: " + ((rightChoices * 100) - ((numberOfTriedApartments - rightChoices) * 50)) + "€";
             }
             else
             {
-                testoEndGamePanel.text = "Percentuale Felicità Raggiunta: " + CalculatePoints().ToString("F0") + "%";    
+                testoEndGamePanel.text = "Percentuale Felicità Raggiunta: " + CalculatePoints() + "%";    
             }
-            
         }
     }
 
     /// <summary>
-    /// Calculates the player's overall performance score based on successful categories 
-    /// relative to total attempts. Returns a percentage from 0 to 100.
+    /// Calculates the final score based on the game mode. 
+    /// In time mode, the score is calculated based on the number of right choices and wrong choices. 
+    /// In category mode, the score is calculated based on the number of categories completed and the total number of tried apartments.
     /// </summary>
     private float CalculatePoints()
     {
-        if (numberOfTriedApartments == 0) return 0f; 
-        
-        return ((categoriesCompleted * 5f) / numberOfTriedApartments) * 100f;
+        if(timeMode)
+        {
+            return ((rightChoices * 100) - ((numberOfTriedApartments - rightChoices) * 50));
+        }
+        else
+        {
+            if (numberOfTriedApartments == 0) return 0f; 
+            return ((categoriesCompleted * maxCombo) / numberOfTriedApartments) * 100f;
+        }
+
     }
 
     /// <summary>
-    /// Safely terminates the application, ensuring all clinical data is written to the log file before closing.
+    /// Handles the game quit action, setting the end reason to "UI_Quit" and returning to the menu.
+    /// Associated with button in final prompt.
     /// </summary>
     public void QuitGame()
     {
-        Debug.Log("Exiting game and saving logs...");
-        
-        PlayerLog.CloseLogger(); 
-        
-        Application.Quit();
-        
-        #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-        #endif
+        endReason = "UI_Quit";
+        ReturnToMenu();
     }
 }

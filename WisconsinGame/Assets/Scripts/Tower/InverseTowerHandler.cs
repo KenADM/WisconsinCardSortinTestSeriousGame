@@ -76,9 +76,9 @@ public class InverseTowerHandler : MonoBehaviour
             houseChar.MakeUnmovable();
 
             checkHousePlacement?.Invoke(this.gameObject, new int[] { 
-                houseChar.HouseData.color, 
-                houseChar.HouseData.type, 
-                houseChar.HouseData.people 
+                houseChar.HouseData.Color, 
+                houseChar.HouseData.Type, 
+                houseChar.HouseData.People 
             });
         }
     }

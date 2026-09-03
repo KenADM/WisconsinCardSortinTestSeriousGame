@@ -37,6 +37,24 @@ public class MainMenuManager : MonoBehaviour
     private int tempCategories;
     private int tempReshuffles;
     
+    private void Awake()
+    {
+        // Initialize temporary settings to current global settings
+        tempMaxCombo = ExperimentSettings.maxCombo;
+        tempCategories = ExperimentSettings.categoriesToComplete;
+        tempReshuffles = ExperimentSettings.maxReshuffles;
+        if (vrModeToggle != null) vrModeToggle.isOn = ExperimentSettings.vrMode;
+        if (timeModeToggle != null) timeModeToggle.isOn = ExperimentSettings.timeMode;
+        if (timeModeToggle.isOn)
+        {
+            TimeMode();
+        }
+        else
+        {
+            CategoryMode();
+        }
+    }
+    
     private void Start()
     {
         // Ensure the cursor is visible and unlocked for menu navigation
@@ -45,6 +63,18 @@ public class MainMenuManager : MonoBehaviour
         
         if (mainPanel != null) mainPanel.SetActive(true);
         if (settingsPanel != null) settingsPanel.SetActive(false);
+    }
+    
+    private void Update()
+    {
+        if (timeModeToggle != null && timeModeToggle.isOn)
+        {
+            TimeMode();
+        }
+        else
+        {
+            CategoryMode();
+        }
     }
 
     /// <summary>
@@ -162,45 +192,31 @@ public class MainMenuManager : MonoBehaviour
         ExperimentSettings.timeMode = timeModeToggle.isOn;
         Debug.Log("Time Mode Toggle Changed: " + ExperimentSettings.timeMode);
     }
+    
     public void TimeMode()
     {
         if(MaxTimeInputField != null) MaxTimeInputField.SetActive(true);
         if(MaxReshufflesInputField != null) MaxReshufflesInputField.SetActive(false);
         if(MaxCategoriesInputField != null) MaxCategoriesInputField.SetActive(false);
     }
-        public void CategoryMode()
+    
+    public void CategoryMode()
     {
         if(MaxTimeInputField != null) MaxTimeInputField.SetActive(false);
         if(MaxReshufflesInputField != null) MaxReshufflesInputField.SetActive(true);
         if(MaxCategoriesInputField != null) MaxCategoriesInputField.SetActive(true);
     }
 
-    void Awake()
+    /// <summary>
+    /// Quits the application entirely. If running in the Unity Editor, it safely stops Play Mode.
+    /// </summary>
+    public void QuitApplication()
     {
-        // Initialize temporary settings to current global settings
-        tempMaxCombo = ExperimentSettings.maxCombo;
-        tempCategories = ExperimentSettings.categoriesToComplete;
-        tempReshuffles = ExperimentSettings.maxReshuffles;
-        if (vrModeToggle != null) vrModeToggle.isOn = ExperimentSettings.vrMode;
-        if (timeModeToggle != null) timeModeToggle.isOn = ExperimentSettings.timeMode;
-        if (timeModeToggle.isOn)
-        {
-            TimeMode();
-        }
-        else
-        {
-            CategoryMode();
-        }
-    }
-    void Update()
-    {
-        if (timeModeToggle != null && timeModeToggle.isOn)
-        {
-            TimeMode();
-        }
-        else
-        {
-            CategoryMode();
-        }
+        Debug.Log("Quitting Application");
+        Application.Quit();
+
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #endif
     }
 }

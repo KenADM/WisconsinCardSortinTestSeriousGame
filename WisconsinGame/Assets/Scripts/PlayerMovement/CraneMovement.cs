@@ -14,6 +14,7 @@ public class CraneMovement : MonoBehaviour
     [Header("Settings")]
     public float rotationSpeed = 1f;
     public Transform playerHead; 
+    private bool debugMode = false;
 
     [Header("Smooth Movement Settings")]
     public bool useSmoothMovement = true;
@@ -107,15 +108,24 @@ public class CraneMovement : MonoBehaviour
     private void Update()
     {
         // Listen for player input and translate it into crane movement commands.
-        HandleInput();
+        if(debugMode)
+        {
+            HandleInput();
+        }
 
         // Handle the smooth movement of the crane towards its target position.
         HandleSmoothMovement();
+    }
+    
+    void Awake()
+    {
+        debugMode = ExperimentSettings.debugMode;
     }
 
     /// <summary>
     /// Listens for VR Joystick or Keyboard inputs. Translates raw input into 
     /// crane movement commands while respecting tutorial movement locks.
+    /// Only if debugMode is enabled, this method will be active. Otherwise, the movement is solely controlled by the buttons in the scene.
     /// </summary>
     private void HandleInput()
     {
@@ -193,9 +203,13 @@ public class CraneMovement : MonoBehaviour
     private void MoveToClosest(float direction)
     {
         Debug.Log("moving");
+
+        string directionString = direction > 0 ? "Right" : "Left";
+        JsonTelemetryLogger.LogMovement(directionString, playerHead.position.x);
+
         bool isFacingFront = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 0f)) < 1f;
         bool isFacingBack = Mathf.Abs(Mathf.DeltaAngle(this.transform.eulerAngles.y, 180f)) < 1f;
-        // da rivedere, teoricamente non mi ruoto piu
+
         if (isFacingFront) MoveToClosestHandler(direction);
         else if (isFacingBack) MoveToClosestHandler(-direction);
     }
@@ -323,6 +337,9 @@ public class CraneMovement : MonoBehaviour
             houseComp.Grab();
             OnHouseGrabbed?.Invoke();
 
+            int[] grabbedValues = new int[] { houseComp.HouseData.Color, houseComp.HouseData.Type, houseComp.HouseData.People };
+            JsonTelemetryLogger.LogHouseInteraction(true, grabbedValues, playerHead.position.x);
+
             yield return new WaitForSeconds(0.2f);
         }
 
@@ -363,6 +380,8 @@ public class CraneMovement : MonoBehaviour
         
         if (grabbedHouse.TryGetComponent(out HouseFunction houseComp))
         {
+            int[] droppedValues = new int[] { houseComp.HouseData.Color, houseComp.HouseData.Type, houseComp.HouseData.People };
+            JsonTelemetryLogger.LogHouseInteraction(false, droppedValues, playerHead.position.x);
             houseComp.Release();
         }
         

@@ -8,14 +8,14 @@ using UnityEngine;
 /// </summary>
 public class HouseCombination 
 {
-    [field: SerializeField] public int color { get; private set; }
-    [field: SerializeField] public int type { get; private set; }
-    [field: SerializeField] public int people { get; private set; }
+    [field: SerializeField] public int Color { get; private set; }
+    [field: SerializeField] public int Type { get; private set; }
+    [field: SerializeField] public int People { get; private set; }
 
     public HouseCombination(int colorNew, int typeNew, int peopleNew)
     {
-        color = colorNew;
-        type = typeNew;
-        people = peopleNew;   
+        Color = colorNew;
+        Type = typeNew;
+        People = peopleNew;   
     }
 }
