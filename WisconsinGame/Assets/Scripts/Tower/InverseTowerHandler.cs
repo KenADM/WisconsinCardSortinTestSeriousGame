@@ -39,6 +39,10 @@ public class InverseTowerHandler : MonoBehaviour
     public void PlaceHouse(Transform house)
     {
         house.name = "PlacedHouse"; 
+        if (house.TryGetComponent(out HouseFunction houseChar))
+        {
+                    houseChar.MakeUnmovable();
+        }
 
         if (blockCount == 0)
         {
@@ -73,7 +77,6 @@ public class InverseTowerHandler : MonoBehaviour
         if (house.TryGetComponent(out HouseFunction houseChar))
         {
             houseChar.Grab(); 
-            houseChar.MakeUnmovable();
 
             checkHousePlacement?.Invoke(this.gameObject, new int[] { 
                 houseChar.HouseData.Color, 

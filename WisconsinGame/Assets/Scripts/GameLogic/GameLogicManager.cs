@@ -80,7 +80,7 @@ public class GameLogicManager : MonoBehaviour
     private void DebugPanels(bool state)
     {
         if (consolPanel != null) consolPanel.SetActive(state);
-        if (debugConditionComboPanel != null) debugConditionComboPanel.SetActive(state);
+        if (debugConditionComboPanel != null) debugConditionComboPanel.SetActive(false); // activate only after tutorial ends
         if (skipButton != null) skipButton.SetActive(state);
     }
     
@@ -144,6 +144,7 @@ public class GameLogicManager : MonoBehaviour
 
     private void StartGameHandler()
     {
+        if (debugConditionComboPanel != null) debugConditionComboPanel.SetActive(ExperimentSettings.debugMode);
         isTutorial = false; 
         combo = 0;
         

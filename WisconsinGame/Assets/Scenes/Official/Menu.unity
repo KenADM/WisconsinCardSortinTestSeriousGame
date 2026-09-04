@@ -12481,7 +12481,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 481915098}
         m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
-        m_MethodName: PlayGame
+        m_MethodName: OpenSettings
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -24,6 +24,8 @@ public class Tutorial : MonoBehaviour
     [SerializeField] private GameObject tutorialPlatforms;
 
     [Header("Tutorial Text Prompts (Fasi 0-10) and look at the buttons Prompt")]
+
+    [SerializeField] private GameObject startTutorial;
     [SerializeField] private GameObject phase0Prompt;
     [SerializeField] private GameObject phase1Prompt;
     [SerializeField] private GameObject phase2Prompt;
@@ -38,8 +40,6 @@ public class Tutorial : MonoBehaviour
     [SerializeField] private GameObject lookAtTheButtonsPrompt; 
     [SerializeField] private GameObject lookAtTimePrompt;
 
-    [SerializeField] private GameObject startGamePrompt;
-
     [Header("Tutorial Triggers")]
     [SerializeField] private GameObject rightTriggerObj; 
     [SerializeField] private GameObject leftTriggerObj;  
@@ -49,12 +49,13 @@ public class Tutorial : MonoBehaviour
     [SerializeField] private GameObject crane;
     [SerializeField] private GameObject spawningPlatformGameplay;
 
-    private int phase = 0;
+    private int phase = -1;
     private bool hasSpawnedSecondHouse = false;
     private bool timeMode;
 
     void Awake()
     {
+        phase = -1;
         timeMode = ExperimentSettings.timeMode;
     }
     private void OnEnable()
@@ -81,7 +82,7 @@ public class Tutorial : MonoBehaviour
         HideAllPrompts(); 
 
         if (rightTriggerObj != null) rightTriggerObj.SetActive(false);
-        if (leftTriggerObj != null) leftTriggerObj.SetActive(false);
+        if (leftTriggerObj != null) leftTriggerObj.SetActive(true);
     }
 
     private void Update()
@@ -106,7 +107,18 @@ public class Tutorial : MonoBehaviour
     /// </summary>
     private void TutorialGameHandler()
     {
-        if (phase0Prompt) phase0Prompt.SetActive(true);
+        if (ExperimentSettings.skipTutorial)
+        {
+            SkipTutorial();
+        }
+        else
+        {
+            if (startTutorial) startTutorial.SetActive(true);
+            CraneMovement craneMovement = crane.GetComponent<CraneMovement>(); 
+            EnableMoveDirection?.Invoke(true, false); 
+            craneMovement.MoveLeft();
+
+        }
     }
 
     /// <summary>
@@ -114,6 +126,7 @@ public class Tutorial : MonoBehaviour
     /// </summary>
     private void HideAllPrompts()
     {
+        if (startTutorial) startTutorial.SetActive(false);
         if (phase0Prompt) phase0Prompt.SetActive(false);
         if (phase1Prompt) phase1Prompt.SetActive(false);
         if (phase2Prompt) phase2Prompt.SetActive(false);
@@ -142,6 +155,11 @@ public class Tutorial : MonoBehaviour
 
         switch (phase)
         {
+            case 0:
+                EnableMoveDirection?.Invoke(false, false); 
+                EnableGrab?.Invoke(false);
+                if (phase0Prompt) phase0Prompt.SetActive(true); 
+                break;
             case 1:
                 EnableMoveDirection?.Invoke(false, true); 
                 EnableGrab?.Invoke(false);
@@ -224,7 +242,11 @@ public class Tutorial : MonoBehaviour
     /// </summary>
     private void ReachedRightTrigger()
     {
-        if (phase == 1) SetPhase(2); 
+        if (phase == 1) 
+        {
+            if (leftTriggerObj != null) leftTriggerObj.SetActive(true);
+            SetPhase(2); 
+        }
     }
 
     /// <summary>
@@ -248,6 +270,7 @@ public class Tutorial : MonoBehaviour
     /// </summary>
     public void ReachedLeftTrigger()
     {
+        if (phase == -1) SetPhase(0);
         if (phase == 4) SetPhase(5); 
     }
 
@@ -269,6 +292,7 @@ public class Tutorial : MonoBehaviour
         phase = 9;
         EnableMoveDirection?.Invoke(true, true); 
         EnableGrab?.Invoke(false); 
+        
     }
 
     /// <summary>

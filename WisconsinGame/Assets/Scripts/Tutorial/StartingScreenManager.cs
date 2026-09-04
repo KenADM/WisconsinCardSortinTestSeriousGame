@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using TMPro;
+using System.Collections;
 
 /// <summary>
 /// Manages the initial start screen UI, validating the user code 
@@ -17,31 +18,44 @@ public class StartingScreenManager : MonoBehaviour
     // --- EVENTS ---
     public static event Action TutorialGame;
 
-    private void Start()
-    {
-        if (startMenu != null)
-        {
-            startMenu.SetActive(true);
+    private IEnumerator Start()
+    {   
+        yield return null;
+        if (!ExperimentSettings.enableUserCodeInGameInput) {
+            StartTutorialDirectly();
+
         }
-        
-        if (input != null)
+        else
         {
-            Debug.Log($"Loading user code: {input.text}");
-            //input.text = ExperimentSettings.userCode;
-        }else
-        {
-            Debug.LogWarning("Input field reference is missing in StartingScreenManager.");
+            if (startMenu != null)
+            {
+                startMenu.SetActive(true);
+            }
+            
+            if (input != null)
+            {
+                input.text = ExperimentSettings.userCode;
+                Debug.Log($"Loading user code: {input.text}");
+            }else
+            {
+                Debug.LogWarning("Input field reference is missing in StartingScreenManager.");
+            }   
         }
+
+
+    
+
+
     }
 
     /// <summary>
     /// Checks if the user code input field contains valid text.
     /// </summary>
     /// <returns>True if the field is not empty or just blank spaces, otherwise false.</returns>
-    private bool CheckInputField()
+    private bool CheckUser()
     {
-        Debug.Log($"Checking input field: '{input.text}'");
-        return !string.IsNullOrWhiteSpace(input.text);
+        Debug.Log($"Checking input field: '{ExperimentSettings.userCode}'");
+        return !string.IsNullOrWhiteSpace(ExperimentSettings.userCode);
     }
 
     /// <summary>
@@ -50,11 +64,12 @@ public class StartingScreenManager : MonoBehaviour
     /// </summary>
     public void StartTutorialHandler()
     {
-        if (CheckInputField())
+        ExperimentSettings.userCode = input.text;
+        PlayerPrefs.SetString("UserCode", ExperimentSettings.userCode); 
+
+        if (CheckUser())
         {
-            ExperimentSettings.userCode = input.text;
             TutorialGame?.Invoke();
-            
             if (startMenu != null)
             {
                 startMenu.SetActive(false);
@@ -68,5 +83,9 @@ public class StartingScreenManager : MonoBehaviour
                 testo.text += "!"; 
             }
         }
+    }
+    private void StartTutorialDirectly()
+    {
+        TutorialGame?.Invoke();
     }
 }

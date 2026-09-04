@@ -20,6 +20,9 @@ public class CraneMovement : MonoBehaviour
     [Header("Smooth Movement Settings")]
     public bool useSmoothMovement = true;
     public float movementSpeed = 5f; 
+    // Cooldown variables
+    private float pickupCooldown = 0.5f;
+    private float lastPickupTime = -1f;
     
     private Vector3 targetPos;
 
@@ -285,11 +288,16 @@ public class CraneMovement : MonoBehaviour
     {
         if (!allowGrab || isArmMoving) return;
 
+        if (Time.time < lastPickupTime + pickupCooldown) return;
+
         if (isCraneSliding) 
         {
             Debug.Log("Azione bloccata: La gru è in movimento!");
             return;
         }
+
+        // Record the exact time the action was successfully triggered
+        lastPickupTime = Time.time;
 
         if (!isSomethingInHand) 
         {
