@@ -17,17 +17,20 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private TMP_Text categoriesText;
     [SerializeField] private TMP_Text reshufflesText;
     [SerializeField] private TMP_Text timeText;
-    [SerializeField] private TMP_Text userCodeText;
+    [SerializeField] private TMP_InputField userCodeText;
     
     [Header("Toggles")]
     [SerializeField] private Toggle vrModeToggle; 
     [SerializeField] private Toggle timeModeToggle; 
     [SerializeField] private Toggle debugModeToggle; 
     [SerializeField] private Toggle skipTutorialToggle;
+    [SerializeField] private Toggle userCodeToggle;
 
     [Header("Panels")]
     [SerializeField] private GameObject mainPanel;
     [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private GameObject warningCodePanelMain;
+    [SerializeField] private GameObject warningCodePanelSettings;
 
     [Header("Mode Inputs")]
     [SerializeField] private GameObject maxTimeInputField;
@@ -37,13 +40,16 @@ public class MainMenuManager : MonoBehaviour
     [Header("Scene Routing")]
     [SerializeField] private string gameSceneName = "MainGame";
 
-    private void Awake()
+    private void OnDisable()
     {
-
+        QuitApplication();
     }
-    
+
     private void Start()
     {
+        if (warningCodePanelMain != null) warningCodePanelMain.SetActive(false);
+        if (warningCodePanelSettings != null) warningCodePanelSettings.SetActive(false);
+
         if (PlayerPrefs.HasKey("MaxCombo")) ExperimentSettings.maxCombo = PlayerPrefs.GetInt("MaxCombo");
         if (PlayerPrefs.HasKey("CategoriesToComplete")) ExperimentSettings.categoriesToComplete = PlayerPrefs.GetInt("CategoriesToComplete");
         if (PlayerPrefs.HasKey("MaxReshuffles")) ExperimentSettings.maxReshuffles = PlayerPrefs.GetInt("MaxReshuffles");
@@ -52,6 +58,7 @@ public class MainMenuManager : MonoBehaviour
         if (PlayerPrefs.HasKey("TimeMode")) ExperimentSettings.timeMode = PlayerPrefs.GetInt("TimeMode") == 1;  
         if (PlayerPrefs.HasKey("DebugMode")) ExperimentSettings.debugMode = PlayerPrefs.GetInt("DebugMode") == 1;
         if (PlayerPrefs.HasKey("SkipTutorial")) ExperimentSettings.skipTutorial = PlayerPrefs.GetInt("SkipTutorial") == 1;
+        if (PlayerPrefs.HasKey("UserCode")) ExperimentSettings.userCode = PlayerPrefs.GetString("UserCode");
 
         // 2. Connect Toggles to Listeners via code (Better than using the Inspector)
         if (vrModeToggle != null) 
@@ -73,6 +80,17 @@ public class MainMenuManager : MonoBehaviour
         {
             skipTutorialToggle.isOn = ExperimentSettings.skipTutorial;
             skipTutorialToggle.onValueChanged.AddListener(OnSkipTutorialToggled);
+        }
+        if (userCodeToggle != null)
+        {
+            userCodeToggle.isOn = ExperimentSettings.enableUserCodeInGameInput;
+            userCodeToggle.onValueChanged.AddListener(OnUserCodeToggled);
+        }
+        if (userCodeText != null)
+        {
+            userCodeText.text = ExperimentSettings.userCode;
+            // Si attiva quando il campo viene deselezionato o si preme Invio
+            userCodeText.onEndEdit.AddListener(OnUserCodeEndEdit);
         }
 
         // Initialize panels and text
@@ -127,13 +145,28 @@ public class MainMenuManager : MonoBehaviour
     {
         if (mainPanel != null) mainPanel.SetActive(false);
         if (settingsPanel != null) settingsPanel.SetActive(true);
+        if (warningCodePanelMain != null) warningCodePanelMain.SetActive(false);
     }
 
     public void CloseSettings()
-    {
-        ExperimentSettings.userCode = userCodeText != null ? userCodeText.text : "";
+    {   
+        string currentCode = userCodeText != null ? userCodeText.text.Trim() : "";
+
+        // Blocca la chiusura se lo skip è attivo MA non c'è un codice utente valido inserito
+        if (userCodeToggle != null && !userCodeToggle.isOn && string.IsNullOrWhiteSpace(currentCode))
+        {
+            if (warningCodePanelSettings != null) warningCodePanelSettings.SetActive(true);
+            
+            return; // Esce senza chiudere il pannello
+        }
+
+        // Se il controllo passa, salva e chiudi
+        ExperimentSettings.userCode = currentCode;
+        SaveAndRefreshUI();
+
         if (settingsPanel != null) settingsPanel.SetActive(false);
         if (mainPanel != null) mainPanel.SetActive(true); 
+        if (warningCodePanelSettings != null) warningCodePanelSettings.SetActive(false);
     }
 
     // --- DIRECT MODIFICATION METHODS ---
@@ -144,6 +177,7 @@ public class MainMenuManager : MonoBehaviour
         if (ExperimentSettings.maxCombo < 1) ExperimentSettings.maxCombo = 1; 
         SaveAndRefreshUI();
     }
+
 
     private void ChangeCategories(int amount)
     {
@@ -205,6 +239,23 @@ public class MainMenuManager : MonoBehaviour
         SaveAndRefreshUI();
     }
 
+    private void OnUserCodeToggled(bool isOn)
+    {
+        ExperimentSettings.enableUserCodeInGameInput = isOn;
+        SaveAndRefreshUI();
+    }
+    private void OnUserCodeEndEdit(string value)
+    {
+        string cleanValue = value.Trim();
+        ExperimentSettings.userCode = cleanValue;
+        
+        // Aggiorna PlayerPrefs immediatamente
+        PlayerPrefs.SetString("UserCode", cleanValue);
+        PlayerPrefs.Save();
+
+        Debug.Log($"[MainMenu] User code salvato alla deselezione: '{cleanValue}'");
+    }
+
     // --- CORE SAVING & UI REFRESH ---
 
     /// <summary>
@@ -217,6 +268,7 @@ public class MainMenuManager : MonoBehaviour
         if (categoriesText != null) categoriesText.text = ExperimentSettings.categoriesToComplete.ToString();
         if (reshufflesText != null) reshufflesText.text = ExperimentSettings.maxReshuffles.ToString();
         if (timeText != null) timeText.text = ExperimentSettings.time.ToString(); 
+        if (userCodeText != null) userCodeText.text = ExperimentSettings.userCode;
         
         // Save to Disk instantly
         PlayerPrefs.SetInt("MaxCombo", ExperimentSettings.maxCombo);
@@ -227,6 +279,9 @@ public class MainMenuManager : MonoBehaviour
         PlayerPrefs.SetInt("TimeMode", ExperimentSettings.timeMode ? 1 : 0);
         PlayerPrefs.SetInt("DebugMode", ExperimentSettings.debugMode ? 1 : 0);
         PlayerPrefs.SetInt("SkipTutorial", ExperimentSettings.skipTutorial ? 1 : 0);
+        
+        PlayerPrefs.SetString("UserCode", ExperimentSettings.userCode); 
+        
         PlayerPrefs.Save(); // Force write to disk
     }
 
@@ -261,16 +316,29 @@ public class MainMenuManager : MonoBehaviour
 
     public void PlayGame()
     {
+        
+        if (!ExperimentSettings.enableUserCodeInGameInput && ExperimentSettings.userCode == "")
+        {
+            if (warningCodePanelMain != null) warningCodePanelMain.SetActive(true);
+            if (warningCodePanelSettings != null) warningCodePanelSettings.SetActive(true);           
+            return; // Esce senza chiudere il pannello
+        }        
+
         if (!ExperimentSettings.vrMode)
         {
             StopXR();
         }
 
+        if (warningCodePanelMain != null) warningCodePanelMain.SetActive(false);
         SceneManager.LoadScene(gameSceneName);
     }
 
     public void QuitApplication()
     {
+        ExperimentSettings.userCode = ""; // Delete from runtime memory
+        ExperimentSettings.enableUserCodeInGameInput = false; 
+        PlayerPrefs.DeleteKey("UserCode"); // Delete from disk memory
+
         Debug.Log("Quitting Application");
         Application.Quit();
 
