@@ -10,9 +10,7 @@ public class WallHiderDecider : MonoBehaviour
     [SerializeField] private Transform north;
     [SerializeField] private Transform south;
     [SerializeField] private Transform west;
-    [SerializeField] private Transform east;
-    [SerializeField] private Transform floor;
-    
+    [SerializeField] private Transform east;    
     private GameObject player;
     
     public bool wallHidingActive = true;

@@ -8,16 +8,17 @@ using TMPro;
 public class GameLogicManager : MonoBehaviour
 {
     [Header("Data For Analysis")]
-    private int combo = 0;
-    private int maxCombo = 5;
-    private int categoriesCompleted = 0;
-    private int categoriesToComplete = 9;
-    private int maxReshuffles = 2;
-    private int rightChoices = 0; 
+    public int combo = 0;
+    public int maxCombo = 0;
+    public int categoriesCompleted = 0;
+    public int categoriesToComplete = 0;
+    public int maxReshuffles = 0;
+    public int rightChoices = 0; 
     
     private int numberOfTriedApartments;
     
     private bool timeMode = true;
+    private bool debugMode = true;
     private List<int> conditionValues = new List<int>() {0, 1, 2};
     private int conditionNumber = 0;
 
@@ -59,7 +60,7 @@ public class GameLogicManager : MonoBehaviour
     public static event Action OnCorrectPlacement; 
     public static event Action OnWrongPlacement; 
 
-    private void Awake()
+    void Awake()
     {
         combo = 0;
         maxCombo = ExperimentSettings.maxCombo;
@@ -69,8 +70,9 @@ public class GameLogicManager : MonoBehaviour
         numberOfTriedApartments = 0;
         rightChoices = 0;
         timeMode = ExperimentSettings.timeMode;
+        debugMode = ExperimentSettings.debugMode;
         
-        DebugPanels(ExperimentSettings.debugMode);
+        DebugPanels(debugMode);
     }
 
     /// <summary>
@@ -144,7 +146,7 @@ public class GameLogicManager : MonoBehaviour
 
     private void StartGameHandler()
     {
-        if (debugConditionComboPanel != null) debugConditionComboPanel.SetActive(ExperimentSettings.debugMode);
+        if (debugConditionComboPanel != null) debugConditionComboPanel.SetActive(debugMode);
         isTutorial = false; 
         combo = 0;
         
@@ -226,7 +228,7 @@ public class GameLogicManager : MonoBehaviour
         
         PrintCombo();
 
-        JsonTelemetryLogger.LogPlacement(conditionNumber, conditionMet, combo, houseValues, platformValues, platform.transform.position.x);
+        JsonTelemetryLogger.LogPlacement(GetCondition(), conditionMet, combo, houseValues, platformValues, platform.transform.position.x);
 
         // Check if the game has reached its end conditions: max categories completed (used in category mode only).
         if (!timeMode && categoriesCompleted >= categoriesToComplete)
@@ -311,7 +313,7 @@ public class GameLogicManager : MonoBehaviour
         {
             endGamePanel.SetActive(true);
             if(timeMode){
-                testoEndGamePanel.text = "Paga Giornaliera: " + ((rightChoices * 100) - ((numberOfTriedApartments - rightChoices) * 50)) + "€";
+                testoEndGamePanel.text = "Paga Giornaliera: " + CalculatePoints() + "€";
             }
             else
             {
@@ -329,7 +331,7 @@ public class GameLogicManager : MonoBehaviour
     {
         if(timeMode)
         {
-            return ((rightChoices * 100) - ((numberOfTriedApartments - rightChoices) * 50));
+            return ((rightChoices * 100) - ((numberOfTriedApartments - rightChoices) * 25));
         }
         else
         {

@@ -11,7 +11,6 @@ public class GrabbableHouseSensor : MonoBehaviour
 
     private void Start()
     {
-        // Fallback: Automatically find the parent manager if not manually assigned in the Inspector
         if (craneManager == null)
         {
             craneManager = GetComponentInParent<CraneMovement>();
@@ -45,10 +44,9 @@ public class GrabbableHouseSensor : MonoBehaviour
     /// <param name="other">The collider that exited the sensor zone.</param>
     private void OnTriggerExit(Collider other)
     {
-        // The "out _" syntax elegantly checks for the component without needing to store it in a variable
         if (craneManager != null && other.gameObject.TryGetComponent<HouseFunction>(out _))
         {
-            //Debug.Log("Calling RemovedHouse on AlignHouse");
+            Debug.Log("Calling RemovedHouse on AlignHouse");
             craneManager.UnhoverHouse(other.gameObject);
         }
     }

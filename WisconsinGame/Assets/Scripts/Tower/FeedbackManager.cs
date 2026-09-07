@@ -25,7 +25,7 @@ public class FeedbackManager : MonoBehaviour
         // Safely check if the particle system exists before attempting to stop or play it
         if (smoke != null)
         {   
-            smoke.Stop(); // Moved inside the null check to prevent crashes!
+            smoke.Stop(); 
             
             var smokeModule = smoke.main;
             smokeModule.startColor = isCorrect ? positive : negative;

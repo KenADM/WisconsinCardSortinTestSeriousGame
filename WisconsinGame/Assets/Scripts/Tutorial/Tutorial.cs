@@ -102,6 +102,7 @@ public class Tutorial : MonoBehaviour
         }
     }
 
+
     /// <summary>
     /// Enables the initial welcome panel
     /// </summary>
@@ -113,11 +114,21 @@ public class Tutorial : MonoBehaviour
         }
         else
         {
-            CraneMovement craneMovement = crane.GetComponent<CraneMovement>(); 
-            EnableMoveDirection?.Invoke(true, false); 
-            craneMovement.MoveLeft();
-
+            // Start a coroutine to wait before moving the crane
+            StartCoroutine(InitialCraneMoveRoutine());
         }
+    }
+
+    /// <summary>
+    /// Waits half a second for the game to settle before forcing the initial left movement.
+    /// </summary>
+    private IEnumerator InitialCraneMoveRoutine()
+    {
+        // Give the CraneMovement script time to finish its Start() and snap into place
+        yield return new WaitForSeconds(0.5f);
+        CraneMovement craneMovement = crane.GetComponent<CraneMovement>(); 
+        EnableMoveDirection?.Invoke(true, false); 
+        craneMovement.MoveLeft();
     }
 
     /// <summary>
@@ -225,7 +236,7 @@ public class Tutorial : MonoBehaviour
         }
     }
 
-    // --- Function associated to buttons ---
+    // --- FUNCTION FOR IN GAME BUTTONS ---
 
     /// <summary>
     /// Closes the initial welcome panel and begins the first interactive movement phase.

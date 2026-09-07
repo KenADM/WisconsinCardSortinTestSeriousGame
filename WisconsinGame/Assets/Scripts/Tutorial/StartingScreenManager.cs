@@ -18,15 +18,14 @@ public class StartingScreenManager : MonoBehaviour
     // --- EVENTS ---
     public static event Action TutorialGame;
 
-    private IEnumerator Start()
+    private void Start()
     {   
-        yield return null;
         if (!ExperimentSettings.enableUserCodeInGameInput) {
             StartTutorialDirectly();
-
         }
         else
         {
+
             if (startMenu != null)
             {
                 startMenu.SetActive(true);

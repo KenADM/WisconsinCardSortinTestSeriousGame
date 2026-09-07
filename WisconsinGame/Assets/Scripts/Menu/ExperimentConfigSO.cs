@@ -16,4 +16,7 @@ public class ExperimentConfigSO : ScriptableObject
     public bool defaultDebugMode = false;
     public bool defaultSkipTutorial = false;
     public bool defaultEnableUserCodeInGameInput = false;
+
+    [Header("Log Directory")]
+    public string logDirectory = "PlayerLog";
 }

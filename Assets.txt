@@ -1,0 +1,64 @@
+Crane arm:
+https://assetstore.unity.com/packages/3d/vehicles/land/polygrunt-construction-vehicles-168884
+
+Room Decor:
+Kitchen
+https://assetstore.unity.com/packages/3d/props/food/pandazole-kitchen-food-low-poly-pack-204525
+Bookshelf
+https://assetstore.unity.com/packages/3d/props/low-poly-basic-items-pack-household-items-249507
+Light Fixture
+https://assetstore.unity.com/packages/3d/props/interior/spotlight-and-structure-141453
+Mic stands
+https://assetstore.unity.com/packages/3d/props/microphone-stands-341256
+Running mat
+https://assetstore.unity.com/packages/3d/characters/humanoids/humans/boy-with-gym-animations-blendshape-306813
+Gym stuff
+https://assetstore.unity.com/packages/3d/props/interior/low-poly-old-school-gym-equipment-313032
+Audio bar
+https://assetstore.unity.com/packages/3d/environments/free-stylized-gameroom-pack-376894 
+People in room
+https://assetstore.unity.com/packages/3d/characters/humanoids/design-mascot-avatar-app-ready-character-257178
+Room Decor misc
+https://assetstore.unity.com/packages/3d/props/interior/pandazole-home-interior-low-poly-pack-203033 
+https://assetstore.unity.com/packages/3d/props/interior/low-poly-living-room-pack-71-models-cozy-interior-furniture-prop-320366 
+https://assetstore.unity.com/packages/3d/props/food/pandazole-kitchen-food-low-poly-pack-204525 
+
+
+Other:
+Smoke effect
+https://assetstore.unity.com/packages/vfx/particles/fire-explosions/free-stylized-smoke-effects-pack-226406
+Debug Console
+https://assetstore.unity.com/packages/tools/gui/in-game-debug-console-68068 
+Arrow icon
+https://assetstore.unity.com/packages/3d/props/low-poly-3d-icons-pack-lite-295587 
+UI buttons
+https://assetstore.unity.com/packages/2d/gui/gui-basic-button-pack-365714 
+Sky and clouds
+https://assetstore.unity.com/packages/audio/ambient/urban/free-general-ambience-sounds-246000 
+Audio:
+SoundEffect https://assetstore.unity.com/packages/audio/sound-fx/free-casual-game-sfx-pack-54116 
+Background audio
+https://assetstore.unity.com/packages/audio/music/lofi-world-vol-1-7-free-music-tracks-214014 
+Machine sound
+https://assetstore.unity.com/packages/audio/sound-fx/transportation/vehicle-essentials-194951 
+Clock font
+https://assetstore.unity.com/packages/3d/props/electronics/keypad-free-262151  
+
+City decor:
+Buildings
+https://assetstore.unity.com/packages/3d/environments/simplepoly-city-low-poly-assets-58899 
+Trees
+https://assetstore.unity.com/packages/vfx/shaders/low-poly-wind-182586 
+House bases
+https://assetstore.unity.com/packages/3d/props/free-stylized-cargo-props-pack-380006 
+Construction props
+https://assetstore.unity.com/packages/3d/props/industrial/demo-construction-side-tools-pack-328501 
+Construction zone walls
+https://assetstore.unity.com/packages/3d/props/street-props-prototype-collection-291021 
+Mountains
+https://assetstore.unity.com/packages/3d/environments/landscapes/rpg-poly-pack-lite-148410 
+Nature
+https://assetstore.unity.com/packages/3d/environments/low-poly-nature-pack-302515 
+
+Animation
+mixamo

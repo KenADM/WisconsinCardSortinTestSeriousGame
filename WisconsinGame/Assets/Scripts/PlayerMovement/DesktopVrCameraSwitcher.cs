@@ -12,24 +12,17 @@ public class DesktopvrCameraSwitcher : MonoBehaviour
     [Header("Rigs")]
     [SerializeField] private GameObject vrCamera;
     [SerializeField] private GameObject desktopCamera;
-    
-    [Tooltip("Read-only view of the current mode. Set via ExperimentSettings at runtime.")]
-    [SerializeField] private bool isDesktopMode = false;
 
-    private void Awake()
-    {
-        isDesktopMode = !ExperimentSettings.vrMode;
-    }
-    
     private void Start()
     {
-        if (isDesktopMode)
+        if (ExperimentSettings.vrMode)
         {
-            ActivateDesktop();
+            StartCoroutine(ActivateVR());
         }
         else
         {
-            StartCoroutine(ActivateVR());
+            ActivateDesktop();
+            
         }
     }
 

@@ -231,8 +231,30 @@ public class MainMenuManager : MonoBehaviour
 
     private void OnVRModeToggled(bool isOn)
     {
+        // 1. Save the new state to memory instantly
         ExperimentSettings.vrMode = isOn;
         SaveAndRefreshUI();
+
+        // 2. Handle the VR hot-plugging logic
+        if (isOn)
+        {
+            // If the user checked the box, but the VR driver isn't running yet...
+            if (XRGeneralSettings.Instance != null && 
+                XRGeneralSettings.Instance.Manager != null && 
+                XRGeneralSettings.Instance.Manager.activeLoader == null)
+            {
+                Debug.Log("[MainMenu] Tentativo di connessione al visore VR...");
+                
+                // Try to boot VR. If it fails, your StartXRSafely method 
+                // will automatically uncheck the toggle for us!
+                StartCoroutine(StartXRSafely());
+            }
+        }
+        else
+        {
+            // If the user unchecked the box, safely shut down the headset drivers
+            StopXR();
+        }
     }
 
     private void OnTimeModeToggled(bool isOn)
@@ -331,6 +353,8 @@ public class MainMenuManager : MonoBehaviour
         SaveAndRefreshUI();
     }
 
+
+
     // --- SYSTEM ROUTING ---
     
     /// <summary>
@@ -371,7 +395,7 @@ public class MainMenuManager : MonoBehaviour
     /// </summary>
     public void OpenLogLocation()
     {
-        string folderName = "PlayerLog";
+        string folderName = ExperimentSettings.logDirectory;
         string logDirectory = Path.Combine(Application.persistentDataPath, folderName);
         Debug.Log("Opening log directory: " + logDirectory);
         Application.OpenURL(logDirectory);

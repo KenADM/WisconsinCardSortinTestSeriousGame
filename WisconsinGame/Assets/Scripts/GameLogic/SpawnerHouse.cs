@@ -43,7 +43,7 @@ public class SpawnerHouse : MonoBehaviour
 
     private void Awake()
     {
-        maxReshuffles = ExperimentSettings.maxCombo;
+        maxReshuffles = ExperimentSettings.maxReshuffles;
         colorNumber = colors.Count;
         roomNumber = rooms.Count;
         timeMode = ExperimentSettings.timeMode;
@@ -203,9 +203,11 @@ public class SpawnerHouse : MonoBehaviour
             {
                 allCombinations.AddRange(masterDeck);   
                 reshuffles++; // Increment added logically here, though original didn't explicitly increment, it represents standard reshuffle logic.
+                Debug.Log("reshuffles");
             }
             else
             {
+                Debug.Log("Stop");
                 EndCausedByMaxReshuffles?.Invoke();
                 return;
             }

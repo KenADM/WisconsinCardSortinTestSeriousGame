@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using System.Collections; 
+using System.Collections;
+using Unity.VisualScripting;
 
 /// <summary>
 /// Manages the physical placement and replacement of houses on a specific tower platform.
@@ -18,12 +19,7 @@ public class InverseTowerHandler : MonoBehaviour
     
     [Header("Current State")]
     [SerializeField] private Transform baseHouse;
-
-    private static Vector3 houseScale = new Vector3(2f, 2f, 2f);
-    private static float houseHeight = 0.6f * houseScale.y - 0.05f;     
-    
-    // --- EVENTS ---
-    // (Kept lowercase to safely match GameLogicManager.cs subscriptions)
+    private static float houseHeight;
     public static event Action<GameObject, int[]> checkHousePlacement;
 
     private void Start()
@@ -48,12 +44,33 @@ public class InverseTowerHandler : MonoBehaviour
         {
             baseHouse = house;
             
-            Vector3 correctPosition = new Vector3(housePreview.position.x, housePreview.position.y - 0.6f, housePreview.position.z);
+            Vector3 correctPosition = new Vector3(
+                housePreview.position.x, 
+                housePreview.position.y - 0.6f, 
+                housePreview.position.z);
             baseHouse.position = correctPosition;
             
+            if (house.TryGetComponent<BoxCollider>(out BoxCollider houseCollider))
+            {
+                houseHeight = houseCollider.size.y * house.localScale.y - 0.05f;
+            }
+            else
+            {
+                Debug.LogWarning("Placed house is missing a BoxCollider!");
+                // Fallback height if boxcollider is missing
+                houseHeight = 0.6f * 2f - 0.05f;
+            }
+
             // Shift the preview and trigger upwards for the next potential drop
-            housePreview.position = new Vector3(housePreview.position.x, housePreview.position.y + houseHeight, housePreview.position.z);
-            trigger.position = new Vector3(trigger.position.x, trigger.position.y + houseHeight, trigger.position.z);
+            housePreview.position = new Vector3(
+                housePreview.position.x, 
+                housePreview.position.y + houseHeight, 
+                housePreview.position.z);
+                
+            trigger.position = new Vector3(
+                trigger.position.x, 
+                trigger.position.y + houseHeight, 
+                trigger.position.z);
 
             baseHouse.SetParent(this.transform);
             TriggerPlacementLogic(house);

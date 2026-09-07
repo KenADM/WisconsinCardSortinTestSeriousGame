@@ -13,8 +13,8 @@ public static class ExperimentSettings
     public static bool skipTutorial;
     public static bool enableUserCodeInGameInput;
     public static string userCode = "";
-
     private static bool isInitialized = false;
+    public static string logDirectory;
     
     // Runs once when the application launches before any scene loads
     /// <summary>
@@ -52,6 +52,7 @@ public static class ExperimentSettings
             debugMode = baseConfig.defaultDebugMode;
             skipTutorial = baseConfig.defaultSkipTutorial;
             enableUserCodeInGameInput = baseConfig.defaultEnableUserCodeInGameInput;
+            logDirectory = baseConfig.logDirectory;
         }
         else
         {
@@ -65,6 +66,7 @@ public static class ExperimentSettings
             debugMode = false;
             skipTutorial = false;
             enableUserCodeInGameInput = false;
+            logDirectory = "PlayerLog";
         }
 
         userCode = "";

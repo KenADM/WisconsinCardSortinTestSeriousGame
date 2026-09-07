@@ -153,7 +153,15 @@ public class CraneMovement : MonoBehaviour
         {
             if (canTakeMoveInput)
             {
-                MoveToClosest(inputX);
+                //MoveToClosest(inputX);
+                if(inputX < 0)
+                {
+                    MoveLeft();
+                }
+                else
+                {
+                    MoveRight();
+                }
                 canTakeMoveInput = false; 
             }
         }
@@ -206,19 +214,9 @@ public class CraneMovement : MonoBehaviour
     }
     
     /// <summary>
-    /// Move to the closest platform in a given direction.
-    /// </summary>
-    /// <param name="direction">direction of movement</param>
-    private void MoveToClosest(float direction)
-    {
-        Debug.Log("moving");
-        MoveToClosestHandler(direction);
-    }
-    
-    /// <summary>
     /// Calculates the closest valid platform in the requested direction and sets it as the new target position.
     /// </summary>
-    private void MoveToClosestHandler(float direction)
+    private void MoveToClosest(float direction)
     {
         Vector3 myPosition = targetPos; 
         Vector3 closest = myPosition; 
@@ -321,9 +319,11 @@ public class CraneMovement : MonoBehaviour
         isArmMoving = true;
         if (craneSoundManager != null) craneSoundManager.PlayArmSound();
 
+        // start and target rotation
         Quaternion startRotation = arm.transform.localRotation;
         Quaternion targetDownRotation = startRotation * Quaternion.Euler(maxRotation, 0, 0);
 
+        // rotatie until it reaches the target rotation OR until it hoveres a house
         while (Quaternion.Angle(arm.transform.localRotation, targetDownRotation) > 0.1f && hoveredHouse == null)
         {
             arm.transform.localRotation = Quaternion.RotateTowards(arm.transform.localRotation, targetDownRotation, rotationSpeed * ROTATION_MULTIPLIER * Time.deltaTime);
@@ -344,18 +344,21 @@ public class CraneMovement : MonoBehaviour
             grabbedHouse.transform.SetParent(hook.transform, true);
             
             houseComp.Grab();
+            // used for tutorial progress
             OnHouseGrabbed?.Invoke();
 
             int[] grabbedValues = new int[] { houseComp.HouseData.Color, houseComp.HouseData.Type, houseComp.HouseData.People };
-            JsonTelemetryLogger.LogHouseInteraction(true, grabbedValues, playerHead.position.x);
+            JsonTelemetryLogger.LogHouseInteraction(true, grabbedValues);
 
             yield return new WaitForSeconds(0.2f);
         }
 
+        // back to sition
         while (Quaternion.Angle(arm.transform.localRotation, startRotation) > 0.1f)
         {
             arm.transform.localRotation = Quaternion.RotateTowards(arm.transform.localRotation, startRotation, rotationSpeed * ROTATION_MULTIPLIER * Time.deltaTime);
-            
+
+            // fix house position and rotation   
             if (grabbedHouse != null)
             {
                 grabbedHouse.transform.position = new Vector3(grabbedHouse.transform.position.x, grabbedHouse.transform.position.y, lockedWorldZ);
@@ -390,7 +393,7 @@ public class CraneMovement : MonoBehaviour
         if (grabbedHouse.TryGetComponent(out HouseFunction houseComp))
         {
             int[] droppedValues = new int[] { houseComp.HouseData.Color, houseComp.HouseData.Type, houseComp.HouseData.People };
-            JsonTelemetryLogger.LogHouseInteraction(false, droppedValues, playerHead.position.x);
+            JsonTelemetryLogger.LogHouseInteraction(false, droppedValues);
             houseComp.Release();
         }
         

@@ -50,7 +50,10 @@ public class VRSeatBeltWithFade : MonoBehaviour
     private void Start()
     {
         // Start checking for the headset proximity sensor
-        StartCoroutine(WaitForHeadsetToBeWorn());
+        if (ExperimentSettings.vrMode)
+        {
+            StartCoroutine(WaitForHeadsetToBeWorn());
+        }
     }
 
     /// <summary>
@@ -88,7 +91,6 @@ public class VRSeatBeltWithFade : MonoBehaviour
         }
 
         // Headset is worn! Set the center coordinates.
-        // (Also fixed the typo here: camY was previously set to localPosition.x)
         camX = vrCamera.localPosition.x;
         camY = vrCamera.localPosition.y; 
         camZ = vrCamera.localPosition.z;

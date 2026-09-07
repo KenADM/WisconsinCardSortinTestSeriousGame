@@ -647,9 +647,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerChar
   <TowerData>k__BackingField:
-    <color>k__BackingField: 0
-    <type>k__BackingField: 0
-    <people>k__BackingField: 0
+    <Color>k__BackingField: 0
+    <Type>k__BackingField: 0
+    <People>k__BackingField: 0
+  HouseBaseSpawn: {fileID: 0}
 --- !u!82 &6283280027375620949
 AudioSource:
   m_ObjectHideFlags: 0
@@ -763,7 +764,7 @@ MonoBehaviour:
   sound: {fileID: 6283280027375620949}
   positive: {r: 0.75, g: 0.98636365, b: 1, a: 1}
   negative: {r: 0, g: 0, b: 0, a: 1}
-  positiveSound: {fileID: 8300000, guid: 79d09c9f2f975c349b1a45fe1dd7b46f, type: 3}
+  positiveSound: {fileID: 8300000, guid: 52320e590bf774734a288886eba557ba, type: 3}
   negativeSound: {fileID: 8300000, guid: 7bef0064f8567430cac22499c6b93d4f, type: 3}
 --- !u!1 &8714626056291906007
 GameObject:

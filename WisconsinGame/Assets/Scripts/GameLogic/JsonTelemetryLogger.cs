@@ -72,12 +72,11 @@ public class LogEvent
     
     public string direction;
     public float? positionX;
-    public int? activeCondition;
+    public string activeCondition;
     
     public bool? isMatch; 
     public int? comboAfter; 
     
-    // Arrays default to null if not assigned, so they don't need a '?'
     public string[] houseValues; 
     public string[] towerTarget;
 }
@@ -160,7 +159,7 @@ public static class JsonTelemetryLogger
     /// <param name="houseValues">The values associated with the house being interacted with.</param>
     /// <param name="currentPosX">The current X position of the player.</param>
 
-    public static void LogHouseInteraction(bool isGrab, int[] houseValues, float currentPosX)
+    public static void LogHouseInteraction(bool isGrab, int[] houseValues)
     {
         if (!isTracking) return;
 
@@ -168,13 +167,7 @@ public static class JsonTelemetryLogger
         {
             timeFromStart = Time.time - sessionStartTime,
             eventType = isGrab ? "Grab" : "Drop",
-            //positionX = currentPosX,
-            houseValues = new string[]
-            {
-                houseValues[0].ToString(),
-                houseValues[1].ToString(),
-                houseValues[2].ToString()
-            }
+            houseValues = ReadableData(houseValues),
         });
     }
 
@@ -188,7 +181,7 @@ public static class JsonTelemetryLogger
     /// <param name="houseValues">The values associated with the house being placed.</param>
     /// <param name="baseValues">The values associated with the target tower.</param>
     /// <param name="currentPosX">The current X position of the tower.</param>
-    public static void LogPlacement(int activeCondition, bool isMatch, int combo, int[] houseValues, int[] baseValues, float currentPosX)
+    public static void LogPlacement(string activeCondition, bool isMatch, int combo, int[] houseValues, int[] baseValues, float currentPosX)
     {
         if (!isTracking) return;
 
@@ -199,22 +192,31 @@ public static class JsonTelemetryLogger
             activeCondition = activeCondition,
             isMatch = isMatch,
             comboAfter = combo,
-            houseValues = new string[]
-            {
-                houseValues[0].ToString(),
-                houseValues[1].ToString(),
-                houseValues[2].ToString()
-            },
-            towerTarget = new string[]
-            {
-                baseValues[0].ToString(),
-                baseValues[1].ToString(),
-                baseValues[2].ToString()
-            },
-            //positionX = currentPosX
+            houseValues = ReadableData(houseValues),
+            towerTarget = ReadableData(baseValues),
+            positionX = currentPosX
         });
     }
 
+    /// <summary>
+    /// Converts data of house/base into a more readable version. 
+    /// </summary>
+    /// <param name="target">object which data needs to convert to "readable"</param>
+    /// <returns>readable version of data</returns>
+    private static string[] ReadableData(int[] target)
+    {
+        string[] toReturn = new string[target.Length];
+
+        if (target.Length >= 3)
+        {
+            toReturn[0] = "Color: " + target[0];
+            toReturn[1] = "Type: " + target[1];
+            toReturn[2] = "People: " + target[2];
+        }
+    
+
+        return toReturn;
+    }
 
     /// <summary>
     /// Saves the current telemetry session data to a JSON file and resets the tracking state.
@@ -235,12 +237,11 @@ public static class JsonTelemetryLogger
         sessionData.finalGameState.totalAttempts = totalAttempts;
         sessionData.finalGameState.categoriesCompleted = categoriesCompleted;
 
-        //string jsonData = JsonUtility.ToJson(sessionData, true);
         string jsonData = JsonConvert.SerializeObject(sessionData, Formatting.Indented, new JsonSerializerSettings 
         { 
             NullValueHandling = NullValueHandling.Ignore 
         });
-        string folderName = "PlayerLog";
+        string folderName = ExperimentSettings.logDirectory;
         
         // determines the directory path based on the platform, using standard path
         string directoryPath = Path.Combine(Application.persistentDataPath, folderName);
