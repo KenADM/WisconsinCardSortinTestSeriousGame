@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// adds a new creatable object in the right click menu
 [CreateAssetMenu(fileName = "DefaultExperimentConfig", menuName = "Experiment/Base Config")]
 public class ExperimentConfigSO : ScriptableObject
 {

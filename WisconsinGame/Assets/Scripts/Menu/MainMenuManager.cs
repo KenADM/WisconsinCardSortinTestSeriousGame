@@ -90,15 +90,22 @@ public class MainMenuManager : MonoBehaviour
         StartCoroutine(StartXRSafely());
     }
 
+    /// <summary>
+    /// Boots the VR headset at the start of the game safely.
+    /// IEnumerator so that it runs as a coroutine.
+    /// </summary>
     private IEnumerator StartXRSafely()
     {
+        // check if the xr plugin manager is installed 
         if (XRGeneralSettings.Instance != null && XRGeneralSettings.Instance.Manager != null)
         {
+            // detect and initialize the vr
             if (!XRGeneralSettings.Instance.Manager.isInitializationComplete)
             {
                 yield return XRGeneralSettings.Instance.Manager.InitializeLoader();
             }
 
+            
             if (XRGeneralSettings.Instance.Manager.activeLoader != null)
             {
                 XRGeneralSettings.Instance.Manager.StartSubsystems();
@@ -112,6 +119,10 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Safely turns off the VR headset the game is not in vr mode.
+    /// </summary>
     private void StopXR()
     {
         if (XRGeneralSettings.Instance != null && XRGeneralSettings.Instance.Manager != null)
@@ -124,6 +135,9 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Open Settings Canvas. 
+    /// </summary>
     public void OpenSettings()
     {
         if (mainPanel != null) mainPanel.SetActive(false);
@@ -131,18 +145,20 @@ public class MainMenuManager : MonoBehaviour
         if (warningCodePanelMain != null) warningCodePanelMain.SetActive(false);
     }
 
+    /// <summary>
+    /// Closes Setting Canvas.
+    /// </summary>
     public void CloseSettings()
     {   
         string currentCode = userCodeText != null ? userCodeText.text.Trim() : "";
 
-        // Blocca la chiusura se lo skip è attivo MA non c'è un codice utente valido inserito
+        // blocks closure if the inGame login is disabled but the userCode is still empty
         if (userCodeToggle != null && !userCodeToggle.isOn && string.IsNullOrWhiteSpace(currentCode))
         {
             if (warningCodePanelSettings != null) warningCodePanelSettings.SetActive(true);
-            return; // Esce senza chiudere il pannello
+            return; 
         }
 
-        // Se il controllo passa, salva e chiudi
         ExperimentSettings.userCode = currentCode;
         SaveAndRefreshUI();
 
@@ -153,6 +169,10 @@ public class MainMenuManager : MonoBehaviour
 
     // --- DIRECT MODIFICATION METHODS ---
 
+    /// <summary>
+    /// Increases max combo of a certain amount.
+    /// </summary>
+    /// <param name="amount">amount to add to the base max combo</param>
     private void ChangeMaxCombo(int amount)
     {
         ExperimentSettings.maxCombo += amount;
@@ -160,6 +180,10 @@ public class MainMenuManager : MonoBehaviour
         SaveAndRefreshUI();
     }
 
+    /// <summary>
+    /// Increase Categories of a certain amount.
+    /// </summary>
+    /// <param name="amount">amount to add to the base number of categories</param>
     private void ChangeCategories(int amount)
     {
         ExperimentSettings.categoriesToComplete += amount;
@@ -167,6 +191,11 @@ public class MainMenuManager : MonoBehaviour
         SaveAndRefreshUI();
     }
 
+
+    /// <summary>
+    /// Increase reshuffles of a certain amount.
+    /// </summary>
+    /// <param name="amount">amount to add to the base number of max reshuffles</param>
     private void ChangeReshuffles(int amount)
     {
         ExperimentSettings.maxReshuffles += amount;
@@ -174,6 +203,10 @@ public class MainMenuManager : MonoBehaviour
         SaveAndRefreshUI();
     }
 
+    /// <summary>
+    /// Increase time of a certain amount.
+    /// </summary>
+    /// <param name="amount">amount to add to the base number of max time</param>
     private void ChangeTimeAmmount(int amount) 
     {
         ExperimentSettings.time += amount;
@@ -181,6 +214,7 @@ public class MainMenuManager : MonoBehaviour
         SaveAndRefreshUI();
     }
 
+    // --- INCREASE/DECREASE BUTTONS ---
     public void RaiseMaxCombo() { ChangeMaxCombo(1); }
     public void LowerMaxCombo() { ChangeMaxCombo(-1); }
     
@@ -239,6 +273,10 @@ public class MainMenuManager : MonoBehaviour
 
     // --- CORE SAVING & UI REFRESH ---
 
+    /// <summary>
+    /// Updates the strings to match the ExperimentSettings.
+    /// Saves the settings in the current session.
+    /// </summary>
     private void SaveAndRefreshUI()
     {
         // Update Text
@@ -261,6 +299,10 @@ public class MainMenuManager : MonoBehaviour
         PlayerPrefs.Save(); 
     }
 
+    /// <summary>
+    /// Disables/Enables settings based on the the value in isTimeMode
+    /// </summary>
+    /// <param name="isTimeMode"></param>
     public void TimeModeSettings(bool isTimeMode)
     {
         if(maxTimeInputField != null) maxTimeInputField.SetActive(isTimeMode);
@@ -268,6 +310,9 @@ public class MainMenuManager : MonoBehaviour
         if(maxCategoriesInputField != null) maxCategoriesInputField.SetActive(!isTimeMode);
     }
 
+    /// <summary>
+    /// Enables Wisconsin test settings
+    /// </summary>
     public void WisconsinMode()
     {
         ExperimentSettings.maxCombo = 5;
@@ -282,13 +327,15 @@ public class MainMenuManager : MonoBehaviour
         if (timeModeToggle != null) timeModeToggle.isOn = false;
         if (debugModeToggle != null) debugModeToggle.isOn = false;
         if (skipTutorialToggle != null) skipTutorialToggle.isOn = false;
-        // (Removed the duplicate skipTutorialToggle line here)
 
         SaveAndRefreshUI();
     }
 
     // --- SYSTEM ROUTING ---
-
+    
+    /// <summary>
+    /// Starts the game and changes the scene.
+    /// </summary>
     public void PlayGame()
     {
         if (!ExperimentSettings.enableUserCodeInGameInput && ExperimentSettings.userCode == "")
@@ -307,16 +354,21 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.LoadScene(gameSceneName);
     }
 
+    /// <summary>
+    /// Closes application
+    /// </summary>
     public void QuitApplication()
     {
         Debug.Log("Quitting Application");
-        Application.Quit(); // ExperimentSettings will handle the cleanup automatically!
-
+        Application.Quit(); 
         #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
         #endif
     }
 
+    /// <summary>
+    /// Opens the log file.
+    /// </summary>
     public void OpenLogLocation()
     {
         string folderName = "PlayerLog";

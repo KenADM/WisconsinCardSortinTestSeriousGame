@@ -7,7 +7,6 @@ public class CloudMovement : MonoBehaviour
 
     void Update()
     {
-        // This pushes the object forward along the Z-axis continuously 
         transform.Translate(0f, 0f, movementSpeed * Time.deltaTime);
     }
 }

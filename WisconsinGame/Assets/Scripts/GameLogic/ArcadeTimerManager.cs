@@ -3,9 +3,7 @@ using TMPro;
 using System;
 
 /// <summary>
-/// Gestisce il timer della modalità Arcade. Il tempo diminuisce costantemente, 
-/// ma il giocatore può guadagnare secondi preziosi facendo le scelte giuste, 
-/// o perderli facendo scelte sbagliate.
+/// Timer handler script, for when the game is in timer mode.
 /// </summary>
 public class ArcadeTimerManager : MonoBehaviour
 {
@@ -21,8 +19,6 @@ public class ArcadeTimerManager : MonoBehaviour
 
     private float currentTime;
     private bool isTimerRunning = false;
-
-    // Evento globale che scatta quando il tempo arriva a zero
     public static event Action OnTimeOut;
 
     void Awake()
@@ -42,11 +38,8 @@ public class ArcadeTimerManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // Supponiamo che il GameLogicManager lanci questi eventi quando valuta la casa
         GameLogicManager.OnCorrectPlacement += AddTime;
         GameLogicManager.OnWrongPlacement += RemoveTime;
-        
-        // Fai partire il timer quando finisce il tutorial o inizia il gioco
         Tutorial.StartGame += StartTimer;
     }
 
@@ -57,25 +50,26 @@ public class ArcadeTimerManager : MonoBehaviour
         Tutorial.StartGame -= StartTimer;
     }
 
+
+
     private void Update()
     {
         if (!isTimerRunning) return;
 
-        // Riduci il tempo ogni frame
         currentTime -= Time.deltaTime;
 
         if (currentTime <= 0)
         {
             currentTime = 0;
             isTimerRunning = false;
-            OnTimeOut?.Invoke(); // Avvisa il gioco che la partita è finita!
+            OnTimeOut?.Invoke(); 
         }
 
         UpdateTimerUI();
     }
 
     /// <summary>
-    /// Avvia il conto alla rovescia.
+    /// Start Countdown
     /// </summary>
     private void StartTimer()
     {
@@ -87,19 +81,17 @@ public class ArcadeTimerManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Aggiunge secondi al timer (chiamato quando il giocatore indovina).
+    /// add seconds to timer
     /// </summary>
     private void AddTime()
     {
         if (!isTimerRunning) return;
         currentTime += bonusTime;
         
-        // Feedback visivo opzionale: fai "saltare" il testo per far notare il bonus
-        // (Si potrebbe aggiungere un'animazione qui)
     }
 
     /// <summary>
-    /// Sottrae secondi al timer (chiamato quando il giocatore sbaglia).
+    /// remove time
     /// </summary>
     private void RemoveTime()
     {
@@ -108,23 +100,20 @@ public class ArcadeTimerManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Aggiorna il testo a schermo formattandolo come Minuti:Secondi.
-    /// Se mancano meno di 10 secondi, il testo diventa rosso.
+    /// Updates timer text
     /// </summary>
     private void UpdateTimerUI()
     {
         if (timerText == null) return;
 
-        // Converte i float in minuti e secondi
         int minutes = Mathf.FloorToInt(currentTime / 60);
         int seconds = Mathf.FloorToInt(currentTime % 60);
         
         timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
 
-        // Effetto panico: cambia colore se il tempo sta per scadere
+        // timer flash
         if (currentTime <= 10f)
         {
-            // Lampeggia leggermente tra rosso e bianco usando il tempo
             timerText.color = Color.Lerp(warningColor, normalColor, Mathf.PingPong(Time.time * 2f, 1f));
         }
         else

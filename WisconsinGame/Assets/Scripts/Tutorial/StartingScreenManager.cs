@@ -84,6 +84,10 @@ public class StartingScreenManager : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// Used when the ingame username insertion is disabled
+    /// </summary>
     private void StartTutorialDirectly()
     {
         TutorialGame?.Invoke();

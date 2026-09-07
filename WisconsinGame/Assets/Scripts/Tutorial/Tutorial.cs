@@ -25,18 +25,17 @@ public class Tutorial : MonoBehaviour
 
     [Header("Tutorial Text Prompts (Fasi 0-10) and look at the buttons Prompt")]
 
-    [SerializeField] private GameObject startTutorial;
-    [SerializeField] private GameObject phase0Prompt;
-    [SerializeField] private GameObject phase1Prompt;
-    [SerializeField] private GameObject phase2Prompt;
-    [SerializeField] private GameObject phase3Prompt;
-    [SerializeField] private GameObject phase4Prompt; 
-    [SerializeField] private GameObject phase5Prompt; 
-    [SerializeField] private GameObject phase6Prompt; 
-    [SerializeField] private GameObject phase7Prompt; 
-    [SerializeField] private GameObject phase8Prompt; 
-    [SerializeField] private GameObject phase9Prompt; 
-    [SerializeField] private GameObject phase10Prompt; 
+    [SerializeField] private GameObject phase0Prompt; // benvenuto
+    [SerializeField] private GameObject phase1Prompt; // vai a destra
+    [SerializeField] private GameObject phase2Prompt; // 4 fondamenta
+    [SerializeField] private GameObject phase3Prompt; // house description
+    [SerializeField] private GameObject phase4Prompt; // vai a sinistra
+    [SerializeField] private GameObject phase5Prompt; // porta su/giu
+    [SerializeField] private GameObject phase6Prompt; // porta dall'altra parte
+    [SerializeField] private GameObject phase7Prompt; // nube nera
+    [SerializeField] private GameObject phase8Prompt; // riprova
+    [SerializeField] private GameObject phase9Prompt; // nube bianca
+    [SerializeField] private GameObject phase10Prompt; // Start gioco
     [SerializeField] private GameObject lookAtTheButtonsPrompt; 
     [SerializeField] private GameObject lookAtTimePrompt;
 
@@ -85,6 +84,7 @@ public class Tutorial : MonoBehaviour
         if (leftTriggerObj != null) leftTriggerObj.SetActive(true);
     }
 
+    
     private void Update()
     {
         // Continuously check distance during Phase 9 to trigger the final UI prompt
@@ -113,7 +113,6 @@ public class Tutorial : MonoBehaviour
         }
         else
         {
-            if (startTutorial) startTutorial.SetActive(true);
             CraneMovement craneMovement = crane.GetComponent<CraneMovement>(); 
             EnableMoveDirection?.Invoke(true, false); 
             craneMovement.MoveLeft();
@@ -126,9 +125,8 @@ public class Tutorial : MonoBehaviour
     /// </summary>
     private void HideAllPrompts()
     {
-        if (startTutorial) startTutorial.SetActive(false);
-        if (phase0Prompt) phase0Prompt.SetActive(false);
-        if (phase1Prompt) phase1Prompt.SetActive(false);
+        if (phase0Prompt) phase0Prompt.SetActive(false); 
+        if (phase1Prompt) phase1Prompt.SetActive(false); 
         if (phase2Prompt) phase2Prompt.SetActive(false);
         if (phase3Prompt) phase3Prompt.SetActive(false);
         if (phase4Prompt) phase4Prompt.SetActive(false);
@@ -339,11 +337,11 @@ public class Tutorial : MonoBehaviour
     /// </summary>
     private IEnumerator SmoothTransitionToGameplay()
     {
-        // 1. Lock controls during cinematic movement
+        // Lock controls during cinematic movement
         EnableMoveDirection?.Invoke(false, false);
         EnableGrab?.Invoke(false);
 
-        // 2. Define target (matching target platform's X/Z but retaining crane's current Y height)
+        // Define target (matching target platform's X/Z but retaining crane's current Y height)
         Vector3 targetPos = new Vector3(
             spawningPlatformGameplay.transform.position.x, 
             crane.transform.position.y, 
@@ -353,19 +351,19 @@ public class Tutorial : MonoBehaviour
         CraneMovement craneMovement = crane.GetComponent<CraneMovement>(); 
         craneMovement.MoveToPositionSmoothly(targetPos);
 
-        // 3. Wait until the physical position matches the target
+        // Wait until the physical position matches the target
         while (Vector3.Distance(crane.transform.position, targetPos) > 0.05f)
         {
             yield return null; 
         }
 
-        // 4. Finalize position and swap operational data to gameplay mode
+        // Finalize position and swap operational data to gameplay mode
         craneMovement.SyncTargetPosition(targetPos);
         craneMovement.platforms.Clear();
         craneMovement.platforms = platformsGameplay;
         craneMovement.SetSpawnPosition(spawningPlatformGameplay);
 
-        // 5. Restore controls and wake up the GameLogicManager
+        // Restore controls and wake up the GameLogicManager
         EnableMoveDirection?.Invoke(true, true);
         EnableGrab?.Invoke(true);
         StartGame?.Invoke();

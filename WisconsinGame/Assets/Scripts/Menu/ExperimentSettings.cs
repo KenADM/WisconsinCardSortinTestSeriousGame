@@ -15,8 +15,12 @@ public static class ExperimentSettings
     public static string userCode = "";
 
     private static bool isInitialized = false;
-
+    
     // Runs once when the application launches before any scene loads
+    /// <summary>
+    /// Activates listener for application quit
+    /// Resets to default all the configs;
+    /// </summary>
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void InitializeApplicationLifecycle()
     {
@@ -34,6 +38,7 @@ public static class ExperimentSettings
     /// </summary>
     public static void ResetToDefaults()
     {
+        //Extracts base config
         ExperimentConfigSO baseConfig = Resources.Load<ExperimentConfigSO>("DefaultExperimentConfig");
 
         if (baseConfig != null)

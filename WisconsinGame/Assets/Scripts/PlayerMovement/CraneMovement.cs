@@ -111,7 +111,7 @@ public class CraneMovement : MonoBehaviour
 
     private void Update()
     {
-        // Listen for player input and translate it into crane movement commands.
+        // Listen for player input and translate it into crane movement commands only in debug mode.
         if(debugMode)
         {
             HandleInput();
@@ -205,6 +205,10 @@ public class CraneMovement : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Move to the closest platform in a given direction.
+    /// </summary>
+    /// <param name="direction">direction of movement</param>
     private void MoveToClosest(float direction)
     {
         Debug.Log("moving");

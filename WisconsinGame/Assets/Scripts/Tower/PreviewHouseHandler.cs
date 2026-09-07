@@ -42,7 +42,7 @@ public class PreviewHouseHandler : MonoBehaviour
             Transform closestPlatform = null;
             float minDistance = float.MaxValue;
 
-            // 1. Find the closest gameplay tower
+            // Find the closest gameplay tower
             foreach (Transform tower in platforms)
             {
                 float distance = Vector3.Distance(player.transform.position, tower.position);
@@ -53,14 +53,14 @@ public class PreviewHouseHandler : MonoBehaviour
                 }
             }
 
-            // 2. Check if the spawning platform is actually the closest point
+            // Check if the spawning platform is actually the closest point
             float spawnDistance = Vector3.Distance(player.transform.position, spawningPlatform.transform.position);
             if (spawnDistance < minDistance)
             {
                 closestPlatform = spawningPlatform.transform;
             }
 
-            // 3. If the closest platform has changed this frame, update the visual previews
+            // If the closest platform has changed this frame, update the visual previews
             if (closestPlatform != currentClosestPlatform)
             {
                 // Hide the preview on the previous platform

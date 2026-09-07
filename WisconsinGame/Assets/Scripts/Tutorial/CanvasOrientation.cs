@@ -3,35 +3,35 @@ using UnityEngine;
 public class CanvasOrientation : MonoBehaviour
 {
     [Header("Target")]
-    [Tooltip("Trascina qui la tua Main Camera (VR Head)")]
+    [Tooltip("VR headset")]
     public Transform vrCamera;
 
     [Header("Settings")]
-    [Tooltip("Mantieni il Canvas dritto (non si inclina se guardi in alto/basso)")]
+    [Tooltip("Lock vertival rotation")]
     public bool lockRotationUpright = true;
 
+
+    /// <summary>
+    /// Adjust rotation for canvases to face the player.
+    /// LateUpdate waits for camera to finish the movement before calculating the orientation.
+    /// </summary>
     void LateUpdate()
     {
         if (vrCamera == null) return;
 
-        // Calcoliamo la direzione dalla telecamera verso il Canvas.
-        // NOTA: Nei Canvas UI, calcoliamo la direzione "al contrario" 
-        // per evitare che il testo risulti specchiato.
+        // Calculate direction
         Vector3 lookDirection = transform.position - vrCamera.position;
-        
+
+        // Flatten the Y axis to keep it upright BEFORE making the Quaternion if lockRotationUprights is active
+        if (lockRotationUpright)
+        {
+            lookDirection.y = 0;
+        }
+
+        // Now apply the rotation safely
         if (lookDirection != Vector3.zero)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-
-            // Blocca gli assi X e Z per evitare che il Canvas si "sdrai" o si inclini lateralmente
-            if (lockRotationUpright)
-            {
-                targetRotation.x = 0;
-                targetRotation.z = 0;
-            }
-
-            // Applica la rotazione istantaneamente
-            transform.rotation = targetRotation;
+            transform.rotation = Quaternion.LookRotation(lookDirection);
         }
     }
 }
