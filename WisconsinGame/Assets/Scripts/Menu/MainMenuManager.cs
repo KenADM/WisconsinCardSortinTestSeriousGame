@@ -231,11 +231,11 @@ public class MainMenuManager : MonoBehaviour
 
     private void OnVRModeToggled(bool isOn)
     {
-        // 1. Save the new state to memory instantly
+        // Save the new state to memory instantly
         ExperimentSettings.vrMode = isOn;
         SaveAndRefreshUI();
 
-        // 2. Handle the VR hot-plugging logic
+        // Handle the VR hot-plugging logic
         if (isOn)
         {
             // If the user checked the box, but the VR driver isn't running yet...

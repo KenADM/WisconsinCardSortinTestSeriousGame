@@ -21,6 +21,7 @@ public class GameLogicManager : MonoBehaviour
     private bool debugMode = true;
     private List<int> conditionValues = new List<int>() {0, 1, 2};
     private int conditionNumber = 0;
+    private int oldConditionNumber = -1;
 
     private bool isTutorial = true; 
     private string endReason = "Quit";
