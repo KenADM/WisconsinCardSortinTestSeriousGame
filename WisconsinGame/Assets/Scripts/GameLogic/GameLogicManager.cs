@@ -218,6 +218,9 @@ public class GameLogicManager : MonoBehaviour
             return;
         }
         
+        JsonTelemetryLogger.LogPlacement(GetCondition(), conditionMet, combo, houseValues, platformValues, platform.transform.position.x);
+        PrintCombo();
+
         // check if the combo has reached the maxCombo threshold, and if so, choose a new condition and reset the combo
         if (combo >= maxCombo)
         {
@@ -227,9 +230,6 @@ public class GameLogicManager : MonoBehaviour
             categoriesCompleted++;
         }
         
-        PrintCombo();
-
-        JsonTelemetryLogger.LogPlacement(GetCondition(), conditionMet, combo, houseValues, platformValues, platform.transform.position.x);
 
         // Check if the game has reached its end conditions: max categories completed (used in category mode only).
         if (!timeMode && categoriesCompleted >= categoriesToComplete)
@@ -337,7 +337,7 @@ public class GameLogicManager : MonoBehaviour
         else
         {
             if (numberOfTriedApartments == 0) return 0f; 
-            return ((categoriesCompleted * maxCombo) / numberOfTriedApartments) * 100f;
+            return ((float)(categoriesCompleted * maxCombo) / numberOfTriedApartments) * 100f;
         }
 
     }
