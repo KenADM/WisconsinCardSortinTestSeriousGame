@@ -69,16 +69,16 @@ public class LogEvent
 {
     public float timeFromStart;
     public string eventType; // "Movement", "Grab", "Drop", "Placement"
-    public string typeOfError;
+    public int? typeOfError;
     public string direction;
     public float? positionX;
-    public string activeCondition;
+    public int? activeCondition;
     
     public bool? isMatch; 
     public int? comboAfter; 
     
-    public string[] houseValues; 
-    public string[] towerTarget;
+    public int[] houseValues; 
+    public int[] towerTarget;
 }
 
 
@@ -167,7 +167,12 @@ public static class JsonTelemetryLogger
         {
             timeFromStart = Time.time - sessionStartTime,
             eventType = isGrab ? "Grab" : "Drop",
-            houseValues = ReadableData(houseValues),
+            houseValues = new int[] 
+                {
+                    houseValues[0],
+                    houseValues[1],
+                    houseValues[2]
+                },
         });
     }
 
@@ -182,7 +187,7 @@ public static class JsonTelemetryLogger
     /// <param name="houseValues">The values associated with the house being placed.</param>
     /// <param name="baseValues">The values associated with the target tower.</param>
     /// <param name="currentPosX">The current X position of the tower.</param>
-    public static void LogPlacement(string activeCondition, bool isMatch,string errorType, int combo, int[] houseValues, int[] baseValues, float currentPosX)
+    public static void LogPlacement(int activeCondition, bool isMatch,int errorType, int combo, int[] houseValues, int[] baseValues, float currentPosX)
     {
         if (!isTracking) return;
 
@@ -194,8 +199,18 @@ public static class JsonTelemetryLogger
             isMatch = isMatch,
             typeOfError = errorType,
             comboAfter = combo,
-            houseValues = ReadableData(houseValues),
-            towerTarget = ReadableData(baseValues),
+            houseValues = new int[] 
+                {
+                    houseValues[0],
+                    houseValues[1],
+                    houseValues[2]
+                },
+            towerTarget = new int[] 
+                {
+                    baseValues[0],
+                    baseValues[1],
+                    baseValues[2]
+                },
             positionX = currentPosX
         });
     }

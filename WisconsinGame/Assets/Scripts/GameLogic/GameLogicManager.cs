@@ -228,14 +228,13 @@ public class GameLogicManager : MonoBehaviour
         pointSystem += UpdatePoints(ErrorType(platformValues,houseValues));
 
         JsonTelemetryLogger.LogPlacement(
-            GetCondition(), 
+            conditionNumber, 
             conditionMet, 
-            ErrorToString(ErrorType(platformValues,houseValues)), 
+            ErrorType(platformValues,houseValues), 
             combo, 
             houseValues, 
             platformValues, 
             platform.transform.position.x);
-        PrintCombo();
 
         // check if the combo has reached the maxCombo threshold, and if so, choose a new condition and reset the combo
         if (combo >= maxCombo)
@@ -247,6 +246,7 @@ public class GameLogicManager : MonoBehaviour
             categoriesCompleted++;
         }
         
+        PrintCombo();
 
         // Check if the game has reached its end conditions: max categories completed (used in category mode only).
         if (!timeMode && categoriesCompleted >= categoriesToComplete)
