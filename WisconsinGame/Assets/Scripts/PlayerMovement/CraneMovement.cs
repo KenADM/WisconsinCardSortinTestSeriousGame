@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine.XR.Management;
+using System.Net;
 
 /// <summary>
 /// Controls the physical movement, smooth sliding, and grabbing mechanics of the crane.
@@ -28,30 +29,27 @@ public class CraneMovement : MonoBehaviour
 
     // not used in final version
     [Header("Movement Input")]
-    public InputAction moveAction; 
+    [SerializeField] private InputAction moveAction; 
 
     // not used in final version
     [Header("Actions Input")]
-    public InputAction pickupAction; 
+    [SerializeField] private  InputAction pickupAction; 
     
     // not used in final version
     [Header("Keyboard Fallback Settings")]
-    public Key moveLeftKey = Key.A;
-    public Key moveRightKey = Key.D;
-    public Key keyboardPickupKey = Key.Space;
+    [SerializeField] private Key moveLeftKey = Key.A;
+    [SerializeField] private Key moveRightKey = Key.D;
+    [SerializeField] private Key keyboardPickupKey = Key.Space;
     private bool canTakeMoveInput = true;
 
     [Header("Sound")]
     [SerializeField] private CraneSoundSystem craneSoundManager;
 
     [Header("Piattaforme")]
-    public List<Transform> platforms = new List<Transform>();
+    [SerializeField] private List<Transform> platforms = new List<Transform>();
 
     [Header("Position for Spawn")]
     [SerializeField] private Transform spawnPosition = null;
-
-    [Header("Tower Related Data")]
-    public float offsetTowerDistance; 
     private bool isSomethingInHand = false;    
     
     // Movement State Flags
@@ -67,7 +65,7 @@ public class CraneMovement : MonoBehaviour
     public static event Action OnHouseGrabbed;
     public static event Action OnHouseDropped;
 
-    public GameObject hoveredHouse = null;
+    private GameObject hoveredHouse = null;
     private GameObject grabbedHouse = null;
 
     // game object related
@@ -84,11 +82,6 @@ public class CraneMovement : MonoBehaviour
     {
         moveAction.Enable();
         pickupAction.Enable(); 
-        
-        if (spawnPosition != null)
-        {
-            offsetTowerDistance = this.transform.localPosition.z - spawnPosition.localPosition.z;
-        }
         
         targetPos = playerHead.position;
     }
@@ -260,6 +253,13 @@ public class CraneMovement : MonoBehaviour
         JsonTelemetryLogger.LogMovement(directionString, targetPos.x);
     }
 
+    /// <summary>
+    /// Checks if the target position is in the right direction of movement
+    /// </summary>
+    /// <param name="myX">my position</param>
+    /// <param name="targetX">my target position</param>
+    /// <param name="direction">-1 left, +1 right</param>
+    /// <returns></returns>
     private bool IsCorrectDirection(float myX, float targetX, float direction)
     {
         if (direction > 0) return targetX > myX + ARRIVAL_THRESHOLD;
@@ -482,4 +482,21 @@ public class CraneMovement : MonoBehaviour
         isCraneSliding = false;
         if (craneSoundManager != null) craneSoundManager.StopMovementSound();
     }
+
+    /// <summary>
+    /// Clears Platforms
+    /// </summary>
+    public void ClearPlatforms()
+    {
+        platforms.Clear();
+    }
+    
+    /// <summary>
+    /// Populates plaform list
+    /// </summary>
+    /// <param name="newPlatforms">new platforms</param>
+    public void PopulatePlatform(List<Transform> newPlatforms)
+    {
+        platforms = newPlatforms;
+    } 
 }

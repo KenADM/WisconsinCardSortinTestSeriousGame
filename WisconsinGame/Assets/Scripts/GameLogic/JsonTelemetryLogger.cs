@@ -69,7 +69,7 @@ public class LogEvent
 {
     public float timeFromStart;
     public string eventType; // "Movement", "Grab", "Drop", "Placement"
-    
+    public string typeOfError;
     public string direction;
     public float? positionX;
     public string activeCondition;
@@ -177,11 +177,12 @@ public static class JsonTelemetryLogger
     /// </summary>
     /// <param name="activeCondition">The active condition during the placement.</param>    
     /// <param name="isMatch">Indicates whether the placement was a match (true) or not (false).</param>
+    /// <param name="errorType">Indicates the type of error made in the matching attempt</param>
     /// <param name="combo">The combo after the placement.</param>
     /// <param name="houseValues">The values associated with the house being placed.</param>
     /// <param name="baseValues">The values associated with the target tower.</param>
     /// <param name="currentPosX">The current X position of the tower.</param>
-    public static void LogPlacement(string activeCondition, bool isMatch, int combo, int[] houseValues, int[] baseValues, float currentPosX)
+    public static void LogPlacement(string activeCondition, bool isMatch,string errorType, int combo, int[] houseValues, int[] baseValues, float currentPosX)
     {
         if (!isTracking) return;
 
@@ -191,6 +192,7 @@ public static class JsonTelemetryLogger
             eventType = "Placement",
             activeCondition = activeCondition,
             isMatch = isMatch,
+            typeOfError = errorType,
             comboAfter = combo,
             houseValues = ReadableData(houseValues),
             towerTarget = ReadableData(baseValues),

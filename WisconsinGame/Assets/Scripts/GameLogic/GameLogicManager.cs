@@ -4,27 +4,31 @@ using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System; 
 using TMPro;
+using NUnit.Framework;
 
 public class GameLogicManager : MonoBehaviour
 {
     [Header("Data For Analysis")]
-    public int combo = 0;
-    public int maxCombo = 0;
-    public int categoriesCompleted = 0;
-    public int categoriesToComplete = 0;
-    public int maxReshuffles = 0;
-    public int rightChoices = 0; 
+    private int combo = 0;
+    private int maxCombo = 0;
+    private int categoriesCompleted = 0;
+    private int categoriesToComplete = 0;
+    private int maxReshuffles = 0;
+    private int rightChoices = 0; 
     
+    // Time mode point system
+    private int oldConditionNumber = -1;
+    private int pointSystem = 0;
     private int numberOfTriedApartments;
     
+    // Other Settings
     private bool timeMode = true;
     private bool debugMode = true;
-    private List<int> conditionValues = new List<int>() {0, 1, 2};
-    private int conditionNumber = 0;
-    private int oldConditionNumber = -1;
-
     private bool isTutorial = true; 
     private string endReason = "Quit";
+    // Condition values
+    private List<int> conditionValues = new List<int>() {0, 1, 2};
+    private int conditionNumber = 0;
     
     [Header("Platforms")]
     [SerializeField] private List<Transform> platforms = new List<Transform>();
@@ -51,6 +55,7 @@ public class GameLogicManager : MonoBehaviour
     private float requiredHoldTime = 3f;
     
     private bool isExiting = false;
+    private bool hasSavedData = false;
 
     public static event Action<Transform> SpawnStartingHouse;
     public static event Action SpawnHouse;
@@ -72,7 +77,9 @@ public class GameLogicManager : MonoBehaviour
         rightChoices = 0;
         timeMode = ExperimentSettings.timeMode;
         debugMode = ExperimentSettings.debugMode;
-        
+        pointSystem = 0;
+        hasSavedData = false;
+
         DebugPanels(debugMode);
     }
 
@@ -109,9 +116,10 @@ public class GameLogicManager : MonoBehaviour
         ArcadeTimerManager.OnTimeOut -= EndTimeOut;
         
         // save only if the tutorial has been passed
-        if (!isTutorial)
+        if (!isTutorial && !hasSavedData)
         {
             JsonTelemetryLogger.SaveAndClose(endReason, CalculatePoints(), rightChoices, numberOfTriedApartments, categoriesCompleted);
+            hasSavedData = true;
         }
     }
 
@@ -207,7 +215,6 @@ public class GameLogicManager : MonoBehaviour
         }
         else
         {   
-            combo = 0;
             if (!isTutorial) OnWrongPlacement?.Invoke();
             if (feedbackHandler != null) feedbackHandler.Feedback(false);
         }
@@ -218,12 +225,22 @@ public class GameLogicManager : MonoBehaviour
             return;
         }
         
-        JsonTelemetryLogger.LogPlacement(GetCondition(), conditionMet, combo, houseValues, platformValues, platform.transform.position.x);
+        pointSystem += UpdatePoints(ErrorType(platformValues,houseValues));
+
+        JsonTelemetryLogger.LogPlacement(
+            GetCondition(), 
+            conditionMet, 
+            ErrorToString(ErrorType(platformValues,houseValues)), 
+            combo, 
+            houseValues, 
+            platformValues, 
+            platform.transform.position.x);
         PrintCombo();
 
         // check if the combo has reached the maxCombo threshold, and if so, choose a new condition and reset the combo
         if (combo >= maxCombo)
         {
+            oldConditionNumber = conditionNumber;
             ChooseCondition();
             PrintCondition();
             combo = 0;
@@ -281,9 +298,6 @@ public class GameLogicManager : MonoBehaviour
         }
     }
 
-
-
-
     /// <summary>
     /// Handles the end of the game due to a timeout (only used in time mode).
     /// </summary>
@@ -321,18 +335,22 @@ public class GameLogicManager : MonoBehaviour
                 testoEndGamePanel.text = "Percentuale Felicità Raggiunta: " + CalculatePoints() + "%";    
             }
         }
+
+        JsonTelemetryLogger.SaveAndClose(endReason, CalculatePoints(), rightChoices, numberOfTriedApartments, categoriesCompleted);
+        hasSavedData = true;
+
     }
 
     /// <summary>
     /// Calculates the final score based on the game mode. 
-    /// In time mode, the score is calculated based on the number of right choices and wrong choices. 
+    /// In time mode, the score is calculated over time based on the type of error made while matching.
     /// In category mode, the score is calculated based on the number of categories completed and the total number of tried apartments.
     /// </summary>
     private float CalculatePoints()
     {
         if(timeMode)
         {
-            return ((rightChoices * 100) - ((numberOfTriedApartments - rightChoices) * 25));
+            return pointSystem;
         }
         else
         {
@@ -351,4 +369,92 @@ public class GameLogicManager : MonoBehaviour
         endReason = "UI_Quit";
         ReturnToMenu();
     }
+
+    // --- Point System Related ---
+
+    /// <summary>
+    /// Returns the type of error
+    /// </summary>
+    /// <param name="platform">characteristic of the platform where the house is placed</param>
+    /// <param name="house">placed house</param>
+    /// <returns>
+    /// Returns the type of error:
+    /// - 0, no error
+    /// - 1, distraction error
+    /// - 2, wrong matched characteristic
+    /// - 4, perseveration error
+    /// </returns>
+    private int ErrorType(int[] platform, int[] house)
+    {
+        // if match right condition
+        if (platform[conditionNumber] == house[conditionNumber])
+        {
+            return 0;
+        }
+        
+        // if match old condition
+        if (oldConditionNumber != -1 && platform[oldConditionNumber] == house[oldConditionNumber])
+        {
+            return 4;
+        }
+
+        // if match ANY characteristic 
+        int i = 0;
+        while (i < platform.Length)
+        {
+            if (platform[i] == house[i])
+            {
+                return 2;
+            }
+            else
+            {
+                i++;
+            }
+        }
+
+        // distraction error
+        return 1;
+    }
+
+    /// <summary>
+    /// Converts the type of error into a readable string
+    /// </summary>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    private string ErrorToString(int error)
+    {
+        switch (error)
+        {
+            case 0:
+                return "no error";
+            case 1:
+                return "distraction";
+            case 2:
+                return "wrong matched condition"; 
+            case 4:
+                return "perseveration";
+            default:                         
+                return "invalid";
+        }
+    }
+
+    /// <summary>
+    /// Gives the changing value to apply to the current points based on the type of error
+    /// </summary>
+    /// <param name="errorType"></param>
+    /// <returns></returns>
+    private int UpdatePoints(int errorType)
+    {
+        if (errorType == 0)
+        {
+            return 100;
+        }
+        else
+        {
+            return -100 / (2 * errorType); 
+        }
+    }
+
+
+
 }

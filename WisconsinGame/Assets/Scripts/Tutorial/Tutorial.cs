@@ -370,8 +370,8 @@ public class Tutorial : MonoBehaviour
 
         // Finalize position and swap operational data to gameplay mode
         craneMovement.SyncTargetPosition(targetPos);
-        craneMovement.platforms.Clear();
-        craneMovement.platforms = platformsGameplay;
+        craneMovement.ClearPlatforms();
+        craneMovement.PopulatePlatform(platformsGameplay);
         craneMovement.SetSpawnPosition(spawningPlatformGameplay);
 
         // Restore controls and wake up the GameLogicManager
