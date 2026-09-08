@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// Manages the orientation of certain canvases in the scene.
+/// </summary>
+
 public class CanvasOrientation : MonoBehaviour
 {
     [Header("Target")]

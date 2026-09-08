@@ -1,4 +1,7 @@
 using UnityEngine;
+/// <summary>
+/// Changes the floor of the custom gravity script.
+/// </summary>
 
 public class ChangeGround : MonoBehaviour
 {

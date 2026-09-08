@@ -1,9 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Attach this script DIRECTLY to your "Camera Offset" GameObject.
-/// It will brutally force the Y local position to stay at 0, no matter what the VR driver does.
-/// Used to solve bug if disconnection of vr occur
+/// Forces position on assigned object.
+/// Used to solve bug if disconnection of vr occur while in game.
 /// </summary>
 public class VRConnectionHandler : MonoBehaviour
 {

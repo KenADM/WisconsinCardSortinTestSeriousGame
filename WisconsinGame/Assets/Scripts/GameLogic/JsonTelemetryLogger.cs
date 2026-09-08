@@ -46,6 +46,7 @@ public class GameConfigData
     public float timeLimit;
     public bool isVrMode;
     public bool debugMode;
+
 }
 
 /// <summary>
@@ -59,6 +60,10 @@ public class GameStateData
     public int correctPlacements;
     public int totalAttempts;
     public int categoriesCompleted;
+    public int distractionError;
+    public int wrongCondition;
+    public int perseveration;
+
 }
 
 /// <summary>
@@ -69,16 +74,16 @@ public class LogEvent
 {
     public float timeFromStart;
     public string eventType; // "Movement", "Grab", "Drop", "Placement"
-    public int? typeOfError;
+    public string typeOfError;
     public string direction;
     public float? positionX;
-    public int? activeCondition;
+    public string activeCondition;
     
     public bool? isMatch; 
     public int? comboAfter; 
     
-    public int[] houseValues; 
-    public int[] towerTarget;
+    public string[] houseValues; 
+    public string[] towerTarget;
 }
 
 
@@ -91,6 +96,10 @@ public static class JsonTelemetryLogger
     private static float sessionStartTime;
     private static bool isTracking = false;
 
+    private static int distractionErrorCounter;
+    private static int wrongConditionCounter;
+    private static int perseverationCounter;
+
 
     /// <summary>
     /// Initializes a new telemetry session with the provided username and game mode.
@@ -100,6 +109,11 @@ public static class JsonTelemetryLogger
     /// <param name="gameModeNew">The game mode for the new telemetry session, time Mode or max category mode.</param>
     public static void Initialize(string usernameNew, string gameModeNew)
     {
+        
+        distractionErrorCounter = 0;
+        wrongConditionCounter = 0;
+        perseverationCounter = 0;
+
         sessionData = new TelemetryData
         {
             username = usernameNew,
@@ -138,8 +152,8 @@ public static class JsonTelemetryLogger
     /// Logs a movement event, capturing the direction and current X position of the player.
     /// </summary>
     /// <param name="direction">The direction of the movement.</param>
-    /// <param name="currentPosX">The current X position of the player.</param>
-    public static void LogMovement(string direction, float currentPosX)
+    /// <param name="targetPosX">The target X position of the player.</param>
+    public static void LogMovement(string direction, float targetPosX)
     {
         if (!isTracking) return;
 
@@ -148,7 +162,7 @@ public static class JsonTelemetryLogger
             timeFromStart = (float)Math.Round(Time.time - sessionStartTime, 4),
             eventType = "Movement",
             direction = direction,
-            positionX = currentPosX
+            positionX = targetPosX
         });
     }
 
@@ -157,7 +171,6 @@ public static class JsonTelemetryLogger
     /// </summary>
     /// <param name="isGrab">Indicates whether the action was a grab (true) or a drop (false).</param>
     /// <param name="houseValues">The values associated with the house being interacted with.</param>
-    /// <param name="currentPosX">The current X position of the player.</param>
 
     public static void LogHouseInteraction(bool isGrab, int[] houseValues)
     {
@@ -167,12 +180,7 @@ public static class JsonTelemetryLogger
         {
             timeFromStart = (float)Math.Round(Time.time - sessionStartTime, 4),
             eventType = isGrab ? "Grab" : "Drop",
-            houseValues = new int[] 
-                {
-                    houseValues[0],
-                    houseValues[1],
-                    houseValues[2]
-                },
+            houseValues = ReadableData(houseValues)
         });
     }
 
@@ -187,30 +195,21 @@ public static class JsonTelemetryLogger
     /// <param name="houseValues">The values associated with the house being placed.</param>
     /// <param name="baseValues">The values associated with the target tower.</param>
     /// <param name="currentPosX">The current X position of the tower.</param>
-    public static void LogPlacement(int activeCondition, bool isMatch,int errorType, int combo, int[] houseValues, int[] baseValues, float currentPosX)
+    public static void LogPlacement(string activeCondition, bool isMatch,int errorType, int combo, int[] houseValues, int[] baseValues, float currentPosX)
     {
         if (!isTracking) return;
 
+        IncreaseTypeError(errorType);
         sessionData.rawLogs.Add(new LogEvent
         {
             timeFromStart = (float)Math.Round(Time.time - sessionStartTime, 4),
             eventType = "Placement",
             activeCondition = activeCondition,
             isMatch = isMatch,
-            typeOfError = errorType,
+            typeOfError = ErrorToString(errorType),
             comboAfter = combo,
-            houseValues = new int[] 
-                {
-                    houseValues[0],
-                    houseValues[1],
-                    houseValues[2]
-                },
-            towerTarget = new int[] 
-                {
-                    baseValues[0],
-                    baseValues[1],
-                    baseValues[2]
-                },
+            houseValues = ReadableData(houseValues),
+            towerTarget = ReadableData(baseValues),
             positionX = currentPosX
         });
     }
@@ -236,6 +235,49 @@ public static class JsonTelemetryLogger
     }
 
     /// <summary>
+    /// Converts the type of error into a readable string
+    /// </summary>
+    /// <param name="error"></param>
+    /// <returns>string description of error</returns>
+    private static string ErrorToString(int error)
+    {
+        switch (error)
+        {
+            case 0:
+                return "no error";
+            case 1:
+                return "distraction";
+            case 2:
+                return "wrong matched condition"; 
+            case 4:
+                return "perseveration";
+            default:                         
+                return "invalid";
+        }
+    }
+    /// <summary>
+    /// Increases the right error type counter;
+    /// </summary>
+    /// <param name="error">type of error code</param>
+    private static void IncreaseTypeError(int error)
+    {
+        switch (error)
+        {
+            case 1:
+                distractionErrorCounter++;
+                break;
+            case 2:
+                wrongConditionCounter++;
+                break;
+            case 4:
+                perseverationCounter++;
+                break;
+            default:
+                break;             
+        }
+    }
+
+    /// <summary>
     /// Saves the current telemetry session data to a JSON file and resets the tracking state.
     /// The file is saved in a "PlayerLog" folder within the persistent data path, with a filename that includes the username and a timestamp.
     /// </summary>
@@ -253,6 +295,9 @@ public static class JsonTelemetryLogger
         sessionData.finalGameState.correctPlacements = correctChoices;
         sessionData.finalGameState.totalAttempts = totalAttempts;
         sessionData.finalGameState.categoriesCompleted = categoriesCompleted;
+        sessionData.finalGameState.distractionError = distractionErrorCounter;
+        sessionData.finalGameState.wrongCondition = wrongConditionCounter;
+        sessionData.finalGameState.perseveration = perseverationCounter;
 
         string jsonData = JsonConvert.SerializeObject(sessionData, Formatting.Indented, new JsonSerializerSettings 
         { 

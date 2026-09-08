@@ -228,7 +228,7 @@ public class GameLogicManager : MonoBehaviour
         pointSystem += UpdatePoints(ErrorType(platformValues,houseValues));
 
         JsonTelemetryLogger.LogPlacement(
-            conditionNumber, 
+            GetCondition(), 
             conditionMet, 
             ErrorType(platformValues,houseValues), 
             combo, 
@@ -416,27 +416,6 @@ public class GameLogicManager : MonoBehaviour
         return 1;
     }
 
-    /// <summary>
-    /// Converts the type of error into a readable string
-    /// </summary>
-    /// <param name="error"></param>
-    /// <returns></returns>
-    private string ErrorToString(int error)
-    {
-        switch (error)
-        {
-            case 0:
-                return "no error";
-            case 1:
-                return "distraction";
-            case 2:
-                return "wrong matched condition"; 
-            case 4:
-                return "perseveration";
-            default:                         
-                return "invalid";
-        }
-    }
 
     /// <summary>
     /// Gives the changing value to apply to the current points based on the type of error
