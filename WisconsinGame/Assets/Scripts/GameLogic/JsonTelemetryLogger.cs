@@ -145,7 +145,7 @@ public static class JsonTelemetryLogger
 
         sessionData.rawLogs.Add(new LogEvent
         {
-            timeFromStart = Time.time - sessionStartTime,
+            timeFromStart = (float)Math.Round(Time.time - sessionStartTime, 4),
             eventType = "Movement",
             direction = direction,
             positionX = currentPosX
@@ -165,7 +165,7 @@ public static class JsonTelemetryLogger
 
         sessionData.rawLogs.Add(new LogEvent
         {
-            timeFromStart = Time.time - sessionStartTime,
+            timeFromStart = (float)Math.Round(Time.time - sessionStartTime, 4),
             eventType = isGrab ? "Grab" : "Drop",
             houseValues = new int[] 
                 {
@@ -193,7 +193,7 @@ public static class JsonTelemetryLogger
 
         sessionData.rawLogs.Add(new LogEvent
         {
-            timeFromStart = Time.time - sessionStartTime,
+            timeFromStart = (float)Math.Round(Time.time - sessionStartTime, 4),
             eventType = "Placement",
             activeCondition = activeCondition,
             isMatch = isMatch,
