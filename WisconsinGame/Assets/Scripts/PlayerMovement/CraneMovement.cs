@@ -109,15 +109,11 @@ public class CraneMovement : MonoBehaviour
         {
             HandleInput();
         }
-
-        // Handle the smooth movement of the crane towards its target position.
-        HandleSmoothMovement();
     }
     
     void Awake()
     {
         debugMode = ExperimentSettings.debugMode;
-
     }
 
     /// <summary>
@@ -146,7 +142,6 @@ public class CraneMovement : MonoBehaviour
         {
             if (canTakeMoveInput)
             {
-                //MoveToClosest(inputX);
                 if(inputX < 0)
                 {
                     MoveLeft();
@@ -175,35 +170,28 @@ public class CraneMovement : MonoBehaviour
         }
     }
 
+
     /// <summary>
-    /// Handles the actual physical sliding of the crane towards its target position.
-    /// Can toggle between smooth interpolation and instant teleportation.
+    /// Start movement with animation
     /// </summary>
-    private void HandleSmoothMovement()
+    private IEnumerator SlideCraneRoutine()
     {
-        // if i want to use smooth movements
+        isCraneSliding = true;
+        if (craneSoundManager != null) craneSoundManager.PlayMovementSound();
+
         if (useSmoothMovement)
         {
-            // if the crane is not at the target position, move it closer
-            if (Vector3.Distance(playerHead.position, targetPos) > ARRIVAL_THRESHOLD)
+            while (Vector3.Distance(playerHead.position, targetPos) > ARRIVAL_THRESHOLD)
             {
-                isCraneSliding = true;
                 playerHead.position = Vector3.MoveTowards(playerHead.position, targetPos, movementSpeed * Time.deltaTime);
-            }
-            else
-            {
-                isCraneSliding = false;
-                playerHead.position = targetPos;
-                if (craneSoundManager != null) craneSoundManager.StopMovementSound();
+                yield return null;
             }
         }
-        else
-        {
-            //teleport
-            isCraneSliding = false;
-            playerHead.position = targetPos;
-            if (craneSoundManager != null) craneSoundManager.StopMovementSound();
-        }
+
+        playerHead.position = targetPos;
+        
+        isCraneSliding = false;
+        if (craneSoundManager != null) craneSoundManager.StopMovementSound();
     }
     
     /// <summary>
@@ -239,14 +227,12 @@ public class CraneMovement : MonoBehaviour
             }
         }
 
-
         // move to closer target
         targetPos = new Vector3(closest.x, targetPos.y, targetPos.z);
         
         if (Vector3.Distance(playerHead.position, targetPos) > ARRIVAL_THRESHOLD)
         {
-            isCraneSliding = true;
-            if (craneSoundManager != null) craneSoundManager.PlayMovementSound();
+            StartCoroutine(SlideCraneRoutine());
         }
 
         string directionString = direction > 0 ? "Right" : "Left";
@@ -323,7 +309,7 @@ public class CraneMovement : MonoBehaviour
         Quaternion startRotation = arm.transform.localRotation;
         Quaternion targetDownRotation = startRotation * Quaternion.Euler(maxRotation, 0, 0);
 
-        // rotatie until it reaches the target rotation OR until it hoveres a house
+        // rotate until it reaches the target rotation OR until it hoveres a house
         while (Quaternion.Angle(arm.transform.localRotation, targetDownRotation) > 0.1f && hoveredHouse == null)
         {
             arm.transform.localRotation = Quaternion.RotateTowards(arm.transform.localRotation, targetDownRotation, rotationSpeed * ROTATION_MULTIPLIER * Time.deltaTime);
@@ -353,7 +339,7 @@ public class CraneMovement : MonoBehaviour
             yield return new WaitForSeconds(0.2f);
         }
 
-        // back to sition
+        // back to position
         while (Quaternion.Angle(arm.transform.localRotation, startRotation) > 0.1f)
         {
             arm.transform.localRotation = Quaternion.RotateTowards(arm.transform.localRotation, startRotation, rotationSpeed * ROTATION_MULTIPLIER * Time.deltaTime);
@@ -424,15 +410,6 @@ public class CraneMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the spawn position.
-    /// Used by Tutorial to inform the crane of the new current spawn platform.
-    /// </summary>  
-    public void SetSpawnPosition(GameObject spawnPos) 
-    { 
-        spawnPosition = spawnPos.transform; 
-    }
-
-    /// <summary>
     /// Enables or disables the crane's ability to move left or right based on tutorial progression and at the end of the game.
     /// </summary>
     /// <param name="left"></param>
@@ -453,12 +430,10 @@ public class CraneMovement : MonoBehaviour
     }
 
 
-    // function used by tutorial to move the crane to a specific position without player input.
-
     /// <summary>
     /// Set target position.
-    /// Play movement crane sound if moving.
-    /// set isCraneSliding to true if moving.
+    /// Used by tutorial to slide to starting position
+    /// Starts movement coroutine
     /// </summary>
     /// <param name="newTargetPos">The world position to move the crane to.</param>
     public void MoveToPositionSmoothly(Vector3 newTargetPos)
@@ -466,8 +441,7 @@ public class CraneMovement : MonoBehaviour
         targetPos = newTargetPos;
         if (Vector3.Distance(playerHead.position, targetPos) > ARRIVAL_THRESHOLD)
         {
-            isCraneSliding = true;
-            if (craneSoundManager != null) craneSoundManager.PlayMovementSound();
+            StartCoroutine(SlideCraneRoutine());
         }
     }
 
@@ -499,4 +473,14 @@ public class CraneMovement : MonoBehaviour
     {
         platforms = newPlatforms;
     } 
+
+    /// <summary>
+    /// Sets the spawn position.
+    /// Used by Tutorial to inform the crane of the new current spawn platform.
+    /// </summary>  
+    public void SetSpawnPosition(GameObject spawnPos) 
+    { 
+        spawnPosition = spawnPos.transform; 
+    }
+
 }
