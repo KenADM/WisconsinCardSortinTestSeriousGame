@@ -9,6 +9,7 @@ TagManager:
   - Wall
   - InnerWall
   - Grabbed
+  - recording
   layers:
   - Default
   - TransparentFX
