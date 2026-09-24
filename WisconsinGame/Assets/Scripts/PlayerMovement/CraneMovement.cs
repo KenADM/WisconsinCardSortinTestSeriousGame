@@ -78,6 +78,14 @@ public class CraneMovement : MonoBehaviour
     private const float ARRIVAL_THRESHOLD = 0.001f;
     private const float ROTATION_MULTIPLIER = 50f; 
 
+    // audio
+    [SerializeField] private AudioSource leftButton;
+    [SerializeField] private AudioSource rightButton;
+    [SerializeField] private AudioSource pickupButton;
+
+    [SerializeField] private AudioClip clickSound;
+
+    
     private void Start()
     {
         moveAction.Enable();
@@ -274,6 +282,8 @@ public class CraneMovement : MonoBehaviour
     /// </summary>
     public void TogglePickup()
     {
+        pickupButton.PlayOneShot(clickSound, 0.25f);
+
         if (!allowGrab || isArmMoving) return;
 
         if (Time.time < lastPickupTime + pickupCooldown) return;
@@ -393,6 +403,7 @@ public class CraneMovement : MonoBehaviour
     /// </summary>   
     public void MoveLeft() 
     { 
+        leftButton.PlayOneShot(clickSound, 0.25f);
         if (isArmMoving || isCraneSliding) return;
         Debug.Log("Left");
         if (allowMoveLeft) MoveToClosest(-1f);
@@ -404,6 +415,7 @@ public class CraneMovement : MonoBehaviour
     /// </summary>   
     public void MoveRight() 
     { 
+        rightButton.PlayOneShot(clickSound, 0.25f);
         if (isArmMoving || isCraneSliding) return;
         Debug.Log("Right");
         if (allowMoveRight) MoveToClosest(1f);

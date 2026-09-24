@@ -42,6 +42,7 @@ public class Tutorial : MonoBehaviour
     [Header("Tutorial Triggers")]
     [SerializeField] private GameObject rightTriggerObj; 
     [SerializeField] private GameObject leftTriggerObj;  
+    [SerializeField] private GameObject middleTriggerObj;  
 
     [Header("For Actual Game")]
     [SerializeField] private List<Transform> platformsGameplay = new List<Transform>();
@@ -52,6 +53,10 @@ public class Tutorial : MonoBehaviour
     private bool hasSpawnedSecondHouse = false;
     private bool timeMode;
 
+    // audio
+    [SerializeField] private AudioSource audioSource;
+
+    [SerializeField] private AudioClip clickSound;
     void Awake()
     {
         phase = -1;
@@ -62,6 +67,7 @@ public class Tutorial : MonoBehaviour
         StartingScreenManager.TutorialGame += TutorialGameHandler;
         wentRightTriggerTutorial.ReachedRight += ReachedRightTrigger;
         wentLeftTriggerTutorial.ReachedLeft += ReachedLeftTrigger; 
+        wentMiddleTriggerTutorial.ReachedMiddle += ReachedMiddleTrigger;
         CraneMovement.OnHouseGrabbed += OnCraneGrab;
         GameLogicManager.TutorialSpawnNextHouse += OnTutorialHousePlaced;
     }
@@ -71,6 +77,7 @@ public class Tutorial : MonoBehaviour
         StartingScreenManager.TutorialGame -= TutorialGameHandler;
         wentRightTriggerTutorial.ReachedRight -= ReachedRightTrigger;
         wentLeftTriggerTutorial.ReachedLeft -= ReachedLeftTrigger; 
+        wentMiddleTriggerTutorial.ReachedMiddle -= ReachedMiddleTrigger;
         CraneMovement.OnHouseGrabbed -= OnCraneGrab;
         GameLogicManager.TutorialSpawnNextHouse -= OnTutorialHousePlaced;
     }
@@ -87,6 +94,7 @@ public class Tutorial : MonoBehaviour
     
     private void Update()
     {
+        /*
         // Continuously check distance during Phase 9 to trigger the final UI prompt
         if (phase == 9)
         {
@@ -99,7 +107,7 @@ public class Tutorial : MonoBehaviour
 
                 SetPhase(10); 
             }
-        }
+        }*/
     }
 
 
@@ -220,6 +228,11 @@ public class Tutorial : MonoBehaviour
                 EnableMoveDirection?.Invoke(true, true); 
                 EnableGrab?.Invoke(false); 
                 if (phase9Prompt) phase9Prompt.SetActive(true); 
+                if (middleTriggerObj != null) middleTriggerObj.SetActive(true);
+                
+                //change the left target
+                CraneMovement craneMovement = crane.GetComponent<CraneMovement>(); 
+                craneMovement.SetSpawnPosition(spawningPlatformGameplay);
                 break;
 
             case 10: 
@@ -243,6 +256,8 @@ public class Tutorial : MonoBehaviour
     /// </summary>
     public void CloseTutorialPanel()
     {
+        audioSource.PlayOneShot(clickSound, 0.25f);
+
         if (phase0Prompt) phase0Prompt.SetActive(false);
         SetPhase(1); 
     }
@@ -263,6 +278,8 @@ public class Tutorial : MonoBehaviour
     /// </summary>
     public void ProceedToPhase3()
     {
+        audioSource.PlayOneShot(clickSound, 0.25f);
+
         if (phase == 2) SetPhase(3);
     }
 
@@ -271,6 +288,8 @@ public class Tutorial : MonoBehaviour
     /// </summary>
     public void ProceedToPhase4()
     {
+        audioSource.PlayOneShot(clickSound, 0.25f);
+
         if (phase == 3) SetPhase(4); 
     }
 
@@ -281,6 +300,10 @@ public class Tutorial : MonoBehaviour
     {
         if (phase == -1) SetPhase(0);
         if (phase == 4) SetPhase(5); 
+    }
+
+    public void ReachedMiddleTrigger(){
+        if (phase == 9) SetPhase(10); 
     }
 
     /// <summary>
@@ -309,6 +332,8 @@ public class Tutorial : MonoBehaviour
     /// </summary>
     public void TimeModePromptButton()
     {
+        audioSource.PlayOneShot(clickSound, 0.25f);
+
         if (lookAtTimePrompt) lookAtTimePrompt.SetActive(false);
         if (phase10Prompt) phase10Prompt.SetActive(true);
     }
@@ -317,6 +342,8 @@ public class Tutorial : MonoBehaviour
     /// </summary>
     public void StartGameHandler()
     {
+        audioSource.PlayOneShot(clickSound, 0.25f);
+
         HideAllPrompts();
         StartCoroutine(SmoothTransitionToGameplay());
     }
