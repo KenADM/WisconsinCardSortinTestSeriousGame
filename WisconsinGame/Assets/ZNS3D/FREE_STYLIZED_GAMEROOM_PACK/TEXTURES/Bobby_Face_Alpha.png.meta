@@ -1,7 +1,17 @@
 fileFormatVersion: 2
 guid: 68eaa426a0a473f4eaa50f6751967370
+AssetOrigin:
+  serializedVersion: 1
+  productId: 376894
+  packageName: FREE_STYLIZED_GAMEROOM_PACK
+  packageVersion: 1.0
+  assetPath: Assets/ZNS3D/FREE_STYLIZED_GAMEROOM_PACK/TEXTURES/Bobby_Face_Alpha.png
+  uploadId: 907768
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: 6037152326966491635
+    second: Bobby_Face_Alpha_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -108,7 +118,29 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Bobby_Face_Alpha_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 4096
+        height: 4096
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f9b2cf1e0648c350800000000000000
+      internalID: 6037152326966491635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -122,16 +154,10 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Bobby_Face_Alpha_0: 6037152326966491635
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 376894
-  packageName: FREE_STYLIZED_GAMEROOM_PACK
-  packageVersion: 1.0
-  assetPath: Assets/ZNS3D/FREE_STYLIZED_GAMEROOM_PACK/TEXTURES/Bobby_Face_Alpha.png
-  uploadId: 907768
