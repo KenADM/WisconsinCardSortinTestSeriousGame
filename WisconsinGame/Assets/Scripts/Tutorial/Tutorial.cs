@@ -87,8 +87,20 @@ public class Tutorial : MonoBehaviour
         SpawnStartingHouse?.Invoke(placingPlatformTutorial.transform);
         HideAllPrompts(); 
 
-        if (rightTriggerObj != null) rightTriggerObj.SetActive(false);
-        if (leftTriggerObj != null) leftTriggerObj.SetActive(true);
+
+        if (ExperimentSettings.skipTutorial)
+        {
+            if (middleTriggerObj != null) middleTriggerObj.SetActive(true);
+        }
+        else
+        {
+            if (rightTriggerObj != null) rightTriggerObj.SetActive(false);
+            if (leftTriggerObj != null) leftTriggerObj.SetActive(true);
+            if (middleTriggerObj != null) middleTriggerObj.SetActive(false);
+
+        }
+
+        
     }
 
     
