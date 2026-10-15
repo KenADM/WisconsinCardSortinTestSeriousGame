@@ -42,6 +42,9 @@ public class MainMenuManager : MonoBehaviour
 
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         if (warningCodePanelMain != null) warningCodePanelMain.SetActive(false);
         if (warningCodePanelSettings != null) warningCodePanelSettings.SetActive(false);
 

@@ -72943,8 +72943,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 946c48dc0a178264bb73c3d0ff96a10f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCam
-  sensX: 10
-  sensY: 10
+  sensX: 4
+  sensY: 4
   Orientation: {fileID: 270352906}
 --- !u!114 &1352211033
 MonoBehaviour:
