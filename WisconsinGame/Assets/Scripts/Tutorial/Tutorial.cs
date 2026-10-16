@@ -331,6 +331,7 @@ public class Tutorial : MonoBehaviour
     {
         HideAllPrompts(); 
         phase = 9;
+        if (middleTriggerObj != null) middleTriggerObj.SetActive(true);
         EnableMoveDirection?.Invoke(true, true); 
         EnableGrab?.Invoke(false); 
         
